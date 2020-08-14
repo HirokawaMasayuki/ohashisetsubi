@@ -96,7 +96,7 @@ $get_dir_path =  dirname($get_dir);
 echo $get_dir_path;
 */
 
-$filepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル出力\test_x.xlsx'; //読み込みたいファイルの指定
+$filepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル原本\test_x.xlsx'; //読み込みたいファイルの指定
 //$filepath = '\\DESKTOP-QT28T8M\共有hirokawa\xampp\htdocs\CakePHPapp\webroot\エクセル出力\test_x.xlsx'; //読み込みたいファイルの指定
 
 $reader = new XlsxReader();

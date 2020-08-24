@@ -55,7 +55,7 @@ $this->layout = '';
 
         <hr size="1" style="margin: 0.5rem">
 
-        <?= $this->Form->create($customers, ['url' => ['action' => 'confirm']]) ?>
+        <?= $this->Form->create($customers, ['url' => ['action' => 'do']]) ?>
         <br>
         <legend align="center"><strong style="font-size: 14pt"><?= __("顧客登録") ?></strong></legend>
         <br>
@@ -66,8 +66,8 @@ $this->layout = '';
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">フリガナ（カタカナで入力）</strong></td>
           </tr>
           <tr>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('name', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('furigana', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('name')) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('furigana')) ?></td>
           </tr>
         </table>
         <br>
@@ -77,8 +77,8 @@ $this->layout = '';
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">住所</strong></td>
           </tr>
           <tr>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('siten', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('address', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('siten')) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('address')) ?></td>
           </tr>
         </table>
         <br>
@@ -88,45 +88,39 @@ $this->layout = '';
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">FAX</strong></td>
           </tr>
           <tr>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tel', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('fax', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('tel')) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('fax')) ?></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
-            <td align="center" width="280" colspan="3" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">締め日</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">締め日</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("keisyou", ["type"=>"select","empty"=>"選択してください", "options"=>$arrKeisyou, 'label'=>false]) ?></td>
-            <td width="40" bgcolor="#FFFFCC" style="border-right-style: none;padding: 0.2rem"><strong style="font-size: 11pt"></strong></td>
-            <td width="120" bgcolor="#FFFFCC" style="border-right-style: none;border-left-style: none;padding: 0.2rem"><?= $this->Form->control('simebi', array('type'=>'text', 'label'=>false, 'size'=>20)) ?></td>
-            <td align="center" width="40" bgcolor="#FFFFCC" style="border-left-style: none;padding: 0.2rem"><strong style="font-size: 11pt">日</strong></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($keisyou) ?></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="border-right-style: none;border-left-style: none;padding: 0.2rem"><?= h($this->request->getData('simebi')."日") ?></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
-            <td align="center" width="560" colspan="4" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">必着日</strong></td>
+            <td align="center" width="560" colspan="2" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">必着日</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("hittyaku_flag", ["type"=>"select","empty"=>"選択してください", "options"=>$arrMonth, 'label'=>false]) ?></td>
-            <td width="40" bgcolor="#FFFFCC" style="border-right-style: none;padding: 0.2rem"><strong style="font-size: 11pt"></strong></td>
-            <td width="120" bgcolor="#FFFFCC" style="border-right-style: none;border-left-style: none;padding: 0.2rem"><?= $this->Form->control('hittyakubi', array('type'=>'text', 'label'=>false, 'size'=>20)) ?></td>
-            <td align="center" width="40" bgcolor="#FFFFCC" style="border-left-style: none;padding: 0.2rem"><strong style="font-size: 11pt">日</strong></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($hittyaku_flag) ?></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="border-right-style: none;border-left-style: none;padding: 0.2rem"><?= h($this->request->getData('hittyakubi')."日") ?></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
-            <td align="center" width="560" colspan="4" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金日</strong></td>
+            <td align="center" width="560" colspan="2" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金日</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("nyuukin_flag", ["type"=>"select","empty"=>"選択してください", "options"=>$arrMonth, 'label'=>false]) ?></td>
-            <td width="40" bgcolor="#FFFFCC" style="border-right-style: none;padding: 0.2rem"><strong style="font-size: 11pt"></strong></td>
-            <td width="120" bgcolor="#FFFFCC" style="border-right-style: none;border-left-style: none;padding: 0.2rem"><?= $this->Form->control('nyuukinbi', array('type'=>'text', 'label'=>false, 'size'=>20)) ?></td>
-            <td align="center" width="40" bgcolor="#FFFFCC" style="border-left-style: none;padding: 0.2rem"><strong style="font-size: 11pt">日</strong></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($nyuukin_flag) ?></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="border-right-style: none;border-left-style: none;padding: 0.2rem"><?= h($this->request->getData('nyuukinbi')."日") ?></td>
           </tr>
         </table>
         <br>
@@ -135,7 +129,7 @@ $this->layout = '';
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">回収方法</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("kaisyuu", ["type"=>"select","empty"=>"選択してください", "options"=>$arrKaisyuu, 'label'=>false]) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($kaisyuu) ?></td>
           </tr>
         </table>
         <br>
@@ -145,15 +139,17 @@ $this->layout = '';
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">担当者連絡先</strong></td>
           </tr>
           <tr>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tantou', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tantou_tel', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('tantou')) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('tantou_tel')) ?></td>
           </tr>
         </table>
         <br>
 
         <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
         <tr bgcolor="#E6FFFF" >
-          <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('入力内容確認'), array('name' => 'confirm')); ?></div></td>
+          <td style="border-style: none;"><div align="center"><?= $this->Form->submit('戻る', ['onclick' => 'history.back()', 'type' => 'button']); ?></div></td>
+          <td width="40"></td>
+          <td style="border-style: none;"><div align="center"><?= $this->Form->submit('登録', array('name' => 'kakunin')); ?></div></td>
         </tr>
         </table>
 
@@ -161,7 +157,23 @@ $this->layout = '';
                 <legend align="center"><strong style="font-size: 9pt;color: red"><?= __("※顧客名以外の項目は空白のまま登録できます。") ?></strong></legend>
                 <br>
 
-
     </td>
   </tr>
 </table>
+
+<?= $this->Form->control('name', array('type'=>'hidden', 'value'=>$this->request->getData('name'), 'label'=>false)) ?>
+<?= $this->Form->control('furigana', array('type'=>'hidden', 'value'=>$this->request->getData('furigana'), 'label'=>false)) ?>
+<?= $this->Form->control('siten', array('type'=>'hidden', 'value'=>$this->request->getData('siten'), 'label'=>false)) ?>
+<?= $this->Form->control('address', array('type'=>'hidden', 'value'=>$this->request->getData('address'), 'label'=>false)) ?>
+<?= $this->Form->control('tel', array('type'=>'hidden', 'value'=>$this->request->getData('tel'), 'label'=>false)) ?>
+<?= $this->Form->control('fax', array('type'=>'hidden', 'value'=>$this->request->getData('fax'), 'label'=>false)) ?>
+<?= $this->Form->control('simebi', array('type'=>'hidden', 'value'=>$this->request->getData('simebi'), 'label'=>false)) ?>
+<?= $this->Form->control('hittyakubi', array('type'=>'hidden', 'value'=>$this->request->getData('hittyakubi'), 'label'=>false)) ?>
+<?= $this->Form->control('nyuukinbi', array('type'=>'hidden', 'value'=>$this->request->getData('nyuukinbi'), 'label'=>false)) ?>
+<?= $this->Form->control('tantou', array('type'=>'hidden', 'value'=>$this->request->getData('tantou'), 'label'=>false)) ?>
+<?= $this->Form->control('tantou_tel', array('type'=>'hidden', 'value'=>$this->request->getData('tantou_tel'), 'label'=>false)) ?>
+<?= $this->Form->control('keisyou', array('type'=>'hidden', 'value'=>$this->request->getData('keisyou'), 'label'=>false)) ?>
+<?= $this->Form->control('hittyaku_flag', array('type'=>'hidden', 'value'=>$this->request->getData('hittyaku_flag'), 'label'=>false)) ?>
+<?= $this->Form->control('nyuukin_flag', array('type'=>'hidden', 'value'=>$this->request->getData('nyuukin_flag'), 'label'=>false)) ?>
+<?= $this->Form->control('kaisyuu', array('type'=>'hidden', 'value'=>$this->request->getData('kaisyuu'), 'label'=>false)) ?>
+<?= $this->Form->control('created_at', array('type'=>'hidden', 'value'=>date('Y-m-d H:i:s', strtotime('+9hour')), 'label'=>false)) ?>

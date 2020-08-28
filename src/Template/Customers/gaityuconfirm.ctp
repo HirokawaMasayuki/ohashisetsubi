@@ -39,7 +39,7 @@ $this->layout = '';
 
         <table style="margin-bottom:0px" width="750" border="0" align="center" cellpadding="0" cellspacing="0" bordercolor="#CCCCCC">
           <tr style="border-style: none; background-color: #E6FFFF">
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/kokyaku.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'menu')));?></td>
+            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/gaityuu.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'gaityumenu')));?></td>
           </tr>
         </table>
 
@@ -55,16 +55,14 @@ $this->layout = '';
 
         <hr size="1" style="margin: 0.5rem">
 
-        <?= $this->Form->create($customers, ['url' => ['action' => 'index']]) ?>
+        <?= $this->Form->create($suppliers, ['url' => ['action' => 'gaityudo']]) ?>
         <br>
-        <legend align="center"><strong style="font-size: 14pt"><?= __("顧客登録") ?></strong></legend>
-        <br>
-        <legend align="center"><strong style="font-size: 9pt;color: red"><?= __($mes) ?></strong></legend>
+        <legend align="center"><strong style="font-size: 14pt"><?= __("外注先登録") ?></strong></legend>
         <br>
 
         <table align="center">
           <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">顧客名</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">外注先名</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">フリガナ（カタカナで入力）</strong></td>
           </tr>
           <tr>
@@ -128,7 +126,7 @@ $this->layout = '';
         <br>
         <table align="center">
           <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">回収方法</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">支払い方法</strong></td>
           </tr>
           <tr>
             <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($kaisyuu) ?></td>
@@ -147,6 +145,35 @@ $this->layout = '';
         </table>
         <br>
 
+        <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
+        <tr bgcolor="#E6FFFF" >
+          <td style="border-style: none;"><div align="center"><?= $this->Form->submit('戻る', ['onclick' => 'history.back()', 'type' => 'button']); ?></div></td>
+          <td width="40"></td>
+          <td style="border-style: none;"><div align="center"><?= $this->Form->submit('登録', array('name' => 'kakunin')); ?></div></td>
+        </tr>
+        </table>
+
+                <br>
+                <legend align="center"><strong style="font-size: 9pt;color: red"><?= __("※外注先名以外の項目は空白のまま登録できます。") ?></strong></legend>
+                <br>
+
     </td>
   </tr>
 </table>
+
+<?= $this->Form->control('name', array('type'=>'hidden', 'value'=>$this->request->getData('name'), 'label'=>false)) ?>
+<?= $this->Form->control('furigana', array('type'=>'hidden', 'value'=>$this->request->getData('furigana'), 'label'=>false)) ?>
+<?= $this->Form->control('siten', array('type'=>'hidden', 'value'=>$this->request->getData('siten'), 'label'=>false)) ?>
+<?= $this->Form->control('address', array('type'=>'hidden', 'value'=>$this->request->getData('address'), 'label'=>false)) ?>
+<?= $this->Form->control('tel', array('type'=>'hidden', 'value'=>$this->request->getData('tel'), 'label'=>false)) ?>
+<?= $this->Form->control('fax', array('type'=>'hidden', 'value'=>$this->request->getData('fax'), 'label'=>false)) ?>
+<?= $this->Form->control('simebi', array('type'=>'hidden', 'value'=>$this->request->getData('simebi'), 'label'=>false)) ?>
+<?= $this->Form->control('hittyakubi', array('type'=>'hidden', 'value'=>$this->request->getData('hittyakubi'), 'label'=>false)) ?>
+<?= $this->Form->control('nyuukinbi', array('type'=>'hidden', 'value'=>$this->request->getData('nyuukinbi'), 'label'=>false)) ?>
+<?= $this->Form->control('tantou', array('type'=>'hidden', 'value'=>$this->request->getData('tantou'), 'label'=>false)) ?>
+<?= $this->Form->control('tantou_tel', array('type'=>'hidden', 'value'=>$this->request->getData('tantou_tel'), 'label'=>false)) ?>
+<?= $this->Form->control('keisyou', array('type'=>'hidden', 'value'=>$this->request->getData('keisyou'), 'label'=>false)) ?>
+<?= $this->Form->control('hittyaku_flag', array('type'=>'hidden', 'value'=>$this->request->getData('hittyaku_flag'), 'label'=>false)) ?>
+<?= $this->Form->control('nyuukin_flag', array('type'=>'hidden', 'value'=>$this->request->getData('nyuukin_flag'), 'label'=>false)) ?>
+<?= $this->Form->control('kaisyuu', array('type'=>'hidden', 'value'=>$this->request->getData('kaisyuu'), 'label'=>false)) ?>
+<?= $this->Form->control('created_at', array('type'=>'hidden', 'value'=>date('Y-m-d H:i:s', strtotime('+9hour')), 'label'=>false)) ?>

@@ -75,27 +75,6 @@ class AccountsController extends AppController
 */
 
 
-/*
-//エラー出るけどダウンロードはできる
-$spreadsheet = new Spreadsheet();
-$sheet = $spreadsheet->getActiveSheet();
-$sheet->setCellValue('A1', 'Hello World 1');
-$sheet->setCellValue('A2', 'Hello World 2');
-
-// xlsx ファイルをダウンロード
-$this->loadComponent('Excel');
-$filename = 'サンプル_' . date('ymd_His');
-return $this->Excel->download($spreadsheet, $filename);
-*/
-
-/*
-//現在のパスを取得
-$get_dir = __FILE__;
-echo $get_dir . "<br />";
-$get_dir_path =  dirname($get_dir);
-echo $get_dir_path;
-*/
-
 $filepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル原本\test_x.xlsx'; //読み込みたいファイルの指定
 //$filepath = '\\DESKTOP-QT28T8M\共有hirokawa\xampp\htdocs\CakePHPapp\webroot\エクセル出力\test_x.xlsx'; //読み込みたいファイルの指定
 

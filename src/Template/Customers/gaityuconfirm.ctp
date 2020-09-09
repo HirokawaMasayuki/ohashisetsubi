@@ -49,7 +49,7 @@ $this->layout = '';
                   <tr style="border-style: none; background-color: #E6FFFF">
                     <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/touroku.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'form')));?></td>
                     <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/ichiran.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'veiw')));?></td>
-                    <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/syuusei.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'edit')));?></td>
+                    <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/syuusei.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'editichiran')));?></td>
                   </tr>
         </table>
 
@@ -95,11 +95,11 @@ $this->layout = '';
         <br>
         <table align="center">
           <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">郵便番号</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">締め日</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($keisyou) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('yuubin')) ?></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="border-right-style: none;border-left-style: none;padding: 0.2rem"><?= h($this->request->getData('simebi')."日") ?></td>
           </tr>
         </table>
@@ -126,9 +126,11 @@ $this->layout = '';
         <br>
         <table align="center">
           <tr>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">支払い方法</strong></td>
           </tr>
           <tr>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($keisyou) ?></td>
             <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($kaisyuu) ?></td>
           </tr>
         </table>
@@ -165,6 +167,7 @@ $this->layout = '';
 <?= $this->Form->control('furigana', array('type'=>'hidden', 'value'=>$this->request->getData('furigana'), 'label'=>false)) ?>
 <?= $this->Form->control('siten', array('type'=>'hidden', 'value'=>$this->request->getData('siten'), 'label'=>false)) ?>
 <?= $this->Form->control('address', array('type'=>'hidden', 'value'=>$this->request->getData('address'), 'label'=>false)) ?>
+<?= $this->Form->control('yuubin', array('type'=>'hidden', 'value'=>$this->request->getData('yuubin'), 'label'=>false)) ?>
 <?= $this->Form->control('tel', array('type'=>'hidden', 'value'=>$this->request->getData('tel'), 'label'=>false)) ?>
 <?= $this->Form->control('fax', array('type'=>'hidden', 'value'=>$this->request->getData('fax'), 'label'=>false)) ?>
 <?= $this->Form->control('simebi', array('type'=>'hidden', 'value'=>$this->request->getData('simebi'), 'label'=>false)) ?>

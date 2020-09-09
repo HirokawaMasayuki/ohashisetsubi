@@ -55,11 +55,9 @@ $this->layout = '';
 
         <hr size="1" style="margin: 0.5rem">
 
-        <?= $this->Form->create($customers, ['url' => ['action' => 'index']]) ?>
+        <?= $this->Form->create($Customer, ['url' => ['action' => 'editdo']]) ?>
         <br>
-        <legend align="center"><strong style="font-size: 14pt"><?= __("顧客登録") ?></strong></legend>
-        <br>
-        <legend align="center"><strong style="font-size: 9pt;color: red"><?= __($mes) ?></strong></legend>
+        <legend align="center"><strong style="font-size: 14pt;"><?= __($mess) ?></strong></legend>
         <br>
 
         <table align="center">

@@ -36,60 +36,51 @@ class AccountsController extends AppController
      {
 			 $tests = $this->Tests->newEntity();
        $this->set('tests',$tests);
+
+				$filepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル原本\test_x.xlsx'; //読み込みたいファイルの指定
 /*
-			 $arrtouroku = array();
-       $arrtouroku[] = array(
-         'test' => "test4",
-         'delete_flag' => 0,
-         'created_at' => date('Y-m-d H:i:s', strtotime('+9hour'))
-       );
+//①エクセルシート自体を複数作成する
 
-			 $tests = $this->Tests->patchEntity($this->Tests->newEntity(), $arrtouroku[0]);
-       $connection = ConnectionManager::get('default');//トランザクション1
-       // トランザクション開始2
-       $connection->begin();//トランザクション3
-       try {//トランザクション4
+				for($i=1; $i<=3; $i++){
 
-         if ($this->Tests->save($tests)) {
+					$reader = new XlsxReader();
+					$spreadsheet = $reader->load($filepath);
+					$sheet = $spreadsheet->getActiveSheet();
+					$sheet->setCellValue('A1', $i);
+					$sheet->setCellValue('A2', 'yyy');
 
-           $mes = "※下記のように登録されました";
-           $this->set('mes',$mes);
+					$writer = new XlsxWriter($spreadsheet);
 
-           $connection->commit();// コミット5
+					$datetime = date('Ymd', strtotime('+9hour'));
 
-         } else {
+					${"file_name".$i} = "test_".$datetime."_".$i.".xlsx";
 
-           $mes = "※登録されませんでした";
-           $this->set('mes',$mes);
+					$outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/${"file_name".$i}"; //出力したいファイルの指定
 
-           $this->Flash->error(__('The data could not be saved. Please, try again.'));
-           throw new Exception(Configure::read("M.ERROR.INVALID"));//失敗6
-
-         }
-
-       } catch (Exception $e) {//トランザクション7
-       //ロールバック8
-         $connection->rollback();//トランザクション9
-
-       }//トランザクション10
+					$writer->save($outfilepath);
+				}
 */
 
 
-$filepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル原本\test_x.xlsx'; //読み込みたいファイルの指定
-//$filepath = '\\DESKTOP-QT28T8M\共有hirokawa\xampp\htdocs\CakePHPapp\webroot\エクセル出力\test_x.xlsx'; //読み込みたいファイルの指定
+//②エクセルシートは１つで、その中のシートを複数作成する
 
-$reader = new XlsxReader();
-$spreadsheet = $reader->load($filepath);
-$sheet = $spreadsheet->getActiveSheet();
-$sheet->setCellValue('A1', 'xxx');
-$sheet->setCellValue('A2', 'yyy');
+				$reader = new XlsxReader();
+				$spreadsheet = $reader->load($filepath);
 
-$writer = new XlsxWriter($spreadsheet);
+				for($i=2; $i<=4; $i++){//Sheet1はすでに存在するので、$i=2からスタート
 
-$outfilepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル出力\test_y.xlsx'; //出力したいファイルの指定
-//$outfilepath = '\\DESKTOP-QT28T8M\共有hirokawa\xampp\htdocs\CakePHPapp\webroot\エクセル出力\test_y.xlsx'; //読み込みたいファイルの指定
+					$baseSheet = $spreadsheet->getSheet(0);
+					$newSheet = $baseSheet->copy();
+					$newSheet->setTitle( "Sheet".$i );
+					$spreadsheet->addSheet( $newSheet );
 
-$writer->save($outfilepath);
+					$writer = new XlsxWriter($spreadsheet);
+
+				}
+
+				$outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/copytest.xlsx"; //出力したいファイルの指定
+
+				$writer->save($outfilepath);
 
      }
 

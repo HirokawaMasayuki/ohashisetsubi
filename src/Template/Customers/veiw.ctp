@@ -39,7 +39,7 @@ $this->layout = '';
 
         <table style="margin-bottom:0px" width="750" border="0" align="center" cellpadding="0" cellspacing="0" bordercolor="#CCCCCC">
           <tr style="border-style: none; background-color: #E6FFFF">
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/gaityuu.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'gaityumenu')));?></td>
+            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/kokyaku.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'menu')));?></td>
           </tr>
         </table>
 
@@ -47,14 +47,32 @@ $this->layout = '';
 
         <table style="margin-bottom:0px" width="1000" border="0" align="center" cellpadding="0" cellspacing="0" bordercolor="#CCCCCC">
                   <tr style="border-style: none; background-color: #E6FFFF">
-                    <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/touroku.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'gaityuform')));?></td>
-                    <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/ichiran.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'gaityuveiw')));?></td>
+                    <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/touroku.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'form')));?></td>
+                    <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/ichiran.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'veiw')));?></td>
                     <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/syuusei.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'editichiran')));?></td>
                   </tr>
         </table>
 
         <hr size="1" style="margin: 0.5rem">
+        <br>
+        <legend align="center"><strong style="font-size: 14pt"><?= __("顧客一覧") ?></strong></legend>
+        <br>
 
-    </td>
-  </tr>
-</table>
+<table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
+  <tbody border="2" bordercolor="#E6FFFF" bgcolor="#FFFFCC" style="border-bottom: solid;border-width: 1px">
+        <thead>
+          <tr>
+            <td align="center" width="200" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">顧客名</strong></td>
+            <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">支店</strong></td>
+          </tr>
+        </thead>
+        <tbody border="2" bordercolor="#E6FFFF" bgcolor="#FFFFCC">
+          <?php foreach ($Customers as $Customers): ?>
+          <tr>
+            <td align="center" width="200" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><?= h($Customers->name) ?></td>
+            <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><?= h($Customers->siten) ?></td>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+    </table>
+<br><br>

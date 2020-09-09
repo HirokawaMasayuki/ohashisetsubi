@@ -49,7 +49,7 @@ $this->layout = '';
                   <tr style="border-style: none; background-color: #E6FFFF">
                     <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/touroku.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'form')));?></td>
                     <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/ichiran.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'veiw')));?></td>
-                    <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/syuusei.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'edit')));?></td>
+                    <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/syuusei.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Customers','action'=>'editichiran')));?></td>
                   </tr>
         </table>
 
@@ -95,11 +95,11 @@ $this->layout = '';
         <br>
         <table align="center">
           <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">郵便番号</strong></td>
             <td align="center" width="280" colspan="3" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">締め日</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("keisyou", ["type"=>"select","empty"=>"選択してください", "options"=>$arrKeisyou, 'label'=>false]) ?></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('yuubin', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
             <td width="40" bgcolor="#FFFFCC" style="border-right-style: none;padding: 0.2rem"><strong style="font-size: 11pt"></strong></td>
             <td width="120" bgcolor="#FFFFCC" style="border-right-style: none;border-left-style: none;padding: 0.2rem"><?= $this->Form->control('simebi', array('type'=>'text', 'label'=>false, 'size'=>20)) ?></td>
             <td align="center" width="40" bgcolor="#FFFFCC" style="border-left-style: none;padding: 0.2rem"><strong style="font-size: 11pt">日</strong></td>
@@ -132,9 +132,11 @@ $this->layout = '';
         <br>
         <table align="center">
           <tr>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">支払い方法</strong></td>
           </tr>
           <tr>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("keisyou", ["type"=>"select","empty"=>"選択してください", "options"=>$arrKeisyou, 'label'=>false]) ?></td>
             <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("kaisyuu", ["type"=>"select","empty"=>"選択してください", "options"=>$arrKaisyuu, 'label'=>false]) ?></td>
           </tr>
         </table>

@@ -55,6 +55,32 @@ $this->layout = '';
 
         <hr size="1" style="margin: 0.5rem">
 
-    </td>
-  </tr>
-</table>
+        <?= $this->Form->create($suppliers, ['url' => ['action' => 'gaityueditsyuusei']]) ?>
+      <br>
+        <legend align="center"><strong style="font-size: 14pt"><?= __("外注先情報修正") ?></strong></legend>
+        <br>
+
+<table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
+  <tbody border="2" bordercolor="#E6FFFF" bgcolor="#FFFFCC" style="border-bottom: solid;border-width: 1px">
+        <thead>
+          <tr>
+            <td align="center" width="200" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">外注先</strong></td>
+            <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">支店</strong></td>
+            <td align="center" width="50" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt"></strong></td>
+          </tr>
+        </thead>
+        <tbody border="2" bordercolor="#E6FFFF" bgcolor="#FFFFCC">
+          <?php foreach ($Suppliers as $Suppliers): ?>
+          <tr>
+            <td align="center" width="200" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><?= h($Suppliers->name) ?></td>
+            <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><?= h($Suppliers->siten) ?></td>
+            <?php
+            echo "<td colspan='20' nowrap='nowrap'><div align='center'>";
+            echo $this->Form->submit("修正" , ['action'=>'hensyu', 'name' => $Suppliers->id]) ;
+            echo "</div></td>";
+            ?>
+          </tr>
+          <?php endforeach; ?>
+        </tbody>
+    </table>
+<br><br>

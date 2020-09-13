@@ -55,16 +55,14 @@ $this->layout = '';
 
         <hr size="1" style="margin: 0.5rem">
 
-        <?= $this->Form->create($suppliers, ['url' => ['action' => 'index']]) ?>
+        <?= $this->Form->create($suppliers, ['url' => ['action' => 'gaityueditdo']]) ?>
         <br>
-        <legend align="center"><strong style="font-size: 14pt"><?= __("外注先登録") ?></strong></legend>
-        <br>
-        <legend align="center"><strong style="font-size: 9pt;color: red"><?= __($mes) ?></strong></legend>
+        <legend align="center"><strong style="font-size: 14pt;"><?= __($mess) ?></strong></legend>
         <br>
 
         <table align="center">
           <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">外注先名</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">顧客名</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">フリガナ（カタカナで入力）</strong></td>
           </tr>
           <tr>
@@ -129,7 +127,7 @@ $this->layout = '';
         <table align="center">
           <tr>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">支払い方法</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">回収方法</strong></td>
           </tr>
           <tr>
             <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($keisyou) ?></td>

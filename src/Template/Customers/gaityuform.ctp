@@ -66,8 +66,8 @@ $this->layout = '';
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">フリガナ（カタカナで入力）</strong></td>
           </tr>
           <tr>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('name', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('furigana', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('name', array('type'=>'text', 'label'=>false, 'size'=>38, 'required'=>true)) ?></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('furigana', array('type'=>'text', 'label'=>false, 'size'=>38, 'required'=>true)) ?></td>
           </tr>
         </table>
         <br>

@@ -17,16 +17,42 @@ class AccountsController extends AppController
 			public function initialize()
 			{
 			parent::initialize();
-			$this->Tests = TableRegistry::get('tests');
 			$this->Customers = TableRegistry::get('customers');
+			$this->Uriages = TableRegistry::get('uriages');
 		  }
 
 		 public function index()
      {
-	//		 echo phpinfo();
      }
 
-		 public function form()
+		 public function uriageformcustomer()
+     {
+			 $uriages = $this->Uriages->newEntity();
+       $this->set('uriages',$uriages);
+
+			 $arrCustomers = $this->Customers->find('all', ['conditions' => ['delete_flag' => '0']])->order(['furigana' => 'ASC']);
+			 $arrCustomer = array();
+			 foreach ($arrCustomers as $value) {
+				 $arrCustomer[] = array($value->name=>$value->name);
+			 }
+			 $this->set('arrCustomer',$arrCustomer);
+
+     }
+
+		 public function uriageformsyousai()
+     {
+			 $uriages = $this->Uriages->newEntity();
+       $this->set('uriages',$uriages);
+
+			 $data = $this->request->getData();
+
+			 echo "<pre>";
+			 print_r($data);
+			 echo "</pre>";
+
+     }
+
+		 public function uriagesyuturyoku()
      {
 			 $customers = $this->Customers->newEntity();
        $this->set('customers',$customers);

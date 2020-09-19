@@ -50,7 +50,7 @@ $this->layout = '';
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">顧客選択</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("name2", ["type"=>"select","empty"=>"選択してください", "options"=>$arrCustomer, 'label'=>false]) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("name1", ["type"=>"select","empty"=>"選択してください", "options"=>$arrCustomer, 'label'=>false]) ?></td>
           </tr>
         </table>
         <br>
@@ -59,7 +59,7 @@ $this->layout = '';
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">顧客入力</strong></td>
           </tr>
           <tr>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('name1', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('name2', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
           </tr>
         </table>
         <br>

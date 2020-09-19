@@ -45,11 +45,27 @@ class AccountsController extends AppController
        $this->set('uriages',$uriages);
 
 			 $data = $this->request->getData();
-
+/*
 			 echo "<pre>";
 			 print_r($data);
 			 echo "</pre>";
+*/
+			 if(!empty($data["name1"])){
+				 $name = $data["name1"];
+			 }elseif(!empty($data["name2"])){
+				 $name = $data["name2"];
+			 }else{
+				 $name = "";
+			 }
 
+			 $Customer = $this->Customers->find('all', ['conditions' => ['name' => $name]])->toArray();
+			 if(isset($Customer[0])){
+				 $customercheck = 1;
+			 }else{
+				 $customercheck = 2;
+			 }
+			 $this->set('name',$name);
+			 $this->set('customercheck',$customercheck);
      }
 
 		 public function uriagesyuturyoku()

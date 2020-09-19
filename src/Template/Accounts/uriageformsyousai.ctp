@@ -38,9 +38,11 @@ $this->layout = '';
 
         <hr size="1" style="margin: 0.5rem">
 
+        <?php if($customercheck == 1): ?>
+
         <?= $this->Form->create($uriages, ['url' => ['action' => 'uriageformsyousai']]) ?>
         <br>
-        <legend align="center"><strong style="font-size: 14pt"><?= __("顧客選択") ?></strong></legend>
+        <legend align="center"><strong style="font-size: 14pt"><?= __("詳細入力") ?></strong></legend>
         <br>
 
         <table align="center">
@@ -59,6 +61,17 @@ $this->layout = '';
         </tr>
         </table>
 
-    </td>
-  </tr>
-</table>
+      <?php else: ?>
+
+        <br>
+        <legend align="center"><strong style="font-size: 11pt; color:red"><?= "正しい顧客名が入力されていません。前の画面からやりなおしてください。" ?></strong></legend>
+        <br>
+        <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
+        <tr bgcolor="#E6FFFF" >
+          <td style="border-style: none;"><div align="center"><?= $this->Form->submit('戻る', ['onclick' => 'history.back()', 'type' => 'button']); ?></div></td>
+        </tr>
+        </table>
+        <br>
+        <br>
+
+      <?php endif; ?>

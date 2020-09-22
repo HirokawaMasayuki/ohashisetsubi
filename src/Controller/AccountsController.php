@@ -95,7 +95,9 @@ class AccountsController extends AppController
 			 $this->set('address',$data["address"]);
 			 $this->set('keisyou',$data["keisyou"]);
 
-			 $dateexcl = $data['date']['year']."年".$data['date']['month']."月".$data['date']['day']."日";
+			 $month = (int)$data['date']['month'];
+			 $day = (int)$data['date']['day'];
+			 $dateexcl = $data['date']['year']."年".$month."月".$day."日";
 			 $datetouroku = $data['date']['year']."-".$data['date']['month']."-".$data['date']['day'];
 			 $this->set('dateexcl',$dateexcl);
 			 $this->set('datetouroku',$datetouroku);
@@ -145,43 +147,78 @@ class AccountsController extends AppController
 				 ${"arr_".$i} = array('pro_'.$i => $data["pro_".$i],'amount_'.$i => $data["amount_".$i],'tani_'.$i => $data["tani_".$i],'tanka_'.$i => $data["tanka_".$i],
 															 'price_'.$i => $data["price_".$i],'bik_'.$i => $data["bik_".$i]);
 
-			 $tourokuArr = array_merge($tourokuArr,${"arr_".$i});
+				 $tourokuArr = array_merge($tourokuArr,${"arr_".$i});
 
 			 }
-
+/*
 			 echo "<pre>";
 			 print_r($tourokuArr);
 			 echo "</pre>";
-
-			 $filepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル原本\test_x.xlsx'; //読み込みたいファイルの指定
+*/
+			 //エクセル出力
+			 $filepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル原本\納品書.xlsx'; //読み込みたいファイルの指定
 			 $reader = new XlsxReader();
 			 $spreadsheet = $reader->load($filepath);
 			 $sheet = $spreadsheet->getActiveSheet();
-			 $sheet->setCellValue('A1', 1234);
-			 $sheet->setCellValue('A2', '5432');
+			 $sheet->setCellValue('A2', "〒 ".$data["yuubin"]);
+			 $sheet->setCellValue('A3', $data["address"]);
+			 $sheet->setCellValue('A4', $data["name"]);
+			 $sheet->setCellValue('E4', $data["keisyou"]);
+			 $sheet->setCellValue('G2', $data["dateexcl"]);
+
+			 $pro_check = 0;
+			 for($i=1; $i<=8; $i++){
+
+				 $num = 11 + $i;
+				 $num2 = 34 + $i;
+				 if(empty($data["pro_".$i]) && $pro_check == 0){
+					 ${"pro_".$i} = "以下余白";
+					 $pro_check = 1;
+				 }else{
+					 ${"pro_".$i} = $data["pro_".$i];
+				 }
+
+				 $sheet->setCellValue("A".$num, ${"pro_".$i});
+				 $sheet->setCellValue("A".$num2, ${"pro_".$i});
+				 $sheet->setCellValue("E".$num, $data["amount_".$i]);
+				 $sheet->setCellValue("E".$num2, $data["amount_".$i]);
+				 $sheet->setCellValue("F".$num, $data["tani_".$i]);
+				 $sheet->setCellValue("F".$num2, $data["tani_".$i]);
+				 $sheet->setCellValue("G".$num, $data["tanka_".$i]);
+				 $sheet->setCellValue("G".$num2, $data["tanka_".$i]);
+				 $sheet->setCellValue("H".$num, $data["price_".$i]);
+				 $sheet->setCellValue("H".$num2, $data["price_".$i]);
+				 $sheet->setCellValue("I".$num, $data["bik_".$i]);
+				 $sheet->setCellValue("I".$num2, $data["bik_".$i]);
+
+		 }
 
 			 $writer = new XlsxWriter($spreadsheet);
 
 			 $datetime = date('H時i分出力', strtotime('+9hour'));
-
 			 $year = date('Y');
 			 $month = date('m');
 			 $day = date('d');
 
-			 if(is_dir("C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$year/$month/$day")){//ファイルがディレクトリかどうかを調べる
-				 $i = 1;
-			 }else{
+			 if(is_dir("C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$year/$month/$day")){//ディレクトリが存在すればOK
+
+				 $file_name = $data["name"]."_".$datetime.".xlsx";
+				 $outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$year/$month/$day/$file_name"; //出力したいファイルの指定
+
+			 }else{//ディレクトリが存在しなければ作成する
+
 				 mkdir("C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$year/$month/$day", 0777, true);
+				 $file_name = $data["name"]."_".$datetime.".xlsx";
+				 $outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$year/$month/$day/$file_name"; //出力したいファイルの指定
+
 			 }
 
-			 $file_name = $data["name"]."_".$datetime.".xlsx";
-
-			 $outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$year/$month/$day/$file_name"; //出力したいファイルの指定
+			 $mesxlsx = "「エクセル出力/".$year."/".$month."/".$day."」フォルダにエクセルシート「".$file_name."」が出力されました。";
+			 $this->set('mesxlsx',$mesxlsx);
 
 			 $writer->save($outfilepath);
 
-
-/*
+ 			//データベース登録
 			 $uriage = $this->Uriages->patchEntity($uriages, $tourokuArr);
        $connection = ConnectionManager::get('default');//トランザクション1
        // トランザクション開始2
@@ -206,16 +243,17 @@ class AccountsController extends AppController
        //ロールバック8
          $connection->rollback();//トランザクション9
        }//トランザクション10
-*/
+
      }
 
-		 public function test()
+		 public function test()//エクセル複数作成のテスト
      {
+			 /*
 			 $tests = $this->Tests->newEntity();
        $this->set('tests',$tests);
 
 				$filepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル原本\test_x.xlsx'; //読み込みたいファイルの指定
-/*
+
 //①エクセルシート自体を複数作成する
 
 				for($i=1; $i<=3; $i++){
@@ -236,7 +274,6 @@ class AccountsController extends AppController
 
 					$writer->save($outfilepath);
 				}
-*/
 
 
 //②エクセルシートは１つで、その中のシートを複数作成する
@@ -258,7 +295,7 @@ class AccountsController extends AppController
 				$outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/copytest.xlsx"; //出力したいファイルの指定
 
 				$writer->save($outfilepath);
-
+*/
      }
 
 }

@@ -40,5 +40,5 @@ $this->layout = '';
 
         <?= $this->Form->create($uriages, ['url' => ['action' => 'uriagesyuturyoku']]) ?>
         <br>
-        <legend align="center"><strong style="font-size: 13pt"><?= __("エクセルに出力されました。") ?></strong></legend>
+        <legend align="center"><strong style="font-size: 13pt"><?= __($mesxlsx) ?></strong></legend>
         <br>

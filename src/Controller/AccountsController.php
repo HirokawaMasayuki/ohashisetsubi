@@ -246,14 +246,135 @@ class AccountsController extends AppController
 
      }
 
+		 public function uriagekensakuform()//売上照会
+     {
+			 $uriages = $this->Uriages->newEntity();
+       $this->set('uriages',$uriages);
+     }
+
+     public function uriagekensakuview()//売上照会
+     {
+			 $uriages = $this->Uriages->newEntity();
+       $this->set('uriages',$uriages);
+       $data = $this->request->getData();
+/*
+       echo "<pre>";
+       print_r($data);
+       echo "</pre>";
+*/
+       $date_sta = $data['date_sta']['year']."-".$data['date_sta']['month']."-".$data['date_sta']['day'];
+       $date_fin = $data['date_fin']['year']."-".$data['date_fin']['month']."-".$data['date_fin']['day'];
+
+       $customer = $data['customer'];
+       $proname = $data['proname'];
+
+       $date_fin = strtotime($date_fin);
+       $date_fin = date('Y-m-d', strtotime('+1 day', $date_fin));
+
+       if(empty($data['customer'])){//product_codeの入力がないとき
+         $product_code = "no";
+         if(empty($data['proname'])){//seikeikiの入力がないとき
+           $seikeiki = "no";//日にちだけで絞り込み
+
+           $Uriages = $this->Uriages->find()
+           ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"]);
+					 $this->set('Uriages',$Uriages);
+
+         }else{//pronameの入力があるとき pronameと日にちで絞り込み
+
+           $Uriages = $this->Uriages->find()
+          ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0,
+					'OR' => [['pro_1' => $proname], ['pro_2' => $proname], ['pro_3' => $proname], ['pro_4' => $proname],
+					['pro_5' => $proname], ['pro_6' => $proname], ['pro_7' => $proname], ['pro_8' => $proname]]])
+					->order(["syutsuryokubi"=>"ASC"]);
+					$this->set('Uriages',$Uriages);
+
+         }
+       }else{//customerの入力があるとき
+         if(empty($data['proname'])){//pronameの入力がないとき
+
+           $Uriages = $this->Uriages->find()
+           ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin,  'customer' => $customer, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"]);
+					 $this->set('Uriages',$Uriages);
+
+         }else{//pronameの入力があるときpronameとcustomerと日にちで絞り込み
+
+					 $Uriages = $this->Uriages->find()
+          ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'customer' => $customer, 'delete_flag' => 0,
+					'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
+					['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%']]])
+					->order(["syutsuryokubi"=>"ASC"]);
+					$this->set('Uriages',$Uriages);
+
+         }
+
+       }
+
+     }
+
+		     public function uriagekensakusyousai()
+		     {
+					 $uriages = $this->Uriages->newEntity();
+		       $this->set('uriages',$uriages);
+
+		       $data = $this->request->getData();
+
+		       $data = array_keys($data, '詳細');
+
+		       $Uriages = $this->Uriages->find()->where(['id' => $data[0]])->toArray();
+
+		       $syutsuryokubi = $Uriages[0]["syutsuryokubi"]->format('Y年m月d日');
+					 $this->set('syutsuryokubi',$syutsuryokubi);
+					 $customer = $Uriages[0]["customer"];
+		       $this->set('customer',$customer);
+					 $yuubin = $Uriages[0]["yuubin"];
+		       $this->set('yuubin',$yuubin);
+					 $address = $Uriages[0]["address"];
+		       $this->set('address',$address);
+					 $keisyou = $Uriages[0]["keisyou"];
+		       $this->set('keisyou',$keisyou);
+
+					 for($i=1; $i<=8; $i++){
+
+						 ${"pro_".$i} = $Uriages[0]["pro_".$i];
+			       $this->set("pro_".$i,${"pro_".$i});
+						 ${"amount_".$i} = $Uriages[0]["amount_".$i];
+			       $this->set("amount_".$i,${"amount_".$i});
+						 ${"tani_".$i} = $Uriages[0]["tani_".$i];
+			       $this->set("tani_".$i,${"tani_".$i});
+						 ${"tanka_".$i} = $Uriages[0]["tanka_".$i];
+			       $this->set("tanka_".$i,${"tanka_".$i});
+						 ${"price_".$i} = $Uriages[0]["price_".$i];
+			       $this->set("price_".$i,${"price_".$i});
+						 ${"bik_".$i} = $Uriages[0]["bik_".$i];
+			       $this->set("bik_".$i,${"bik_".$i});
+
+					 }
+
+
+		     }
+
 		 public function test()//エクセル複数作成のテスト
      {
-			 /*
-			 $tests = $this->Tests->newEntity();
-       $this->set('tests',$tests);
+			 $uriages = $this->Uriages->newEntity();
+       $this->set('uriages',$uriages);
 
 				$filepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル原本\test_x.xlsx'; //読み込みたいファイルの指定
+				$filepath1 = 'C:\xampp\htdocs\CakePHPapp\webroot\test.txt'; //読み込みたいファイルの指定
 
+				// ファイルが存在するかチェックする
+				if (file_exists($filepath1)) {
+
+				  // ファイルが存在したら、ファイル名を付けて存在していると表示
+				  echo 'ファイルは存在します。';
+
+				} else {
+
+				  // ファイルが存在していなかったら、見つからないと表示
+				  echo 'ファイルが見つかりません！';
+				}
+
+/*
 //①エクセルシート自体を複数作成する
 
 				for($i=1; $i<=3; $i++){
@@ -293,6 +414,24 @@ class AccountsController extends AppController
 				}
 
 				$outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/copytest.xlsx"; //出力したいファイルの指定
+
+				$writer->save($outfilepath);
+*/
+
+/*
+				$reader = new XlsxReader();
+				$spreadsheet = $reader->load($filepath);
+				$sheet = $spreadsheet->getActiveSheet();
+				$sheet->setCellValue('A1', 1);
+				$sheet->setCellValue('A2', 'yyy');
+
+				$writer = new XlsxWriter($spreadsheet);
+
+				$datetime = date('Ymd', strtotime('+9hour'));
+
+				$file_name = "test_".$datetime."_.xlsx";
+
+				$outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$file_name"; //出力したいファイルの指定
 
 				$writer->save($outfilepath);
 */

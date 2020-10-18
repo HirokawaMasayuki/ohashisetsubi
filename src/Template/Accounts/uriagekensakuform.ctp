@@ -17,15 +17,6 @@ $this->layout = '';
             <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/top.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Accounts','action'=>'index')));?></td>
             <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/shinki.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Shinkies','action'=>'index')));?></td>
         </tr>
-          <tr style="border-style: none; background-color: #E6FFFF">
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/uriagesyori.png',array('width'=>'105','height'=>'36'));?></td>
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/uriagesyoukai.png',array('width'=>'105','height'=>'36'));?></td>
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/nyuukinnyuuryoku.png',array('width'=>'105','height'=>'36'));?></td>
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/nyuukinsyoukai.png',array('width'=>'105','height'=>'36'));?></td>
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/seikyuusyori.png',array('width'=>'105','height'=>'36'));?></td>
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/seikyuuitiran.png',array('width'=>'105','height'=>'36'));?></td>
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/seikyuurireki.png',array('width'=>'105','height'=>'36'));?></td>
-          </tr>
         </table>
 
         <hr size="2" style="margin: 0.5rem">
@@ -41,12 +32,14 @@ $this->layout = '';
         <?= $this->Form->create($uriages, ['url' => ['action' => 'uriagekensakuview']]) ?>
         <br>
         <legend align="center"><strong style="font-size: 11pt"><?= __("日時以外は空欄のままでも検索できます。") ?></strong></legend>
+        <legend align="center"><strong style="font-size: 11pt"><?= __("フリガナはカタカナで入力してください。") ?></strong></legend>
         <br>
 
 <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
   <tbody border="2" bordercolor="#E6FFFF" bgcolor="#FFFFCC" style="border-bottom: 0px;border-width: 1px">
     <tr style="border-bottom: 0px;border-width: 0px">
       <td style='border-bottom: 0px;border-width: 1px'  width="250" height="40" colspan="20" nowrap="nowrap"><div align="center"><strong style="font-size: 15pt;">顧客</strong></div></td>
+      <td style='border-bottom: 0px;border-width: 1px'  width="250" height="40" colspan="20" nowrap="nowrap"><div align="center"><strong style="font-size: 15pt;">フリガナ</strong></div></td>
       <td style='border-bottom: 0px;border-width: 1px' colspan="40" nowrap="nowrap"><div align="center"><strong style="font-size: 15pt">納品書出力日</strong></div></td>
       <td style='border-bottom: 0px;border-width: 1px'  width="250" height="40" colspan="20" nowrap="nowrap"><div align="center"><strong style="font-size: 13pt;">現場名・品番</strong></div></td>
     </tr>
@@ -59,6 +52,9 @@ $this->layout = '';
       echo "<tr style='border-bottom: 0px;border-width: 0px'>\n";
       echo "<td style='border-bottom: 0px;border-width: 1px' rowspan='2'  height='40' colspan='20'  align='center'>\n";
       echo "<input type='text' name=customer />\n";
+      echo "</td>\n";
+      echo "<td style='border-bottom: 0px;border-width: 1px' rowspan='2'  height='40' colspan='20'  align='center'>\n";
+      echo "<input type='text' name=furigana />\n";
       echo "</td>\n";
       echo "<td colspan='3' style='border-bottom: 0px'><div align='center'><strong style='font-size: 13pt; color:blue'>\n";
       echo "開始";

@@ -33,7 +33,7 @@ class AccountsController extends AppController
 			 $arrCustomers = $this->Customers->find('all', ['conditions' => ['delete_flag' => '0']])->order(['furigana' => 'ASC']);
 			 $arrCustomer = array();
 			 foreach ($arrCustomers as $value) {
-				 $arrCustomer[] = array($value->name=>$value->name);
+				 $arrCustomer[] = array($value->name.' '.$value->siten=>$value->name.' '.$value->siten);
 			 }
 			 $this->set('arrCustomer',$arrCustomer);
 
@@ -50,20 +50,46 @@ class AccountsController extends AppController
 			 print_r($data);
 			 echo "</pre>";
 */
+
+			 $name = "";
+
 			 if(!empty($data["name1"])){
 				 $name = $data["name1"];
-			 }elseif(!empty($data["name2"])){
+				 $this->set('name',$name);
+				 $arrname = explode(" ",$name);
+				 $name = $arrname[0];
+				 $siten = $arrname[1];
+		 }elseif(!empty($data["name2"])){
 				 $name = $data["name2"];
+				 $this->set('name',$name);
+				 $arrname = explode(" ",$name);
+				 $name = $arrname[0];
+				 $siten = $arrname[1];
+		 }else{
+				 $name = $data["name"];
+				 $this->set('name',$name);
+				 $arrname = explode(" ",$name);
+				 $name = $arrname[0];
+				 $siten = $arrname[1];
+		 }
+
+			 $yuubin = "";
+			 $address = "";
+			 $keisyou = "";
+			 $furigana = "";
+			 $customercheck = 1;
+
+			 if(!empty($siten)){
+				 $Customer = $this->Customers->find('all', ['conditions' => ['name' => $name, 'siten' => $siten]])->toArray();//支店がある場合
 			 }else{
-				 $name = "";
+				 $Customer = $this->Customers->find('all', ['conditions' => ['name' => $name]])->toArray();//支店がない場合
 			 }
 
-			 $Customer = $this->Customers->find('all', ['conditions' => ['name' => $name]])->toArray();
 			 if(isset($Customer[0])){
-				 $customercheck = 1;
 				 $yuubin = $Customer[0]->yuubin;
 				 $address = $Customer[0]->address;
 				 $keisyou = $Customer[0]->keisyou;
+				 $furigana = $Customer[0]->furigana;
 				 if($keisyou == 1){
 					 $keisyou = "様";
 				 }elseif($keisyou == 2){
@@ -73,14 +99,48 @@ class AccountsController extends AppController
 				 }else{
 					 $keisyou = "";
 				 }
-			 }else{
+			 }elseif(isset($data['next'])){
 				 $customercheck = 2;
 			 }
-			 $this->set('name',$name);
+
 			 $this->set('yuubin',$yuubin);
 			 $this->set('address',$address);
 			 $this->set('keisyou',$keisyou);
+			 $this->set('furigana',$furigana);
 			 $this->set('customercheck',$customercheck);
+
+
+			 if(isset($data['tuika'])){
+
+				 if($data['num'] >= 20){
+
+					 $tuika = $data['num'] ;
+	         $this->set('tuika',$tuika);
+
+					 echo "<pre>";
+					 print_r("20行以上の登録は同時にできません。２回に分けて登録してください。");
+					 echo "</pre>";
+
+				 }else{
+
+					 $tuika = $data['num'] + 1;
+					 $this->set('tuika',$tuika);
+
+				 }
+
+       }elseif(isset($data['confirm'])){
+
+         $tuika = $data['num'];
+         $this->set('tuika',$tuika);
+
+         return $this->redirect(['action' => 'uriagesyuturyokukakunin',
+         's' => ['data' => $data]]);//登録するデータを全部配列に入れておく
+
+				}else{
+					$tuika = 0;
+					$this->set('tuika',$tuika);
+				}
+
      }
 
 		 public function uriagesyuturyokukakunin()
@@ -88,9 +148,13 @@ class AccountsController extends AppController
 			 $uriages = $this->Uriages->newEntity();
        $this->set('uriages',$uriages);
 
-			 $data = $this->request->getData();
+	//		 $data = $this->request->getData();
+
+			 $Data = $this->request->query('s');
+       $data = $Data['data'];
 
 			 $this->set('name',$data["name"]);
+			 $this->set('furigana',$data["furigana"]);
 			 $this->set('yuubin',$data["yuubin"]);
 			 $this->set('address',$data["address"]);
 			 $this->set('keisyou',$data["keisyou"]);
@@ -106,21 +170,26 @@ class AccountsController extends AppController
 			 print_r($date);
 			 echo "</pre>";
 */
-			 for($i=1; $i<=8; $i++){
+			 for($i=1; $i<=$data["num"]; $i++){
 
-				 $this->set('pro_'.$i,$data["pro_".$i]);
-				 $this->set('amount_'.$i,$data["amount_".$i]);
-				 $this->set('tani_'.$i,$data["tani_".$i]);
-				 $this->set('amount_'.$i,$data["amount_".$i]);
-				 $this->set('tanka_'.$i,$data["tanka_".$i]);
-				 $this->set('bik_'.$i,$data["bik_".$i]);
+				 if(!empty($data["pro_".$i])){
+					 $this->set('tuika',$i);
 
-				 if((int)$data["tanka_".$i] > 0){
-					 ${"price_".$i} = (int)$data["tanka_".$i] * (int)$data["amount_".$i];
-				 }else{
-					 ${"price_".$i} = "";
+					 $this->set('pro_'.$i,$data["pro_".$i]);
+					 $this->set('amount_'.$i,$data["amount_".$i]);
+					 $this->set('tani_'.$i,$data["tani_".$i]);
+					 $this->set('amount_'.$i,$data["amount_".$i]);
+					 $this->set('tanka_'.$i,$data["tanka_".$i]);
+					 $this->set('bik_'.$i,$data["bik_".$i]);
+
+					 if((int)$data["tanka_".$i] > 0){
+						 ${"price_".$i} = (int)$data["tanka_".$i] * (int)$data["amount_".$i];
+					 }else{
+						 ${"price_".$i} = "";
+					 }
+					 $this->set('price_'.$i,${"price_".$i});
+
 				 }
-				 $this->set('price_'.$i,${"price_".$i});
 
 			 }
 
@@ -132,45 +201,145 @@ class AccountsController extends AppController
        $this->set('uriages',$uriages);
 
 			 $data = $this->request->getData();
-/*
-			 echo "<pre>";
-			 print_r($data);
-			 echo "</pre>";
-*/
+
 			 $tourokuArr = array();
 
-			 $tourokuArr = array('customer' => $data["name"],'yuubin' => $data["yuubin"],'address' => $data["address"],'keisyou' => $data["keisyou"]
+			 $tourokuArr = array('customer' => $data["name"],'furigana' => $data["furigana"],'yuubin' => $data["yuubin"],'address' => $data["address"],'keisyou' => $data["keisyou"]
 			 												,'syutsuryokubi' => $data["datetouroku"],'delete_flag' => 0,'created_at' => date('Y-m-d H:i:s', strtotime('+9hour')));
 
-			 for($i=1; $i<=8; $i++){
+			 $total_price = 0;
+			 for($i=1; $i<=$data["tuika"]; $i++){
 
 				 ${"arr_".$i} = array('pro_'.$i => $data["pro_".$i],'amount_'.$i => $data["amount_".$i],'tani_'.$i => $data["tani_".$i],'tanka_'.$i => $data["tanka_".$i],
 															 'price_'.$i => $data["price_".$i],'bik_'.$i => $data["bik_".$i]);
 
 				 $tourokuArr = array_merge($tourokuArr,${"arr_".$i});
 
+				 $total_price = $total_price + $data["price_".$i];
+
 			 }
-/*
-			 echo "<pre>";
-			 print_r($tourokuArr);
-			 echo "</pre>";
-*/
+
+			 $total_price = $total_price * 1.1;
+
+			 $amari = $data["tuika"] % 8;
+			 $syou = floor($data["tuika"]/8);
+
 			 //エクセル出力
 			 $filepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル原本\納品書.xlsx'; //読み込みたいファイルの指定
 			 $reader = new XlsxReader();
 			 $spreadsheet = $reader->load($filepath);
-			 $sheet = $spreadsheet->getActiveSheet();
+//			 $sheet = $spreadsheet->getActiveSheet();
+				$sheet = $spreadsheet->getSheetByName("Sheet1");
+				$sheet->setCellValue('A2', "〒 ".$data["yuubin"]);
+				$sheet->setCellValue('A3', $data["address"]);
+				$sheet->setCellValue('A4', $data["name"]);
+				$sheet->setCellValue('E4', $data["keisyou"]);
+				$sheet->setCellValue('G2', $data["dateexcl"]);
+				$sheet->setCellValue('C8', $total_price);
+
+				for($j=2; $j<2+$syou; $j++){
+
+					$baseSheet = $spreadsheet->getSheet(0);
+	 			 $newSheet = $baseSheet->copy();
+	 			 $newSheet->setTitle( "Sheet".$j );
+	 			 $spreadsheet->addSheet( $newSheet );
+
+	 			 $writer = new XlsxWriter($spreadsheet);
+
+				}
+
+			 $pro_check = 0;
+
+			 if($amari == 0){//以下余白がいらない場合
+
+				 for($i=1; $i<=8; $i++){
+
+					 if($i == $data["tuika"]+2){
+						 break;
+					 }
+
+					 $num = 11 + $i;
+					 $num2 = 34 + $i;
+					 if(empty($data["pro_".$i]) && $pro_check == 0){
+						 ${"pro_".$i} = "以下余白";
+						 $pro_check = 1;
+					 }else{
+						 ${"pro_".$i} = $data["pro_".$i];
+					 }
+
+					 $sheet->setCellValue("A".$num, ${"pro_".$i});
+					 $sheet->setCellValue("A".$num2, ${"pro_".$i});
+					 $sheet->setCellValue("E".$num, $data["amount_".$i]);
+					 $sheet->setCellValue("E".$num2, $data["amount_".$i]);
+					 $sheet->setCellValue("F".$num, $data["tani_".$i]);
+					 $sheet->setCellValue("F".$num2, $data["tani_".$i]);
+					 $sheet->setCellValue("G".$num, $data["tanka_".$i]);
+					 $sheet->setCellValue("G".$num2, $data["tanka_".$i]);
+					 $sheet->setCellValue("H".$num, $data["price_".$i]);
+					 $sheet->setCellValue("H".$num2, $data["price_".$i]);
+					 $sheet->setCellValue("I".$num, $data["bik_".$i]);
+					 $sheet->setCellValue("I".$num2, $data["bik_".$i]);
+
+			 }
+
+		 }else{//以下余白がいる場合
+
+				 for($i=1; $i<=8; $i++){
+
+					 if($i == $data["tuika"]+2){
+						 break;
+					 }
+
+					 $num = 11 + $i;
+					 $num2 = 34 + $i;
+					 if(empty($data["pro_".$i]) && $pro_check == 0){
+						 ${"pro_".$i} = "以下余白";
+						 $pro_check = 1;
+					 }else{
+						 ${"pro_".$i} = $data["pro_".$i];
+					 }
+
+					 $sheet->setCellValue("A".$num, ${"pro_".$i});
+					 $sheet->setCellValue("A".$num2, ${"pro_".$i});
+
+					 if($i < $data["tuika"]+1){
+
+						 $sheet->setCellValue("E".$num, $data["amount_".$i]);
+						 $sheet->setCellValue("E".$num2, $data["amount_".$i]);
+						 $sheet->setCellValue("F".$num, $data["tani_".$i]);
+						 $sheet->setCellValue("F".$num2, $data["tani_".$i]);
+						 $sheet->setCellValue("G".$num, $data["tanka_".$i]);
+						 $sheet->setCellValue("G".$num2, $data["tanka_".$i]);
+						 $sheet->setCellValue("H".$num, $data["price_".$i]);
+						 $sheet->setCellValue("H".$num2, $data["price_".$i]);
+						 $sheet->setCellValue("I".$num, $data["bik_".$i]);
+						 $sheet->setCellValue("I".$num2, $data["bik_".$i]);
+
+					 }
+
+			 }
+
+		 }
+
+		 $writer = new XlsxWriter($spreadsheet);
+
+		 for($j=2; $j<2+$syou; $j++){
+
+			 $sheet = $spreadsheet->getSheetByName("Sheet".$j);
 			 $sheet->setCellValue('A2', "〒 ".$data["yuubin"]);
 			 $sheet->setCellValue('A3', $data["address"]);
 			 $sheet->setCellValue('A4', $data["name"]);
 			 $sheet->setCellValue('E4', $data["keisyou"]);
 			 $sheet->setCellValue('G2', $data["dateexcl"]);
 
-			 $pro_check = 0;
-			 for($i=1; $i<=8; $i++){
+			 for($i=8*($j - 1)+1; $i<=8*$j; $i++){
 
-				 $num = 11 + $i;
-				 $num2 = 34 + $i;
+				 if($i == $data["tuika"]+2){
+					 break;
+				 }
+
+				 $num = 11 + $i - 8*($j - 1);
+				 $num2 = 34 + $i - 8*($j - 1);
 				 if(empty($data["pro_".$i]) && $pro_check == 0){
 					 ${"pro_".$i} = "以下余白";
 					 $pro_check = 1;
@@ -180,22 +349,27 @@ class AccountsController extends AppController
 
 				 $sheet->setCellValue("A".$num, ${"pro_".$i});
 				 $sheet->setCellValue("A".$num2, ${"pro_".$i});
-				 $sheet->setCellValue("E".$num, $data["amount_".$i]);
-				 $sheet->setCellValue("E".$num2, $data["amount_".$i]);
-				 $sheet->setCellValue("F".$num, $data["tani_".$i]);
-				 $sheet->setCellValue("F".$num2, $data["tani_".$i]);
-				 $sheet->setCellValue("G".$num, $data["tanka_".$i]);
-				 $sheet->setCellValue("G".$num2, $data["tanka_".$i]);
-				 $sheet->setCellValue("H".$num, $data["price_".$i]);
-				 $sheet->setCellValue("H".$num2, $data["price_".$i]);
-				 $sheet->setCellValue("I".$num, $data["bik_".$i]);
-				 $sheet->setCellValue("I".$num2, $data["bik_".$i]);
+
+				 if($i < $data["tuika"]+1){
+
+					 $sheet->setCellValue("E".$num, $data["amount_".$i]);
+					 $sheet->setCellValue("E".$num2, $data["amount_".$i]);
+					 $sheet->setCellValue("F".$num, $data["tani_".$i]);
+					 $sheet->setCellValue("F".$num2, $data["tani_".$i]);
+					 $sheet->setCellValue("G".$num, $data["tanka_".$i]);
+					 $sheet->setCellValue("G".$num2, $data["tanka_".$i]);
+					 $sheet->setCellValue("H".$num, $data["price_".$i]);
+					 $sheet->setCellValue("H".$num2, $data["price_".$i]);
+					 $sheet->setCellValue("I".$num, $data["bik_".$i]);
+					 $sheet->setCellValue("I".$num2, $data["bik_".$i]);
+
+				 }
+
+			 }
 
 		 }
 
-			 $writer = new XlsxWriter($spreadsheet);
-
-			 $datetime = date('H時i分出力', strtotime('+9hour'));
+			 $datetime = date('H時i分s秒出力', strtotime('+9hour'));
 			 $year = date('Y');
 			 $month = date('m');
 			 $day = date('d');
@@ -217,7 +391,11 @@ class AccountsController extends AppController
 			 $this->set('mesxlsx',$mesxlsx);
 
 			 $writer->save($outfilepath);
-
+/*
+			 echo "<pre>";
+			 print_r($tourokuArr);
+			 echo "</pre>";
+*/
  			//データベース登録
 			 $uriage = $this->Uriages->patchEntity($uriages, $tourokuArr);
        $connection = ConnectionManager::get('default');//トランザクション1
@@ -267,48 +445,108 @@ class AccountsController extends AppController
 
        $customer = $data['customer'];
        $proname = $data['proname'];
+			 $furigana = $data['furigana'];
 
        $date_fin = strtotime($date_fin);
        $date_fin = date('Y-m-d', strtotime('+1 day', $date_fin));
 
-       if(empty($data['customer'])){//product_codeの入力がないとき
-         $product_code = "no";
-         if(empty($data['proname'])){//seikeikiの入力がないとき
-           $seikeiki = "no";//日にちだけで絞り込み
+					 if(empty($data['furigana'])){//furiganaの入力がないとき
 
-           $Uriages = $this->Uriages->find()
-           ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"]);
-					 $this->set('Uriages',$Uriages);
+						 if(empty($data['customer'])){//customerの入力がないとき
 
-         }else{//pronameの入力があるとき pronameと日にちで絞り込み
+							 if(empty($data['proname'])){//pronameの入力がないとき
 
-           $Uriages = $this->Uriages->find()
-          ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0,
-					'OR' => [['pro_1' => $proname], ['pro_2' => $proname], ['pro_3' => $proname], ['pro_4' => $proname],
-					['pro_5' => $proname], ['pro_6' => $proname], ['pro_7' => $proname], ['pro_8' => $proname]]])
-					->order(["syutsuryokubi"=>"ASC"]);
-					$this->set('Uriages',$Uriages);
+								 $Uriages = $this->Uriages->find()
+								 ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"]);
+								 $this->set('Uriages',$Uriages);
 
-         }
-       }else{//customerの入力があるとき
-         if(empty($data['proname'])){//pronameの入力がないとき
+							 }else{//pronameの入力があるとき pronameと日にちで絞り込み
 
-           $Uriages = $this->Uriages->find()
-           ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin,  'customer' => $customer, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"]);
-					 $this->set('Uriages',$Uriages);
+								 $Uriages = $this->Uriages->find()
+								->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0,
+								'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2' => '%'.$proname.'%'], ['pro_3' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
+								['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
+								['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
+								['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
+								['pro_17 like' => '%'.$proname.'%'], ['pro_18 like' => '%'.$proname.'%'], ['pro_19 like' => '%'.$proname.'%'], ['pro_20 like' => '%'.$proname.'%']]])
+								->order(["syutsuryokubi"=>"ASC"]);
+								$this->set('Uriages',$Uriages);
 
-         }else{//pronameの入力があるときpronameとcustomerと日にちで絞り込み
+							}
 
-					 $Uriages = $this->Uriages->find()
-          ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'customer' => $customer, 'delete_flag' => 0,
-					'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
-					['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%']]])
-					->order(["syutsuryokubi"=>"ASC"]);
-					$this->set('Uriages',$Uriages);
+						}else{//customerの入力があるとき
 
-         }
+							if(empty($data['proname'])){//pronameの入力がないとき
 
-       }
+								$Uriages = $this->Uriages->find()
+								->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin,  'customer like' => '%'.$customer.'%', 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"]);
+								$this->set('Uriages',$Uriages);
+
+							}else{//pronameの入力があるときpronameとcustomerと日にちで絞り込み
+
+								$Uriages = $this->Uriages->find()
+							 ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'customer like' => '%'.$customer.'%', 'delete_flag' => 0,
+							 'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
+							 ['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
+							 ['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
+							 ['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
+							 ['pro_17 like' => '%'.$proname.'%'], ['pro_18 like' => '%'.$proname.'%'], ['pro_19 like' => '%'.$proname.'%'], ['pro_20 like' => '%'.$proname.'%']]])
+							 ->order(["syutsuryokubi"=>"ASC"]);
+							 $this->set('Uriages',$Uriages);
+
+						 }
+
+					 }
+
+				 }else{
+
+					 if(empty($data['customer'])){//customerの入力がないとき
+
+						 if(empty($data['proname'])){//pronameの入力がないとき
+
+							 $Uriages = $this->Uriages->find()
+							 ->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"]);
+							 $this->set('Uriages',$Uriages);
+
+						 }else{//pronameの入力があるとき pronameと日にちで絞り込み
+
+							 $Uriages = $this->Uriages->find()
+							->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0,
+							'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
+							['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
+							['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
+							['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
+							['pro_17 like' => '%'.$proname.'%'], ['pro_18 like' => '%'.$proname.'%'], ['pro_19 like' => '%'.$proname.'%'], ['pro_20 like' => '%'.$proname.'%']]])
+							->order(["syutsuryokubi"=>"ASC"]);
+							$this->set('Uriages',$Uriages);
+
+						}
+
+					}else{//customerの入力があるとき
+
+						if(empty($data['proname'])){//pronameの入力がないとき
+
+							$Uriages = $this->Uriages->find()
+							->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin,  'customer like' => '%'.$customer.'%', 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"]);
+							$this->set('Uriages',$Uriages);
+
+						}else{//pronameの入力があるときpronameとcustomerと日にちで絞り込み
+
+							$Uriages = $this->Uriages->find()
+						 ->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'customer like' => '%'.$customer.'%', 'delete_flag' => 0,
+						 'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
+						 ['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
+						 ['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
+						 ['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
+						 ['pro_17 like' => '%'.$proname.'%'], ['pro_18 like' => '%'.$proname.'%'], ['pro_19 like' => '%'.$proname.'%'], ['pro_20 like' => '%'.$proname.'%']]])
+						 ->order(["syutsuryokubi"=>"ASC"]);
+						 $this->set('Uriages',$Uriages);
+
+					 }
+
+				 }
+
+			 }
 
      }
 
@@ -320,6 +558,8 @@ class AccountsController extends AppController
 		       $data = $this->request->getData();
 
 		       $data = array_keys($data, '詳細');
+					 $id = $data[0];
+					 $this->set('id',$id);
 
 		       $Uriages = $this->Uriages->find()->where(['id' => $data[0]])->toArray();
 
@@ -334,25 +574,203 @@ class AccountsController extends AppController
 					 $keisyou = $Uriages[0]["keisyou"];
 		       $this->set('keisyou',$keisyou);
 
-					 for($i=1; $i<=8; $i++){
+					 $count = 0;
+					 for($i=1; $i<=20; $i++){
 
-						 ${"pro_".$i} = $Uriages[0]["pro_".$i];
-			       $this->set("pro_".$i,${"pro_".$i});
-						 ${"amount_".$i} = $Uriages[0]["amount_".$i];
-			       $this->set("amount_".$i,${"amount_".$i});
-						 ${"tani_".$i} = $Uriages[0]["tani_".$i];
-			       $this->set("tani_".$i,${"tani_".$i});
-						 ${"tanka_".$i} = $Uriages[0]["tanka_".$i];
-			       $this->set("tanka_".$i,${"tanka_".$i});
-						 ${"price_".$i} = $Uriages[0]["price_".$i];
-			       $this->set("price_".$i,${"price_".$i});
-						 ${"bik_".$i} = $Uriages[0]["bik_".$i];
-			       $this->set("bik_".$i,${"bik_".$i});
+						 if(!empty($Uriages[0]["pro_".$i])){
+
+							 $count = $count + 1;
+							 $this->set('count',$count);
+							 ${"pro_".$i} = $Uriages[0]["pro_".$i];
+				       $this->set("pro_".$i,${"pro_".$i});
+							 ${"amount_".$i} = $Uriages[0]["amount_".$i];
+				       $this->set("amount_".$i,${"amount_".$i});
+							 ${"tani_".$i} = $Uriages[0]["tani_".$i];
+				       $this->set("tani_".$i,${"tani_".$i});
+							 ${"tanka_".$i} = $Uriages[0]["tanka_".$i];
+				       $this->set("tanka_".$i,${"tanka_".$i});
+							 ${"price_".$i} = $Uriages[0]["price_".$i];
+				       $this->set("price_".$i,${"price_".$i});
+							 ${"bik_".$i} = $Uriages[0]["bik_".$i];
+				       $this->set("bik_".$i,${"bik_".$i});
+
+						 }
 
 					 }
 
+		     }
+
+				 public function uriagekensakuedit()
+		     {
+					 $uriages = $this->Uriages->newEntity();
+		       $this->set('uriages',$uriages);
+
+					 $data = $this->request->getData();
+					 $id = $data["id"];
+					 $this->set('id',$id);
+					 /*
+					 echo "<pre>";
+		       print_r($data);
+		       echo "</pre>";
+*/
+		       $Uriages = $this->Uriages->find()->where(['id' => $id])->toArray();
+
+		       $syutsuryokubi = $Uriages[0]["syutsuryokubi"]->format('Y年m月d日');
+					 $this->set('syutsuryokubi',$syutsuryokubi);
+					 $customer = $Uriages[0]["customer"];
+		       $this->set('customer',$customer);
+					 $yuubin = $Uriages[0]["yuubin"];
+		       $this->set('yuubin',$yuubin);
+					 $address = $Uriages[0]["address"];
+		       $this->set('address',$address);
+					 $keisyou = $Uriages[0]["keisyou"];
+		       $this->set('keisyou',$keisyou);
+
+					 $count = 0;
+					 for($i=1; $i<=20; $i++){
+
+						 if(!empty($Uriages[0]["pro_".$i])){
+
+							 $count = $count + 1;
+							 $this->set('count',$count);
+							 ${"pro_".$i} = $Uriages[0]["pro_".$i];
+				       $this->set("pro_".$i,${"pro_".$i});
+							 ${"amount_".$i} = $Uriages[0]["amount_".$i];
+				       $this->set("amount_".$i,${"amount_".$i});
+							 ${"tani_".$i} = $Uriages[0]["tani_".$i];
+				       $this->set("tani_".$i,${"tani_".$i});
+							 ${"tanka_".$i} = $Uriages[0]["tanka_".$i];
+				       $this->set("tanka_".$i,${"tanka_".$i});
+							 ${"price_".$i} = $Uriages[0]["price_".$i];
+				       $this->set("price_".$i,${"price_".$i});
+							 ${"bik_".$i} = $Uriages[0]["bik_".$i];
+				       $this->set("bik_".$i,${"bik_".$i});
+
+						 }
+
+					 }
 
 		     }
+
+				 public function uriagekensakueditdo()
+		     {
+					 $uriages = $this->Uriages->newEntity();
+		       $this->set('uriages',$uriages);
+
+					 $data = $this->request->getData();
+					 $id = $data["id"];
+					 $this->set('id',$id);
+
+					 if($data["delete_flag"] == 1){
+		         $mess = "以下のデータを削除しました。";
+		       }else{
+		         $mess = "以下のように更新しました。";
+		       }
+		       $this->set('mess',$mess);
+/*
+					 echo "<pre>";
+		       print_r($data);
+		       echo "</pre>";
+*/
+					 $uriage = $this->Uriages->patchEntity($uriages, $data);
+		       $connection = ConnectionManager::get('default');//トランザクション1
+		       // トランザクション開始2
+		       $connection->begin();//トランザクション3
+		       try {//トランザクション4
+		         if ($this->Uriages->updateAll(
+		           [ 'pro_1' => $data['pro_1'], 'pro_2' => $data['pro_2'], 'pro_3' => $data['pro_3'], 'pro_4' => $data['pro_4'],
+							 'pro_5' => $data['pro_5'], 'pro_6' => $data['pro_6'], 'pro_7' => $data['pro_7'], 'pro_8' => $data['pro_8'],
+							 'pro_9' => $data['pro_9'], 'pro_10' => $data['pro_10'], 'pro_11' => $data['pro_11'], 'pro_12' => $data['pro_12'],
+							 'pro_13' => $data['pro_13'], 'pro_14' => $data['pro_14'], 'pro_15' => $data['pro_15'], 'pro_16' => $data['pro_16'],
+							 'pro_17' => $data['pro_17'], 'pro_18' => $data['pro_18'], 'pro_19' => $data['pro_19'], 'pro_20' => $data['pro_20'],
+							 'delete_flag' => $data['delete_flag']],
+		           ['id'  => $data['id']]
+		         )){
+
+		           $connection->commit();// コミット5
+
+		         } else {
+
+		           $mes = "※更新されませんでした";
+		           $this->set('mes',$mes);
+		           $this->Flash->error(__('This data could not be saved. Please, try again.'));
+		           throw new Exception(Configure::read("M.ERROR.INVALID"));//失敗6
+
+		         }
+
+		       } catch (Exception $e) {//トランザクション7
+		       //ロールバック8
+		         $connection->rollback();//トランザクション9
+		       }//トランザクション10
+
+		       $Uriages = $this->Uriages->find()->where(['id' => $id])->toArray();
+
+		       $syutsuryokubi = $Uriages[0]["syutsuryokubi"]->format('Y年m月d日');
+					 $this->set('syutsuryokubi',$syutsuryokubi);
+					 $customer = $Uriages[0]["customer"];
+		       $this->set('customer',$customer);
+					 $yuubin = $Uriages[0]["yuubin"];
+		       $this->set('yuubin',$yuubin);
+					 $address = $Uriages[0]["address"];
+		       $this->set('address',$address);
+					 $keisyou = $Uriages[0]["keisyou"];
+		       $this->set('keisyou',$keisyou);
+
+					 $count = 0;
+					 for($i=1; $i<=20; $i++){
+
+						 if(!empty($Uriages[0]["pro_".$i])){
+
+							 $count = $count + 1;
+							 $this->set('count',$count);
+							 ${"pro_".$i} = $Uriages[0]["pro_".$i];
+				       $this->set("pro_".$i,${"pro_".$i});
+							 ${"amount_".$i} = $Uriages[0]["amount_".$i];
+				       $this->set("amount_".$i,${"amount_".$i});
+							 ${"tani_".$i} = $Uriages[0]["tani_".$i];
+				       $this->set("tani_".$i,${"tani_".$i});
+							 ${"tanka_".$i} = $Uriages[0]["tanka_".$i];
+				       $this->set("tanka_".$i,${"tanka_".$i});
+							 ${"price_".$i} = $Uriages[0]["price_".$i];
+				       $this->set("price_".$i,${"price_".$i});
+							 ${"bik_".$i} = $Uriages[0]["bik_".$i];
+				       $this->set("bik_".$i,${"bik_".$i});
+
+						 }
+
+					 }
+
+		     }
+
+				 public function nyuukinform()
+		     {
+		       $customers = $this->Customers->newEntity();
+		       $this->set('customers',$customers);
+
+		       $arrKeisyou = [
+		 				'1' => '様',
+		         '2' => '御中',
+		         '3' => '殿'
+		 							];
+		 			$this->set('arrKeisyou',$arrKeisyou);
+
+		       $arrMonth = [
+		 				'1' => '当月',
+		         '2' => '翌月',
+		         '3' => '翌々月'
+		 							];
+		 			$this->set('arrMonth',$arrMonth);
+
+		       $arrKaisyuu = [
+		 				'1' => '振込',
+		         '2' => '集金'
+		 							];
+		 			$this->set('arrKaisyuu',$arrKaisyuu);
+		     }
+
+
+
+
 
 		 public function test()//エクセル複数作成のテスト
      {

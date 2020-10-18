@@ -17,6 +17,15 @@ $this->layout = '';
             <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/top.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Accounts','action'=>'index')));?></td>
             <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/shinki.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Shinkies','action'=>'index')));?></td>
         </tr>
+        <tr style="border-style: none; background-color: #E6FFFF">
+          <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/uriagesyori.png',array('width'=>'105','height'=>'36'));?></td>
+          <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/uriagesyoukai.png',array('width'=>'105','height'=>'36'));?></td>
+          <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/nyuukinnyuuryoku.png',array('width'=>'105','height'=>'36'));?></td>
+          <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/nyuukinsyoukai.png',array('width'=>'105','height'=>'36'));?></td>
+          <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/seikyuusyori.png',array('width'=>'105','height'=>'36'));?></td>
+          <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/seikyuuitiran.png',array('width'=>'105','height'=>'36'));?></td>
+          <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/seikyuurireki.png',array('width'=>'105','height'=>'36'));?></td>
+        </tr>
         </table>
 
         <hr size="2" style="margin: 0.5rem">
@@ -28,7 +37,6 @@ $this->layout = '';
         </table>
 
         <hr size="1" style="margin: 0.5rem">
-        <?= $this->Form->create($uriages, ['url' => ['action' => 'uriagekensakuedit']]) ?>
 
         <br>
         <legend align="center"><strong style="font-size: 14pt"><?= __("詳細") ?></strong></legend>
@@ -49,7 +57,7 @@ $this->layout = '';
           <tr>
             <td align="center" width="200" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">郵便番号</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">住所</strong></td>
-            <td align="center" width="50" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
+            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
           </tr>
           <tr>
             <td  align="center" width="200"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($yuubin) ?></td>
@@ -68,7 +76,7 @@ $this->layout = '';
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">日付（備考）</strong></td>
           </tr>
 
-      <?php for ($i=1;$i<=$count;$i++): ?>
+      <?php for ($i=1;$i<=8;$i++): ?>
 
           <tr>
             <td bgcolor="#FFFFCC" width="150"  style="padding: 0.2rem"><?= h(${"pro_".$i}) ?></td>
@@ -88,10 +96,7 @@ $this->layout = '';
         <tr bgcolor="#E6FFFF" >
           <td style="border-style: none;"><div align="center"><?= $this->Form->submit('戻る', ['onclick' => 'history.back()', 'type' => 'button']); ?></div></td>
           <td width="30"  style="border-style: none;"></td>
-          <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('編集・削除'), array('name' => 'confirm')); ?></div></td>
         </tr>
         </table>
         <br>
         <br>
-
-        <?= $this->Form->control('id', array('type'=>'hidden', 'value'=>$id, 'label'=>false)) ?>

@@ -28,10 +28,10 @@ $this->layout = '';
         </table>
 
         <hr size="1" style="margin: 0.5rem">
-        <?= $this->Form->create($uriages, ['url' => ['action' => 'uriagekensakuedit']]) ?>
+        <?= $this->Form->create($uriages, ['url' => ['action' => 'uriagekensakueditdo']]) ?>
 
         <br>
-        <legend align="center"><strong style="font-size: 14pt"><?= __("詳細") ?></strong></legend>
+        <legend align="center"><strong style="font-size: 14pt"><?= __("編集") ?></strong></legend>
         <br>
 
         <table align="center">
@@ -58,40 +58,46 @@ $this->layout = '';
           </tr>
         </table>
         <br>
+
+        <table align="center">
+          <tr>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->control('delete_flag', array('type'=>'checkbox', 'label'=>false)) ?></td>
+            <td align="center" width="320" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">削除する場合はチェックを入れてください</strong></td>
+          </tr>
+        </table>
+
+        <br>
+
         <table align="center">
           <tr>
             <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">品名（現場名）</strong></td>
             <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">数量</strong></td>
             <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">単位</strong></td>
             <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">単価</strong></td>
-            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">金額</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">日付（備考）</strong></td>
           </tr>
 
       <?php for ($i=1;$i<=$count;$i++): ?>
 
-          <tr>
-            <td bgcolor="#FFFFCC" width="150"  style="padding: 0.2rem"><?= h(${"pro_".$i}) ?></td>
-            <td bgcolor="#FFFFCC" width="30"  style="padding: 0.2rem"><?= h(${"amount_".$i}) ?></td>
-            <td bgcolor="#FFFFCC" width="30"  style="padding: 0.2rem"><?= h(${"tani_".$i}) ?></td>
-            <td bgcolor="#FFFFCC" width="30"  style="padding: 0.2rem"><?= h(${"tanka_".$i}) ?></td>
-            <td bgcolor="#FFFFCC" width="30"  style="padding: 0.2rem"><?= h(${"price_".$i}) ?></td>
-            <td bgcolor="#FFFFCC" width="100"  style="padding: 0.2rem"><?= h(${"bik_".$i}) ?></td>
-          </tr>
+              <tr>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('pro_'.$i, array('type'=>'text', 'label'=>false, 'value'=>${"pro_".$i})) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('amount_'.$i, array('type'=>'text', 'label'=>false, 'size'=>3, 'value'=>${"amount_".$i})) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tani_'.$i, array('type'=>'text', 'label'=>false, 'size'=>3, 'value'=>${"tani_".$i})) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tanka_'.$i, array('type'=>'text', 'label'=>false, 'size'=>3, 'value'=>${"tanka_".$i})) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('bik_'.$i, array('type'=>'text', 'label'=>false, 'value'=>${"bik_".$i})) ?></td>
+              </tr>
 
       <?php endfor;?>
 
     </table>
 
     <br>
-        <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
-        <tr bgcolor="#E6FFFF" >
-          <td style="border-style: none;"><div align="center"><?= $this->Form->submit('戻る', ['onclick' => 'history.back()', 'type' => 'button']); ?></div></td>
-          <td width="30"  style="border-style: none;"></td>
-          <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('編集・削除'), array('name' => 'confirm')); ?></div></td>
-        </tr>
-        </table>
-        <br>
-        <br>
 
-        <?= $this->Form->control('id', array('type'=>'hidden', 'value'=>$id, 'label'=>false)) ?>
+    <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
+    <tr bgcolor="#E6FFFF" >
+      <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('編集確定'), array('name' => 'confirm')); ?></div></td>
+    </tr>
+    </table>
+    <br>
+    <br>
+    <?= $this->Form->control('id', array('type'=>'hidden', 'value'=>$id, 'label'=>false)) ?>

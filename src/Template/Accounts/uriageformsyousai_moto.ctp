@@ -31,7 +31,7 @@ $this->layout = '';
 
         <?php if($customercheck == 1): ?>
 
-        <?= $this->Form->create($uriages, ['url' => ['action' => 'uriageformsyousai']]) ?>
+        <?= $this->Form->create($uriages, ['url' => ['action' => 'uriagesyuturyokukakunin']]) ?>
         <br>
         <legend align="center"><strong style="font-size: 14pt"><?= __("詳細入力") ?></strong></legend>
         <br>
@@ -51,7 +51,7 @@ $this->layout = '';
           <tr>
             <td align="center" width="200" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">郵便番号</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">住所</strong></td>
-            <td align="center" width="50" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
+            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
           </tr>
           <tr>
             <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('yuubin', array('type'=>'text', 'label'=>false, 'value'=>$yuubin)) ?></td>
@@ -81,9 +81,8 @@ $this->layout = '';
             <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('bik_1', array('type'=>'text', 'label'=>false)) ?></td>
           </tr>
         </table>
-        <?= $this->Form->control('num', array('type'=>'hidden', 'value'=>1, 'label'=>false)) ?>
 
-      <?php for ($i=2;$i<=$tuika;$i++): ?>
+      <?php for ($i=2;$i<=8;$i++): ?>
 
         <table align="center">
           <tr>
@@ -95,18 +94,12 @@ $this->layout = '';
             <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('bik_'.$i, array('type'=>'text', 'label'=>false)) ?></td>
           </tr>
         </table>
-        <?= $this->Form->control('num', array('type'=>'hidden', 'value'=>$i, 'label'=>false)) ?>
 
       <?php endfor;?>
 
-      <table align="right" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
-      <tr bgcolor="#E6FFFF" >
-        <td align="right" rowspan="2" width="50" bgcolor="#E6FFFF" style="border: none"><div align="right"><?= $this->Form->submit(__('行追加'), array('name' => 'tuika')); ?></div></td>
-        <td width="200"  style="border-style: none;"></td>
-      </tr>
-      </table>
-      <br>
-      <br>
+        <br>
+        <legend align="center"><strong style="font-size: 10pt; color:red"><?= "※品名（現場名）が8種類以上ある場合は2回に分けて出力してください。" ?></strong></legend>
+        <br>
 
         <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
         <tr bgcolor="#E6FFFF" >
@@ -119,7 +112,6 @@ $this->layout = '';
         <br>
 
         <?= $this->Form->control('name', array('type'=>'hidden', 'value'=>$name, 'label'=>false)) ?>
-        <?= $this->Form->control('furigana', array('type'=>'hidden', 'value'=>$furigana, 'label'=>false)) ?>
 
       <?php else: ?>
 

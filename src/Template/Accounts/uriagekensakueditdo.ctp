@@ -28,10 +28,10 @@ $this->layout = '';
         </table>
 
         <hr size="1" style="margin: 0.5rem">
-        <?= $this->Form->create($uriages, ['url' => ['action' => 'uriagekensakuedit']]) ?>
+        <?= $this->Form->create($uriages, ['url' => ['action' => 'uriagekensakueditdo']]) ?>
 
         <br>
-        <legend align="center"><strong style="font-size: 14pt"><?= __("詳細") ?></strong></legend>
+        <legend align="center"><strong style="font-size: 11pt"><?= __($mess) ?></strong></legend>
         <br>
 
         <table align="center">
@@ -82,16 +82,3 @@ $this->layout = '';
       <?php endfor;?>
 
     </table>
-
-    <br>
-        <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
-        <tr bgcolor="#E6FFFF" >
-          <td style="border-style: none;"><div align="center"><?= $this->Form->submit('戻る', ['onclick' => 'history.back()', 'type' => 'button']); ?></div></td>
-          <td width="30"  style="border-style: none;"></td>
-          <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('編集・削除'), array('name' => 'confirm')); ?></div></td>
-        </tr>
-        </table>
-        <br>
-        <br>
-
-        <?= $this->Form->control('id', array('type'=>'hidden', 'value'=>$id, 'label'=>false)) ?>

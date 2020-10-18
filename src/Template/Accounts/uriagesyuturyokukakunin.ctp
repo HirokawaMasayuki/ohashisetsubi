@@ -17,15 +17,6 @@ $this->layout = '';
             <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/top.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Accounts','action'=>'index')));?></td>
             <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/shinki.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Shinkies','action'=>'index')));?></td>
         </tr>
-          <tr style="border-style: none; background-color: #E6FFFF">
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/uriagesyori.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Accounts','action'=>'uriageformcustomer')));?></td>
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/uriagesyoukai.png',array('width'=>'105','height'=>'36'));?></td>
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/nyuukinnyuuryoku.png',array('width'=>'105','height'=>'36'));?></td>
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/nyuukinsyoukai.png',array('width'=>'105','height'=>'36'));?></td>
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/seikyuusyori.png',array('width'=>'105','height'=>'36'));?></td>
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/seikyuuitiran.png',array('width'=>'105','height'=>'36'));?></td>
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/seikyuurireki.png',array('width'=>'105','height'=>'36'));?></td>
-          </tr>
         </table>
 
         <hr size="2" style="margin: 0.5rem">
@@ -58,7 +49,7 @@ $this->layout = '';
           <tr>
             <td align="center" width="200" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">郵便番号</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">住所</strong></td>
-            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
+            <td align="center" width="50" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
           </tr>
           <tr>
             <td  align="center" width="200"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($yuubin) ?></td>
@@ -77,7 +68,7 @@ $this->layout = '';
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">日付（備考）</strong></td>
           </tr>
 
-      <?php for ($i=1;$i<=8;$i++): ?>
+      <?php for ($i=1;$i<=$tuika;$i++): ?>
 
           <tr>
             <td bgcolor="#FFFFCC" width="150"  style="padding: 0.2rem"><?= h(${"pro_".$i}) ?></td>
@@ -100,8 +91,6 @@ $this->layout = '';
     </table>
 
         <br>
-        <legend align="center"><strong style="font-size: 10pt; color:red"><?= "※品名（現場名）が8種類以上ある場合は2回に分けて出力してください。" ?></strong></legend>
-        <br>
 
         <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
         <tr bgcolor="#E6FFFF" >
@@ -113,7 +102,9 @@ $this->layout = '';
         <br>
         <br>
 
+        <?= $this->Form->control('tuika', array('type'=>'hidden', 'value'=>$tuika, 'label'=>false)) ?>
         <?= $this->Form->control('name', array('type'=>'hidden', 'value'=>$name, 'label'=>false)) ?>
+        <?= $this->Form->control('furigana', array('type'=>'hidden', 'value'=>$furigana, 'label'=>false)) ?>
         <?= $this->Form->control('dateexcl', array('type'=>'hidden', 'value'=>$dateexcl, 'label'=>false)) ?>
         <?= $this->Form->control('datetouroku', array('type'=>'hidden', 'value'=>$datetouroku, 'label'=>false)) ?>
         <?= $this->Form->control('yuubin', array('type'=>'hidden', 'value'=>$yuubin, 'label'=>false)) ?>

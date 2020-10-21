@@ -22,13 +22,21 @@ $this->layout = '';
         <hr size="1" style="margin: 0.5rem">
         <table style="margin-bottom:0px" width="750" border="0" align="center" cellpadding="0" cellspacing="0" bordercolor="#CCCCCC">
           <tr style="border-style: none; background-color: #E6FFFF">
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/nyuukinnyuuryoku.png',array('width'=>'105','height'=>'36','url'=>array('controller'=>'Shinkies','action'=>'index')));?></td>
+            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/nyuukinsyoukai.png',array('width'=>'105','height'=>'36'));?></td>
           </tr>
         </table>
 
         <hr size="2" style="margin: 0.5rem">
 
-        <?= $this->Form->create($customers, ['url' => ['action' => 'nyuukinconfirm']]) ?>
+        <?= $this->Form->create($nyuukins, ['url' => ['action' => 'nyuukinsyoukaieditdo']]) ?>
+        <br>
+
+        <table align="center">
+          <tr>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->control('delete_flag', array('type'=>'checkbox', 'label'=>false)) ?></td>
+            <td align="center" width="320" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">削除する場合はチェックを入れてください</strong></td>
+          </tr>
+        </table>
         <br>
 
         <table align="center">
@@ -37,8 +45,8 @@ $this->layout = '';
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">集金・振込</strong></td>
           </tr>
           <tr>
-            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($namehyouji) ?></td>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("syuukinfurikomi", ["type"=>"select","empty"=>"選択してください", "options"=>$arrSyuukinfurikomi, 'label'=>false, 'required'=>true]) ?></td>
+            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('customer')) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("syuukinfurikomi", ["type"=>"select","empty"=>"選択してください", "options"=>$arrSyuukinfurikomi, 'label'=>false, 'value'=>$this->request->getData('syuukinfurikomi'), 'required'=>true]) ?></td>
           </tr>
         </table>
         <br>
@@ -48,8 +56,8 @@ $this->layout = '';
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求年月日</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= $this->Form->input("datenyuukinyotei", array('type' => 'date', 'monthNames' => false, 'label'=>false)); ?></div></td>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= $this->Form->input("dateseikyuu", array('type' => 'date', 'monthNames' => false, 'label'=>false)); ?></div></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= $this->Form->input("datenyuukinyotei", array('type' => 'date', 'monthNames' => false, 'label'=>false, 'value'=>$this->request->getData('datenyuukinyoteitouroku'))); ?></div></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= $this->Form->input("dateseikyuu", array('type' => 'date', 'monthNames' => false, 'label'=>false, 'value'=>$this->request->getData('dateseikyuutouroku'))); ?></div></td>
           </tr>
         </table>
         <br>
@@ -70,8 +78,8 @@ $this->layout = '';
             <td align="center" width="280" colspan="3" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">種別</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= $this->Form->input("datenyuukin", array('type' => 'date', "empty"=>" ", 'monthNames' => false, 'label'=>false)); ?></div></td>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("syubetu", ["type"=>"select","empty"=>"選択してください", "options"=>$arrSyubetu, 'label'=>false, 'required'=>true]) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= $this->Form->input("datenyuukin", array('type' => 'date', "empty"=>" ", 'monthNames' => false, 'label'=>false, 'value'=>$this->request->getData('datenyuukintouroku'))); ?></div></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("syubetu", ["type"=>"select","empty"=>"選択してください", "options"=>$arrSyubetu, 'label'=>false, 'value'=>$this->request->getData('syubetu'), 'required'=>true]) ?></td>
           </tr>
         </table>
         <br>
@@ -89,7 +97,7 @@ $this->layout = '';
 
         <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
         <tr bgcolor="#E6FFFF" >
-          <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('入力内容確認'), array('name' => 'confirm')); ?></div></td>
+          <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('編集確定'), array('name' => 'confirm')); ?></div></td>
         </tr>
         </table>
 

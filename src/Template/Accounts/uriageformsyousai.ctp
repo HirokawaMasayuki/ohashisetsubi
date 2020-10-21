@@ -42,7 +42,7 @@ $this->layout = '';
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">日付</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($name) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($namehyouji) ?></td>
             <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= $this->Form->input("date", array('type' => 'date', 'monthNames' => false, 'label'=>false)); ?></div></td>
           </tr>
         </table>
@@ -118,7 +118,8 @@ $this->layout = '';
         <br>
         <br>
 
-        <?= $this->Form->control('name', array('type'=>'hidden', 'value'=>$name, 'label'=>false)) ?>
+        <?= $this->Form->control('name', array('type'=>'hidden', 'value'=>$namehyouji, 'label'=>false)) ?>
+        <?= $this->Form->control('id', array('type'=>'hidden', 'value'=>$id, 'label'=>false)) ?>
         <?= $this->Form->control('furigana', array('type'=>'hidden', 'value'=>$furigana, 'label'=>false)) ?>
 
       <?php else: ?>

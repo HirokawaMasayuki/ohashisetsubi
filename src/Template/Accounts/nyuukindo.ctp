@@ -28,7 +28,9 @@ $this->layout = '';
 
         <hr size="2" style="margin: 0.5rem">
 
-        <?= $this->Form->create($customers, ['url' => ['action' => 'nyuukinconfirm']]) ?>
+        <?= $this->Form->create($nyuukins, ['url' => ['action' => 'nyuukinconfirm']]) ?>
+        <br>
+        <legend align="center"><strong style="font-size: 11pt;color: red"><?= __($mes) ?></strong></legend>
         <br>
 
         <table align="center">
@@ -38,7 +40,7 @@ $this->layout = '';
           </tr>
           <tr>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($namehyouji) ?></td>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("syuukinfurikomi", ["type"=>"select","empty"=>"選択してください", "options"=>$arrSyuukinfurikomi, 'label'=>false, 'required'=>true]) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('syuukinfurikomi')) ?></td>
           </tr>
         </table>
         <br>
@@ -48,19 +50,19 @@ $this->layout = '';
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求年月日</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= $this->Form->input("datenyuukinyotei", array('type' => 'date', 'monthNames' => false, 'label'=>false)); ?></div></td>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= $this->Form->input("dateseikyuu", array('type' => 'date', 'monthNames' => false, 'label'=>false)); ?></div></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($datenyuukinyoteitouroku) ?></div></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($dateseikyuutouroku) ?></div></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">繰越額（円）</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求額（円）</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">繰越額</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求額</strong></td>
           </tr>
           <tr>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('kurikosi', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('seikyuu', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
+            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('kurikosi')." 円") ?></td>
+            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('seikyuu')." 円") ?></td>
           </tr>
         </table>
         <br>
@@ -70,32 +72,23 @@ $this->layout = '';
             <td align="center" width="280" colspan="3" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">種別</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= $this->Form->input("datenyuukin", array('type' => 'date', "empty"=>" ", 'monthNames' => false, 'label'=>false)); ?></div></td>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("syubetu", ["type"=>"select","empty"=>"選択してください", "options"=>$arrSyubetu, 'label'=>false, 'required'=>true]) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($datenyuukintouroku) ?></div></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('syubetu')) ?></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">残高（円）</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">残高</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">備考</strong></td>
           </tr>
           <tr>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('zandaka', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('bik', array('type'=>'text', 'label'=>false, 'size'=>38)) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('zandaka')." 円") ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('bik')) ?></td>
           </tr>
         </table>
         <br>
 
-        <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
-        <tr bgcolor="#E6FFFF" >
-          <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('入力内容確認'), array('name' => 'confirm')); ?></div></td>
-        </tr>
-        </table>
-
-
     </td>
   </tr>
 </table>
-
-<?= $this->Form->control('id', array('type'=>'hidden', 'value'=>$id, 'label'=>false)) ?>

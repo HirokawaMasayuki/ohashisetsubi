@@ -96,13 +96,14 @@ $this->layout = '';
         <tr bgcolor="#E6FFFF" >
           <td style="border-style: none;"><div align="center"><?= $this->Form->submit('戻る', ['onclick' => 'history.back()', 'type' => 'button']); ?></div></td>
           <td width="30"  style="border-style: none;"></td>
-          <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('エクセル出力'), array('name' => 'confirm')); ?></div></td>
+          <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('登録'), array('name' => 'confirm')); ?></div></td>
         </tr>
         </table>
         <br>
         <br>
 
         <?= $this->Form->control('tuika', array('type'=>'hidden', 'value'=>$tuika, 'label'=>false)) ?>
+        <?= $this->Form->control('id', array('type'=>'hidden', 'value'=>$id, 'label'=>false)) ?>
         <?= $this->Form->control('name', array('type'=>'hidden', 'value'=>$name, 'label'=>false)) ?>
         <?= $this->Form->control('furigana', array('type'=>'hidden', 'value'=>$furigana, 'label'=>false)) ?>
         <?= $this->Form->control('dateexcl', array('type'=>'hidden', 'value'=>$dateexcl, 'label'=>false)) ?>

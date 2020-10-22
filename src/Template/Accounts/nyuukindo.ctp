@@ -32,58 +32,55 @@ $this->layout = '';
         <br>
         <legend align="center"><strong style="font-size: 11pt;color: red"><?= __($mes) ?></strong></legend>
         <br>
-
         <table align="center">
           <tr>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">取引先名</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">集金・振込</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金予定日</strong></td>
           </tr>
           <tr>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($namehyouji) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($nyuukinyotei."日") ?></div></td>
+          </tr>
+        </table>
+        <br>
+        <table align="center">
+          <tr>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求年月日</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求額（円）</strong></td>
+          </tr>
+          <tr>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($date_seikyuu) ?></div></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($totalseikyuu) ?></div></td>
+          </tr>
+        </table>
+        <br>
+        <table align="center">
+          <tr>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">種別</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">集金・振込</strong></td>
+          </tr>
+          <tr>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('syubetu')) ?></td>
             <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('syuukinfurikomi')) ?></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金予定日</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求年月日</strong></td>
-          </tr>
-          <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($datenyuukinyoteitouroku) ?></div></td>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($dateseikyuutouroku) ?></div></td>
-          </tr>
-        </table>
-        <br>
-        <table align="center">
-          <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">繰越額</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求額</strong></td>
-          </tr>
-          <tr>
-            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('kurikosi')." 円") ?></td>
-            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('seikyuu')." 円") ?></td>
-          </tr>
-        </table>
-        <br>
-        <table align="center">
-          <tr>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金額（円）</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金日</strong></td>
-            <td align="center" width="280" colspan="3" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">種別</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($datenyuukintouroku) ?></div></td>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('syubetu')) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('nyuukinngaku')) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($datenyuukintouroku) ?></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">残高</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">備考</strong></td>
+            <td align="center" width="560" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">備考</strong></td>
           </tr>
           <tr>
-            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('zandaka')." 円") ?></td>
             <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('bik')) ?></td>
           </tr>
         </table>

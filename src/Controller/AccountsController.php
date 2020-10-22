@@ -20,6 +20,7 @@ class AccountsController extends AppController
 			$this->Customers = TableRegistry::get('customers');
 			$this->Uriages = TableRegistry::get('uriages');
 			$this->Nyuukins = TableRegistry::get('nyuukins');
+			$this->Seikyuus = TableRegistry::get('seikyuus');
 		  }
 
 		 public function index()
@@ -410,9 +411,9 @@ class AccountsController extends AppController
 		 }
 
 			 $datetime = date('H時i分s秒出力', strtotime('+9hour'));
-			 $year = date('Y');
-			 $month = date('m');
-			 $day = date('d');
+			 $year = date('Y', strtotime('+9hour'));
+			 $month = date('m', strtotime('+9hour'));
+			 $day = date('d', strtotime('+9hour'));
 
 			 if(is_dir("C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$year/$month/$day")){//ディレクトリが存在すればOK
 
@@ -486,25 +487,76 @@ class AccountsController extends AppController
        $customer = $data['customer'];
        $proname = $data['proname'];
 			 $furigana = $data['furigana'];
+			 $denpyou_num = $data['denpyou_num'];
 
        $date_fin = strtotime($date_fin);
        $date_fin = date('Y-m-d', strtotime('+1 day', $date_fin));
 
-					 if(empty($data['furigana'])){//furiganaの入力がないとき
+					 if(empty($data['denpyou_num'])){//denpyou_numの入力がないとき
+
+						 if(empty($data['furigana'])){//furiganaの入力がないとき
+
+							 if(empty($data['customer'])){//customerの入力がないとき
+
+								 if(empty($data['proname'])){//pronameの入力がないとき
+
+									 $Uriages = $this->Uriages->find()
+									 ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"])->toArray();
+									 $this->set('Uriages',$Uriages);
+
+								 }else{//pronameの入力があるとき pronameと日にちで絞り込み
+
+									 $Uriages = $this->Uriages->find()
+									->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0,
+									'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2' => '%'.$proname.'%'], ['pro_3' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
+									['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
+									['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
+									['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
+									['pro_17 like' => '%'.$proname.'%'], ['pro_18 like' => '%'.$proname.'%'], ['pro_19 like' => '%'.$proname.'%'], ['pro_20 like' => '%'.$proname.'%']]])
+									->order(["syutsuryokubi"=>"ASC"])->toArray();
+									$this->set('Uriages',$Uriages);
+
+								}
+
+							}else{//customerの入力があるとき
+
+								if(empty($data['proname'])){//pronameの入力がないとき
+
+									$Uriages = $this->Uriages->find()
+									->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin,  'customer like' => '%'.$customer.'%', 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"])->toArray();
+									$this->set('Uriages',$Uriages);
+
+								}else{//pronameの入力があるときpronameとcustomerと日にちで絞り込み
+
+									$Uriages = $this->Uriages->find()
+								 ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'customer like' => '%'.$customer.'%', 'delete_flag' => 0,
+								 'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
+								 ['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
+								 ['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
+								 ['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
+								 ['pro_17 like' => '%'.$proname.'%'], ['pro_18 like' => '%'.$proname.'%'], ['pro_19 like' => '%'.$proname.'%'], ['pro_20 like' => '%'.$proname.'%']]])
+								 ->order(["syutsuryokubi"=>"ASC"])->toArray();
+								 $this->set('Uriages',$Uriages);
+
+							 }
+
+						 }
+
+					 }else{
 
 						 if(empty($data['customer'])){//customerの入力がないとき
 
 							 if(empty($data['proname'])){//pronameの入力がないとき
 
 								 $Uriages = $this->Uriages->find()
-								 ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"])->toArray();
+								 ->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"])->toArray();
 								 $this->set('Uriages',$Uriages);
 
 							 }else{//pronameの入力があるとき pronameと日にちで絞り込み
 
 								 $Uriages = $this->Uriages->find()
-								->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0,
-								'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2' => '%'.$proname.'%'], ['pro_3' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
+								->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0,
+								'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
 								['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
 								['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
 								['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
@@ -519,13 +571,13 @@ class AccountsController extends AppController
 							if(empty($data['proname'])){//pronameの入力がないとき
 
 								$Uriages = $this->Uriages->find()
-								->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin,  'customer like' => '%'.$customer.'%', 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"])->toArray();
+								->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin,  'customer like' => '%'.$customer.'%', 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"])->toArray();
 								$this->set('Uriages',$Uriages);
 
 							}else{//pronameの入力があるときpronameとcustomerと日にちで絞り込み
 
 								$Uriages = $this->Uriages->find()
-							 ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'customer like' => '%'.$customer.'%', 'delete_flag' => 0,
+							 ->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'customer like' => '%'.$customer.'%', 'delete_flag' => 0,
 							 'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
 							 ['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
 							 ['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
@@ -538,49 +590,103 @@ class AccountsController extends AppController
 
 					 }
 
-				 }else{
+				 }
 
-					 if(empty($data['customer'])){//customerの入力がないとき
+			 }else{
 
-						 if(empty($data['proname'])){//pronameの入力がないとき
+						 if(empty($data['furigana'])){//furiganaの入力がないとき
 
-							 $Uriages = $this->Uriages->find()
-							 ->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"])->toArray();
+							 if(empty($data['customer'])){//customerの入力がないとき
+
+								 if(empty($data['proname'])){//pronameの入力がないとき
+
+									 $Uriages = $this->Uriages->find()
+									 ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'denpyou_num' => $denpyou_num, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"])->toArray();
+									 $this->set('Uriages',$Uriages);
+
+								 }else{//pronameの入力があるとき pronameと日にちで絞り込み
+
+									 $Uriages = $this->Uriages->find()
+									->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'denpyou_num' => $denpyou_num, 'delete_flag' => 0,
+									'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2' => '%'.$proname.'%'], ['pro_3' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
+									['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
+									['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
+									['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
+									['pro_17 like' => '%'.$proname.'%'], ['pro_18 like' => '%'.$proname.'%'], ['pro_19 like' => '%'.$proname.'%'], ['pro_20 like' => '%'.$proname.'%']]])
+									->order(["syutsuryokubi"=>"ASC"])->toArray();
+									$this->set('Uriages',$Uriages);
+
+								}
+
+							}else{//customerの入力があるとき
+
+								if(empty($data['proname'])){//pronameの入力がないとき
+
+									$Uriages = $this->Uriages->find()
+									->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin,  'customer like' => '%'.$customer.'%', 'denpyou_num' => $denpyou_num, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"])->toArray();
+									$this->set('Uriages',$Uriages);
+
+								}else{//pronameの入力があるときpronameとcustomerと日にちで絞り込み
+
+									$Uriages = $this->Uriages->find()
+								 ->where(['syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'customer like' => '%'.$customer.'%', 'denpyou_num' => $denpyou_num, 'delete_flag' => 0,
+								 'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
+								 ['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
+								 ['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
+								 ['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
+								 ['pro_17 like' => '%'.$proname.'%'], ['pro_18 like' => '%'.$proname.'%'], ['pro_19 like' => '%'.$proname.'%'], ['pro_20 like' => '%'.$proname.'%']]])
+								 ->order(["syutsuryokubi"=>"ASC"])->toArray();
+								 $this->set('Uriages',$Uriages);
+
+							 }
+
+						 }
+
+					 }else{
+
+						 if(empty($data['customer'])){//customerの入力がないとき
+
+							 if(empty($data['proname'])){//pronameの入力がないとき
+
+								 $Uriages = $this->Uriages->find()
+								 ->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'denpyou_num' => $denpyou_num, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"])->toArray();
+								 $this->set('Uriages',$Uriages);
+
+							 }else{//pronameの入力があるとき pronameと日にちで絞り込み
+
+								 $Uriages = $this->Uriages->find()
+								->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'denpyou_num' => $denpyou_num, 'delete_flag' => 0,
+								'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
+								['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
+								['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
+								['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
+								['pro_17 like' => '%'.$proname.'%'], ['pro_18 like' => '%'.$proname.'%'], ['pro_19 like' => '%'.$proname.'%'], ['pro_20 like' => '%'.$proname.'%']]])
+								->order(["syutsuryokubi"=>"ASC"])->toArray();
+								$this->set('Uriages',$Uriages);
+
+							}
+
+						}else{//customerの入力があるとき
+
+							if(empty($data['proname'])){//pronameの入力がないとき
+
+								$Uriages = $this->Uriages->find()
+								->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin,  'customer like' => '%'.$customer.'%', 'denpyou_num' => $denpyou_num, 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"])->toArray();
+								$this->set('Uriages',$Uriages);
+
+							}else{//pronameの入力があるときpronameとcustomerと日にちで絞り込み
+
+								$Uriages = $this->Uriages->find()
+							 ->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'customer like' => '%'.$customer.'%', 'denpyou_num' => $denpyou_num, 'delete_flag' => 0,
+							 'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
+							 ['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
+							 ['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
+							 ['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
+							 ['pro_17 like' => '%'.$proname.'%'], ['pro_18 like' => '%'.$proname.'%'], ['pro_19 like' => '%'.$proname.'%'], ['pro_20 like' => '%'.$proname.'%']]])
+							 ->order(["syutsuryokubi"=>"ASC"])->toArray();
 							 $this->set('Uriages',$Uriages);
 
-						 }else{//pronameの入力があるとき pronameと日にちで絞り込み
-
-							 $Uriages = $this->Uriages->find()
-							->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'delete_flag' => 0,
-							'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
-							['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
-							['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
-							['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
-							['pro_17 like' => '%'.$proname.'%'], ['pro_18 like' => '%'.$proname.'%'], ['pro_19 like' => '%'.$proname.'%'], ['pro_20 like' => '%'.$proname.'%']]])
-							->order(["syutsuryokubi"=>"ASC"])->toArray();
-							$this->set('Uriages',$Uriages);
-
-						}
-
-					}else{//customerの入力があるとき
-
-						if(empty($data['proname'])){//pronameの入力がないとき
-
-							$Uriages = $this->Uriages->find()
-							->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin,  'customer like' => '%'.$customer.'%', 'delete_flag' => 0])->order(["syutsuryokubi"=>"ASC"])->toArray();
-							$this->set('Uriages',$Uriages);
-
-						}else{//pronameの入力があるときpronameとcustomerと日にちで絞り込み
-
-							$Uriages = $this->Uriages->find()
-						 ->where(['furigana like' => '%'.$furigana.'%', 'syutsuryokubi >=' => $date_sta, 'syutsuryokubi <=' => $date_fin, 'customer like' => '%'.$customer.'%', 'delete_flag' => 0,
-						 'OR' => [['pro_1 like' => '%'.$proname.'%'], ['pro_2 like' => '%'.$proname.'%'], ['pro_3 like' => '%'.$proname.'%'], ['pro_4 like' => '%'.$proname.'%'],
-						 ['pro_5 like' => '%'.$proname.'%'], ['pro_6 like' => '%'.$proname.'%'], ['pro_7 like' => '%'.$proname.'%'], ['pro_8 like' => '%'.$proname.'%'],
-						 ['pro_9 like' => '%'.$proname.'%'], ['pro_10 like' => '%'.$proname.'%'], ['pro_11 like' => '%'.$proname.'%'], ['pro_12 like' => '%'.$proname.'%'],
-						 ['pro_13 like' => '%'.$proname.'%'], ['pro_14 like' => '%'.$proname.'%'], ['pro_15 like' => '%'.$proname.'%'], ['pro_16 like' => '%'.$proname.'%'],
-						 ['pro_17 like' => '%'.$proname.'%'], ['pro_18 like' => '%'.$proname.'%'], ['pro_19 like' => '%'.$proname.'%'], ['pro_20 like' => '%'.$proname.'%']]])
-						 ->order(["syutsuryokubi"=>"ASC"])->toArray();
-						 $this->set('Uriages',$Uriages);
+						 }
 
 					 }
 
@@ -891,26 +997,28 @@ class AccountsController extends AppController
 						 's' => ['data' => $data]]);
 
 					 }
-/*
-					 echo "<pre>";
-					 print_r($data);
-					 echo "</pre>";
-*/
+
 					 if(!empty($data["name1"])){
+						 $id = $data["name1"];
 						 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $data["name1"]]])->toArray();
 						 $name = $Customer[0]->name;
 						 $siten = $Customer[0]->siten;
 						 $namehyouji = $name." ".$siten;
 						 $this->set('namehyouji',$namehyouji);
 						 $this->set('id',$data["name1"]);
+						 $nyuukinyotei = $Customer[0]->nyuukinbi;
+						 $this->set('nyuukinyotei',$nyuukinyotei);
 					 }elseif(!empty($data["name2"])){
+						 $id = $data["name2"];
 						 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $data["name2"]]])->toArray();
 						 $name = $Customer[0]->name;
 						 $siten = $Customer[0]->siten;
 						 $namehyouji = $name." ".$siten;
 						 $this->set('namehyouji',$namehyouji);
 						 $this->set('id',$data["name2"]);
-					 }else{
+						 $nyuukinyotei = $Customer[0]->nyuukinbi;
+						 $this->set('nyuukinyotei',$nyuukinyotei);
+				 }else{
 						 $name = "";
 					 }
 
@@ -932,12 +1040,24 @@ class AccountsController extends AppController
 						'調整' => '調整'
 					];
 		 			$this->set('arrSyubetu',$arrSyubetu);
+
+					$Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['delete_flag' => '0', 'customerId' => $id]])->order(['date_seikyuu' => 'desc'])->toArray();
+					$date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y年m月d日');
+					$this->set('date_seikyuu',$date_seikyuu);
+					$touroku_date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
+					$this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
+					$totalseikyuu = $Seikyuus[0]->total_price;
+					$this->set('totalseikyuu',$totalseikyuu);
 		     }
 
 				 public function nyuukinconfirm()
 		     {
 					 $data = $this->request->getData();
-
+/*
+					 echo "<pre>";
+					 print_r($data);
+					 echo "</pre>";
+*/
 					 if(!empty($data['datenyuukinyotei']['year'])){
 						 $datenyuukinyoteitouroku = $data['datenyuukinyotei']['year']."-".$data['datenyuukinyotei']['month']."-".$data['datenyuukinyotei']['day'];
 						 $this->set('datenyuukinyoteitouroku',$datenyuukinyoteitouroku);
@@ -968,9 +1088,20 @@ class AccountsController extends AppController
 					 $namehyouji = $name." ".$siten;
 					 $this->set('namehyouji',$namehyouji);
 					 $this->set('id',$data["id"]);
+					 $nyuukinyotei = $Customer[0]->nyuukinbi;
+					 $this->set('nyuukinyotei',$nyuukinyotei);
 
 		       $customers = $this->Customers->newEntity();
 		       $this->set('customers',$customers);
+
+					 $Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['delete_flag' => '0', 'customerId' => $data["id"]]])->order(['date_seikyuu' => 'desc'])->toArray();
+					 $date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y年m月d日');
+					 $this->set('date_seikyuu',$date_seikyuu);
+					 $touroku_date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
+					 $this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
+					 $totalseikyuu = $Seikyuus[0]->total_price;
+					 $this->set('totalseikyuu',$totalseikyuu);
+
 		     }
 
 				 public function nyuukindo()
@@ -981,9 +1112,6 @@ class AccountsController extends AppController
 					 print_r($data);
 					 echo "</pre>";
 */
-					 $datenyuukinyoteitouroku = $data['datenyuukinyoteitouroku'];
-					 $this->set('datenyuukinyoteitouroku',$datenyuukinyoteitouroku);
-
 					 $dateseikyuutouroku =$data['dateseikyuutouroku'];
 					 $this->set('dateseikyuutouroku',$dateseikyuutouroku);
 
@@ -996,13 +1124,23 @@ class AccountsController extends AppController
 					 $siten = $Customer[0]->siten;
 					 $namehyouji = $name." ".$siten;
 					 $this->set('namehyouji',$namehyouji);
+					 $nyuukinyotei = $Customer[0]->nyuukinbi;
+					 $this->set('nyuukinyotei',$nyuukinyotei);
+
+					 $Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['delete_flag' => '0', 'customerId' => $data["id"]]])->order(['date_seikyuu' => 'desc'])->toArray();
+					 $date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y年m月d日');
+					 $this->set('date_seikyuu',$date_seikyuu);
+					 $touroku_date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
+					 $this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
+					 $totalseikyuu = $Seikyuus[0]->total_price;
+					 $this->set('totalseikyuu',$totalseikyuu);
 
 					 $tourokuArr = array();
 
 					 $tourokuArr = array('customerId' => $data["id"],'customer' => $namehyouji,'furigana' => $furigana,
 					 'syuukinfurikomi' => $data["syuukinfurikomi"],'syubetu' => $data["syubetu"],'bik' => $data["bik"],
-					 'zandaka' => $data["zandaka"],'kurikosi' => $data["kurikosi"],'seikyuu' => $data["seikyuu"],
-					 'datenyuukinyotei' => $data["datenyuukinyoteitouroku"], 'dateseikyuu' => $data["dateseikyuutouroku"], 'datenyuukin' => $data["datenyuukintouroku"],
+					 'nyuukinngaku' => $data["nyuukinngaku"],'seikyuu' => $totalseikyuu,
+					  'dateseikyuu' => $touroku_date_seikyuu, 'datenyuukin' => $data["datenyuukintouroku"],
 					 'delete_flag' => 0,'created_at' => date('Y-m-d H:i:s', strtotime('+9hour')));
 /*
 						echo "<pre>";
@@ -1084,13 +1222,13 @@ class AccountsController extends AppController
 
 				 }
 
-				 public function nyuukinsyoukaizandakaform()
+				 public function nyuukinsyoukainyuukinngakuform()
 		     {
 					 $nyuukins = $this->Nyuukins->newEntity();
 					 $this->set('nyuukins',$nyuukins);
 				 }
 
-				 public function nyuukinsyoukaizandakaitiran()
+				 public function nyuukinsyoukainyuukinngakuitiran()
 		     {
 					 $nyuukins = $this->Nyuukins->newEntity();
 					 $this->set('nyuukins',$nyuukins);
@@ -1117,7 +1255,7 @@ class AccountsController extends AppController
 
 					 $totalkingaku = 0;
 					 for ($k=0; $k<$count; $k++){
-						 $totalkingaku = $totalkingaku + $Nyuukins[$k]->zandaka;
+						 $totalkingaku = $totalkingaku + $Nyuukins[$k]->nyuukinngaku;
 					 }
 					 $this->set('totalkingaku',$totalkingaku);
 
@@ -1138,8 +1276,11 @@ class AccountsController extends AppController
 					 echo "</pre>";
 */
 					 $Nyuukin = $this->Nyuukins->find('all', ['conditions' => ['id' => $id]])->toArray();
+					 $customerId = $Nyuukin[0]->customerId;
 					 $customer = $Nyuukin[0]->customer;
 					 $this->set('customer',$customer);
+					 $datenyuukin = $Nyuukin[0]->datenyuukin;
+					 $this->set('datenyuukin',$datenyuukin);
 					 $syuukinfurikomi = $Nyuukin[0]->syuukinfurikomi;
 					 $this->set('syuukinfurikomi',$syuukinfurikomi);
 					 $datenyuukinyotei = $Nyuukin[0]->datenyuukinyotei;
@@ -1166,10 +1307,22 @@ class AccountsController extends AppController
 					 $this->set('datenyuukin',$datenyuukin);
 					 $syubetu = $Nyuukin[0]->syubetu;
 					 $this->set('syubetu',$syubetu);
-					 $zandaka = $Nyuukin[0]->zandaka;
-					 $this->set('zandaka',$zandaka);
+					 $nyuukinngaku = $Nyuukin[0]->nyuukinngaku;
+					 $this->set('nyuukinngaku',$nyuukinngaku);
 					 $bik = $Nyuukin[0]->bik;
 					 $this->set('bik',$bik);
+
+					 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $customerId]])->toArray();
+					 $nyuukinyotei = $Customer[0]->nyuukinbi;
+					 $this->set('nyuukinyotei',$nyuukinyotei);
+
+					 $Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['delete_flag' => '0', 'customerId' => $customerId]])->order(['date_seikyuu' => 'desc'])->toArray();
+ 					$date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y年m月d日');
+ 					$this->set('date_seikyuu',$date_seikyuu);
+ 					$touroku_date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
+ 					$this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
+ 					$totalseikyuu = $Seikyuus[0]->total_price;
+ 					$this->set('totalseikyuu',$totalseikyuu);
 
 				 }
 
@@ -1202,6 +1355,29 @@ class AccountsController extends AppController
 					];
 					$this->set('arrSyubetu',$arrSyubetu);
 
+					$Nyuukin = $this->Nyuukins->find('all', ['conditions' => ['id' => $id]])->toArray();
+					$customerId = $Nyuukin[0]->customerId;
+					$syubetu = $Nyuukin[0]->syubetu;
+					$this->set('syubetu',$syubetu);
+					$nyuukinngaku = $Nyuukin[0]->nyuukinngaku;
+					$this->set('nyuukinngaku',$nyuukinngaku);
+					$bik = $Nyuukin[0]->bik;
+					$this->set('bik',$bik);
+					$datenyuukin = $Nyuukin[0]->datenyuukin;
+					$this->set('datenyuukin',$datenyuukin);
+
+					$Customer = $this->Customers->find('all', ['conditions' => ['id' => $customerId]])->toArray();
+					$nyuukinyotei = $Customer[0]->nyuukinbi;
+					$this->set('nyuukinyotei',$nyuukinyotei);
+
+					$Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['delete_flag' => '0', 'customerId' => $customerId]])->order(['date_seikyuu' => 'desc'])->toArray();
+				 $date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y年m月d日');
+				 $this->set('date_seikyuu',$date_seikyuu);
+				 $touroku_date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
+				 $this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
+				 $totalseikyuu = $Seikyuus[0]->total_price;
+				 $this->set('totalseikyuu',$totalseikyuu);
+
 				 }
 
 				 public function nyuukinsyoukaieditdo()
@@ -1209,17 +1385,30 @@ class AccountsController extends AppController
 					 $nyuukins = $this->Nyuukins->newEntity();
 					 $this->set('nyuukins',$nyuukins);
 					 $data = $this->request->getData();
-/*
-					 echo "<pre>";
-					 print_r($data);
-					 echo "</pre>";
-*/
+
 					 $id = $data["id"];
 					 $this->set('id',$id);
 
-					 $datenyuukinyotei = $data['datenyuukinyotei']['year']."-".$data['datenyuukinyotei']['month']."-".$data['datenyuukinyotei']['day'];
-					 $dateseikyuu = $data['dateseikyuu']['year']."-".$data['dateseikyuu']['month']."-".$data['dateseikyuu']['day'];
 					 $datenyuukin = $data['datenyuukin']['year']."-".$data['datenyuukin']['month']."-".$data['datenyuukin']['day'];
+					 $this->set('datenyuukin',$datenyuukin);
+					 echo "<pre>";
+					 print_r($data);
+					 echo "</pre>";
+
+					 $Nyuukin = $this->Nyuukins->find('all', ['conditions' => ['id' => $id]])->toArray();
+					 $customerId = $Nyuukin[0]->customerId;
+
+					 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $customerId]])->toArray();
+					 $nyuukinyotei = $Customer[0]->nyuukinbi;
+					 $this->set('nyuukinyotei',$nyuukinyotei);
+
+					 $Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['delete_flag' => '0', 'customerId' => $customerId]])->order(['date_seikyuu' => 'desc'])->toArray();
+					 $date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y年m月d日');
+ 	 				 $this->set('date_seikyuu',$date_seikyuu);
+ 	 				 $touroku_date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
+ 	 				 $this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
+ 	 				 $totalseikyuu = $Seikyuus[0]->total_price;
+ 	 				 $this->set('totalseikyuu',$totalseikyuu);
 
 					 if($data["delete_flag"] == 1){
 		         $mess = "以下のデータを削除しました。";
@@ -1235,8 +1424,8 @@ class AccountsController extends AppController
 		       try {//トランザクション4
 		         if ($this->Nyuukins->updateAll(
 		           [
-							 'syuukinfurikomi' => $data['syuukinfurikomi'], 'datenyuukinyotei' => $datenyuukinyotei, 'dateseikyuu' => $dateseikyuu, 'datenyuukin' => $datenyuukin,
-							 'kurikosi' => $data['kurikosi'], 'seikyuu' => $data['seikyuu'], 'syubetu' => $data['syubetu'], 'zandaka' => $data['zandaka'],'bik' => $data['bik'],
+							 'syuukinfurikomi' => $data['syuukinfurikomi'],  'datenyuukin' => $datenyuukin,
+							 'syubetu' => $data['syubetu'], 'nyuukinngaku' => $data['nyuukinngaku'], 'bik' => $data['bik'],
 							 'delete_flag' => $data['delete_flag']],
 		           ['id'  => $data['id']]
 		         )){
@@ -1257,42 +1446,363 @@ class AccountsController extends AppController
 		         $connection->rollback();//トランザクション9
 		       }//トランザクション10
 
-		       $Nyuukin = $this->Nyuukins->find()->where(['id' => $id])->toArray();
-
-					 $customer = $Nyuukin[0]->customer;
-					 $this->set('customer',$customer);
-					 $syuukinfurikomi = $Nyuukin[0]->syuukinfurikomi;
-					 $this->set('syuukinfurikomi',$syuukinfurikomi);
-					 $datenyuukinyotei = $Nyuukin[0]->datenyuukinyotei;
-					 $this->set('datenyuukinyoteitouroku',$datenyuukinyotei);
-					 if(!empty($datenyuukinyotei)){
-						 $datenyuukinyotei = $Nyuukin[0]->datenyuukinyotei->format('Y年m月d日');
-					 }
-					 $this->set('datenyuukinyotei',$datenyuukinyotei);
-					 $dateseikyuu = $Nyuukin[0]->dateseikyuu;
-					 $this->set('dateseikyuutouroku',$dateseikyuu);
-					 if(!empty($dateseikyuu)){
-						 $dateseikyuu = $Nyuukin[0]->dateseikyuu->format('Y年m月d日');
-					 }
-					 $this->set('dateseikyuu',$dateseikyuu);
-					 $kurikosi = $Nyuukin[0]->kurikosi;
-					 $this->set('kurikosi',$kurikosi);
-					 $seikyuu = $Nyuukin[0]->seikyuu;
-					 $this->set('seikyuu',$seikyuu);
-					 $datenyuukin = $Nyuukin[0]->datenyuukin;
-					 $this->set('datenyuukintouroku',$datenyuukin);
-					 if(!empty($datenyuukin)){
-						 $datenyuukin = $Nyuukin[0]->datenyuukin->format('Y年m月d日');
-					 }
-					 $this->set('datenyuukin',$datenyuukin);
-					 $syubetu = $Nyuukin[0]->syubetu;
-					 $this->set('syubetu',$syubetu);
-					 $zandaka = $Nyuukin[0]->zandaka;
-					 $this->set('zandaka',$zandaka);
-					 $bik = $Nyuukin[0]->bik;
-					 $this->set('bik',$bik);
-
 				 }
+
+				 public function seikyuuformcustomer()
+		     {
+					 $uriages = $this->Uriages->newEntity();
+		       $this->set('uriages',$uriages);
+
+					 $arrCustomers = $this->Customers->find('all', ['conditions' => ['delete_flag' => '0']])->order(['furigana' => 'ASC']);
+					 $arrCustomer = array();
+					 foreach ($arrCustomers as $value) {
+						 $arrCustomer[] = array($value->id=>$value->name.' '.$value->siten);
+					 }
+					 $this->set('arrCustomer',$arrCustomer);
+
+		     }
+
+				 public function seikyuuformcustomerfurigana()
+		     {
+					 $uriages = $this->Uriages->newEntity();
+		       $this->set('uriages',$uriages);
+
+					 $Data = $this->request->query('s');
+		       $data = $Data['data'];
+		/*
+					 echo "<pre>";
+					 print_r($data);
+					 echo "</pre>";
+		*/
+					 $furigana = $data["nyuryokufurigana"];
+
+					 $arrCustomers = $this->Customers->find('all', ['conditions' => ['delete_flag' => '0', 'furigana like' => '%'.$furigana.'%']])->order(['furigana' => 'ASC']);
+					 $arrCustomer = array();
+					 foreach ($arrCustomers as $value) {
+						 $arrCustomer[] = array($value->id=>$value->name.' '.$value->siten);
+					 }
+					 $this->set('arrCustomer',$arrCustomer);
+
+		     }
+
+				 public function seikyuuform()
+		     {
+					 $data = $this->request->getData();
+
+					 if(!empty($data["nyuryokufurigana"])){
+
+						 return $this->redirect(['action' => 'seikyuuformcustomerfurigana',
+						 's' => ['data' => $data]]);
+
+					 }
+
+					 echo "<pre>";
+					 print_r($data);
+					 echo "</pre>";
+
+					 if(!empty($data["name1"])){
+						 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $data["name1"]]])->toArray();
+						 $name = $Customer[0]->name;
+						 $siten = $Customer[0]->siten;
+						 $namehyouji = $name." ".$siten;
+						 $this->set('namehyouji',$namehyouji);
+						 $id = $data["name1"];
+						 $this->set('id',$data["name1"]);
+						 $simebi = $Customer[0]->simebi;
+						 $this->set('simebi',$simebi);
+					 }elseif(!empty($data["name2"])){
+						 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $data["name2"]]])->toArray();
+						 $name = $Customer[0]->name;
+						 $siten = $Customer[0]->siten;
+						 $namehyouji = $name." ".$siten;
+						 $this->set('namehyouji',$namehyouji);
+						 $id = $data["name2"];
+						 $this->set('id',$data["name2"]);
+						 $simebi = $Customer[0]->simebi;
+						 $this->set('simebi',$simebi);
+					 }else{
+						 $name = "";
+					 }
+
+					 $Uriage = $this->Uriages->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0, 'seikyuuId' => 0]])->order(['	syutsuryokubi' => 'ASC'])->toArray();
+					 $count = count($Uriage);
+
+					 $totalkingaku = 0;
+					 $arrPro_1 = array();
+					 $arrDenpyou = array();
+					 $arrSyuturyoku = array();
+					 $arrTotalprice = array();
+
+					 if($count > 0){
+
+						 $this->set('count',$count);
+
+							 for ($k=0; $k<$count; $k++){
+
+								 $arrPro_1[] = $Uriage[$k]->pro_1;
+								 $arrDenpyou[] = $Uriage[$k]->denpyou_num;
+								 $arrSyuturyoku[] = $Uriage[$k]->syutsuryokubi->format('m/d');
+
+								 ${"Totalprice".$k} = 0;
+								 for($i=1; $i<=20; $i++){
+
+									 if(!empty($Uriage[$k]->{"pro_{$i}"})){
+
+										 $totalkingaku = $totalkingaku + $Uriage[$k]->{"price_{$i}"};
+										 ${"Totalprice".$k} = ${"Totalprice".$k} + $Uriage[$k]->{"price_{$i}"};
+
+									 }
+
+								 }
+								 $this->set("Totalprice".$k,${"Totalprice".$k});
+
+							 }
+
+					 }
+
+					 $this->set('totalkingaku',$totalkingaku);
+					 $this->set('arrPro_1',$arrPro_1);
+					 $this->set('arrDenpyou',$arrDenpyou);
+					 $this->set('arrSyuturyoku',$arrSyuturyoku);
+
+		       $customers = $this->Customers->newEntity();
+		       $this->set('customers',$customers);
+
+					 $Today = date('m')."/".date('d', strtotime('+9hour'));
+					 $this->set('Today',$Today);
+					 $monthSeikyuu = date('Y', strtotime('+9hour'))."年 ".date('m', strtotime('+9hour'))."月度";
+					 $this->set('monthSeikyuu',$monthSeikyuu);
+
+					 $Seikyuu = $this->Seikyuus->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0]])->order(['	date_seikyuu' => 'desc'])->toArray();
+
+					 $nyuukinntotal = 0;
+					 $tyouseitotal = 0;
+					 $sousaitotal = 0;
+
+					 if(isset($Seikyuu[0])){
+						 $Zenkai = $Seikyuu[0]->total_price;
+						 $datezenkai = $Seikyuu[0]->date_seikyuu->format('Y-m-d');
+						 echo "<pre>";
+						 print_r($datezenkai);
+						 echo "</pre>";
+
+						 $Nyuukins = $this->Nyuukins->find()
+						 ->where(['datenyuukin >=' => $datezenkai, 'customerId' => $id, 'delete_flag' => 0,
+						 'OR' => [['syubetu' => "振込"], ['syubetu' => "現金"], ['syubetu' => "小切手"], ['syubetu' => "手形"]]])
+						 ->toArray();
+
+						 $count = count($Nyuukins);
+						 for ($k=0; $k<$count; $k++){
+							 $nyuukinntotal = $nyuukinntotal + $Nyuukins[0]->nyuukinngaku;
+						 }
+
+						 $Nyuukinstyousei = $this->Nyuukins->find()
+						 ->where(['datenyuukin >=' => $datezenkai, 'customerId' => $id, 'syubetu' => "調整", 'delete_flag' => 0])
+						 ->toArray();
+
+						 $count = count($Nyuukinstyousei);
+						 for ($k=0; $k<$count; $k++){
+							 $tyouseitotal = $tyouseitotal + $Nyuukinstyousei[0]->nyuukinngaku;
+						 }
+
+						 $Nyuukinssousai = $this->Nyuukins->find()
+						 ->where(['datenyuukin >=' => $datezenkai, 'customerId' => $id, 'syubetu' => "相殺", 'delete_flag' => 0])
+						 ->toArray();
+
+						 $count = count($Nyuukinssousai);
+						 for ($k=0; $k<$count; $k++){
+							 $sousaitotal = $sousaitotal + $Nyuukinssousai[0]->nyuukinngaku;
+						 }
+
+					 }else{
+						 $Zenkai = 0;
+					 }
+					 $this->set('Zenkai',$Zenkai);
+					 $this->set('nyuukinntotal',$nyuukinntotal);
+					 $this->set('tyouseitotal',$tyouseitotal);
+					 $this->set('sousaitotal',$sousaitotal);
+
+		     }
+
+				 public function seikyuuconfirm()
+		     {
+					 $data = $this->request->getData();
+
+					 echo "<pre>";
+					 print_r($data);
+					 echo "</pre>";
+
+					 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $data["id"]]])->toArray();
+					 $name = $Customer[0]->name;
+					 $siten = $Customer[0]->siten;
+					 $namehyouji = $name." ".$siten;
+					 $this->set('namehyouji',$namehyouji);
+					 $id = $data["id"];
+					 $this->set('id',$data["id"]);
+					 $simebi = $Customer[0]->simebi;
+					 $this->set('simebi',$simebi);
+
+					 $Uriage = $this->Uriages->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0, 'seikyuuId' => 0]])->order(['	syutsuryokubi' => 'ASC'])->toArray();
+					 $count = count($Uriage);
+
+					 $totalkingaku = 0;
+					 $arrPro_1 = array();
+					 $arrDenpyou = array();
+					 $arrSyuturyoku = array();
+					 $arrTotalprice = array();
+
+					 if($count > 0){
+
+						 $this->set('count',$count);
+
+							 for ($k=0; $k<$count; $k++){
+
+								 $arrPro_1[] = $Uriage[$k]->pro_1;
+								 $arrDenpyou[] = $Uriage[$k]->denpyou_num;
+								 $arrSyuturyoku[] = $Uriage[$k]->syutsuryokubi->format('m/d');
+
+								 ${"Totalprice".$k} = 0;
+								 for($i=1; $i<=20; $i++){
+
+									 if(!empty($Uriage[$k]->{"pro_{$i}"})){
+
+										 $totalkingaku = $totalkingaku + $Uriage[$k]->{"price_{$i}"};
+										 ${"Totalprice".$k} = ${"Totalprice".$k} + $Uriage[$k]->{"price_{$i}"};
+
+									 }
+
+								 }
+								 $this->set("Totalprice".$k,${"Totalprice".$k});
+
+							 }
+
+					 }
+
+					 $this->set('totalkingaku',$totalkingaku);
+					 $this->set('arrPro_1',$arrPro_1);
+					 $this->set('arrDenpyou',$arrDenpyou);
+					 $this->set('arrSyuturyoku',$arrSyuturyoku);
+
+		       $customers = $this->Customers->newEntity();
+		       $this->set('customers',$customers);
+
+					 $Today = date('m')."/".date('d', strtotime('+9hour'));
+					 $this->set('Today',$Today);
+					 $monthSeikyuu = date('Y', strtotime('+9hour'))."年 ".date('m', strtotime('+9hour'))."月度";
+					 $this->set('monthSeikyuu',$monthSeikyuu);
+
+					 $kurikosi = $data["Zenkai"] - $data["nyuukingaku"] - $data["tyousei"] - $data["sousai"];
+					 $this->set('kurikosi',$kurikosi);
+
+					 $totalseikyuu = $totalkingaku*1.1 + $kurikosi;
+					 $this->set('totalseikyuu',$totalseikyuu);
+		     }
+
+				 public function seikyuudo()
+		     {
+					 $data = $this->request->getData();
+
+					 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $data["id"]]])->toArray();
+					 $name = $Customer[0]->name;
+					 $furigana = $Customer[0]->furigana;
+					 $siten = $Customer[0]->siten;
+					 $namehyouji = $name." ".$siten;
+					 $this->set('namehyouji',$namehyouji);
+					 $id = $data["id"];
+					 $this->set('id',$data["id"]);
+					 $simebi = $Customer[0]->simebi;
+					 $this->set('simebi',$simebi);
+
+					 $Uriage = $this->Uriages->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0, 'seikyuuId' => 0]])->order(['	syutsuryokubi' => 'ASC'])->toArray();
+					 $count = count($Uriage);
+
+					 $totalkingaku = 0;
+					 $arrPro_1 = array();
+					 $arrDenpyou = array();
+					 $arrSyuturyoku = array();
+					 $arrTotalprice = array();
+
+					 if($count > 0){
+
+						 $this->set('count',$count);
+
+							 for ($k=0; $k<$count; $k++){
+
+								 $arrPro_1[] = $Uriage[$k]->pro_1;
+								 $arrDenpyou[] = $Uriage[$k]->denpyou_num;
+								 $arrSyuturyoku[] = $Uriage[$k]->syutsuryokubi->format('m/d');
+
+								 ${"Totalprice".$k} = 0;
+								 for($i=1; $i<=20; $i++){
+
+									 if(!empty($Uriage[$k]->{"pro_{$i}"})){
+
+										 $totalkingaku = $totalkingaku + $Uriage[$k]->{"price_{$i}"};
+										 ${"Totalprice".$k} = ${"Totalprice".$k} + $Uriage[$k]->{"price_{$i}"};
+
+									 }
+
+								 }
+								 $this->set("Totalprice".$k,${"Totalprice".$k});
+
+							 }
+
+					 }
+
+					 $this->set('totalkingaku',$totalkingaku);
+					 $this->set('arrPro_1',$arrPro_1);
+					 $this->set('arrDenpyou',$arrDenpyou);
+					 $this->set('arrSyuturyoku',$arrSyuturyoku);
+
+		       $customers = $this->Customers->newEntity();
+		       $this->set('customers',$customers);
+
+					 $Today = date('m')."/".date('d', strtotime('+9hour'));
+					 $this->set('Today',$Today);
+					 $monthSeikyuu = date('Y', strtotime('+9hour'))."年 ".date('m', strtotime('+9hour'))."月度";
+					 $this->set('monthSeikyuu',$monthSeikyuu);
+
+					 $tourokuArr = array();
+
+					 $tourokuArr = array('customerId' => $data["id"],'furigana' => $furigana,
+					 'date_seikyuu' => date('Y-m-d', strtotime('+9hour')),'nyuukingaku' => $data["nyuukingaku"],'tyousei' => $data["tyousei"],
+					 'sousai' => $data["sousai"], 'total_price' => $data["totalseikyuu"],
+					 'delete_flag' => 0,'created_at' => date('Y-m-d H:i:s', strtotime('+9hour')));
+/*
+						echo "<pre>";
+						print_r($tourokuArr);
+						echo "</pre>";
+*/
+						$seikyuus = $this->Seikyuus->newEntity();
+						$this->set('seikyuus',$seikyuus);
+
+						$seikyuu = $this->Seikyuus->patchEntity($seikyuus, $tourokuArr);
+						$connection = ConnectionManager::get('default');//トランザクション1
+		        // トランザクション開始2
+		        $connection->begin();//トランザクション3
+		        try {//トランザクション4
+		          if ($this->Seikyuus->save($seikyuu)) {
+
+		            $mes = "※下記のように登録されました";
+		            $this->set('mes',$mes);
+		            $connection->commit();// コミット5
+
+		          } else {
+
+		            $mes = "※登録されませんでした";
+		            $this->set('mes',$mes);
+		            $this->Flash->error(__('This data could not be saved. Please, try again.'));
+		            throw new Exception(Configure::read("M.ERROR.INVALID"));//失敗6
+
+		          }
+
+		        } catch (Exception $e) {//トランザクション7
+		        //ロールバック8
+		          $connection->rollback();//トランザクション9
+		        }//トランザクション10
+
+		     }
+
 
 		 public function test()//エクセル複数作成のテスト
      {

@@ -39,54 +39,52 @@ header('Pragma:');
         <table align="center">
           <tr>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">取引先名</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">集金・振込</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金予定日</strong></td>
           </tr>
           <tr>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($customer) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($nyuukinyotei."日") ?></div></td>
+          </tr>
+        </table>
+        <br>
+        <table align="center">
+          <tr>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求年月日</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求額（円）</strong></td>
+          </tr>
+          <tr>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($date_seikyuu) ?></div></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($totalseikyuu) ?></div></td>
+          </tr>
+        </table>
+        <br>
+        <table align="center">
+          <tr>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">種別</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">集金・振込</strong></td>
+          </tr>
+          <tr>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($syubetu) ?></td>
             <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($syuukinfurikomi) ?></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金予定日</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求年月日</strong></td>
-          </tr>
-          <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($datenyuukinyotei) ?></div></td>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($dateseikyuu) ?></div></td>
-          </tr>
-        </table>
-        <br>
-        <table align="center">
-          <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">繰越額</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求額</strong></td>
-          </tr>
-          <tr>
-            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($kurikosi." 円") ?></td>
-            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($seikyuu." 円") ?></td>
-          </tr>
-        </table>
-        <br>
-        <table align="center">
-          <tr>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金額（円）</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金日</strong></td>
-            <td align="center" width="280" colspan="3" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">種別</strong></td>
           </tr>
           <tr>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($datenyuukin) ?></div></td>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($syubetu) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($nyuukinngaku) ?></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($datenyuukin) ?></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">残高</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">備考</strong></td>
+            <td align="center" width="560" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">備考</strong></td>
           </tr>
           <tr>
-            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($zandaka." 円") ?></td>
             <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($bik) ?></td>
           </tr>
         </table>
@@ -109,10 +107,10 @@ header('Pragma:');
 <?= $this->Form->control('syuukinfurikomi', array('type'=>'hidden', 'value'=>$syuukinfurikomi, 'label'=>false)) ?>
 <?= $this->Form->control('datenyuukinyoteitouroku', array('type'=>'hidden', 'value'=>$datenyuukinyoteitouroku, 'label'=>false)) ?>
 <?= $this->Form->control('dateseikyuutouroku', array('type'=>'hidden', 'value'=>$dateseikyuutouroku, 'label'=>false)) ?>
-<?= $this->Form->control('datenyuukintouroku', array('type'=>'hidden', 'value'=>$datenyuukintouroku, 'label'=>false)) ?>
+<?= $this->Form->control('datenyuukintouroku', array('type'=>'hidden', 'value'=>$datenyuukin, 'label'=>false)) ?>
 <?= $this->Form->control('dateseikyuu', array('type'=>'hidden', 'value'=>$dateseikyuu, 'label'=>false)) ?>
-<?= $this->Form->control('kurikosi', array('type'=>'hidden', 'value'=>$kurikosi, 'label'=>false)) ?>
+<?= $this->Form->control('nyuukinyotei', array('type'=>'hidden', 'value'=>$nyuukinyotei, 'label'=>false)) ?>
 <?= $this->Form->control('seikyuu', array('type'=>'hidden', 'value'=>$seikyuu, 'label'=>false)) ?>
 <?= $this->Form->control('syubetu', array('type'=>'hidden', 'value'=>$syubetu, 'label'=>false)) ?>
-<?= $this->Form->control('zandaka', array('type'=>'hidden', 'value'=>$zandaka, 'label'=>false)) ?>
+<?= $this->Form->control('nyuukinngaku', array('type'=>'hidden', 'value'=>$nyuukinngaku, 'label'=>false)) ?>
 <?= $this->Form->control('bik', array('type'=>'hidden', 'value'=>$bik, 'label'=>false)) ?>

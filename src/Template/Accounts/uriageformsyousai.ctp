@@ -43,7 +43,7 @@ $this->layout = '';
           </tr>
           <tr>
             <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($namehyouji) ?></td>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= $this->Form->input("date", array('type' => 'date', 'monthNames' => false, 'label'=>false)); ?></div></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= $this->Form->input("date", array('type' => 'date', 'monthNames' => false, 'label'=>false, 'value'=>date('Y-m-d H:i:s', strtotime('+9hour')))); ?></div></td>
           </tr>
         </table>
         <br>

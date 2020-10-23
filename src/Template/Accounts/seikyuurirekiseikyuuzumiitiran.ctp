@@ -5,6 +5,9 @@ header('Expires:-1');
 header('Cache-Control:');
 header('Pragma:');
 
+use Cake\ORM\TableRegistry;//独立したテーブルを扱う
+$this->Customers = TableRegistry::get('customers');
+
 ?>
 <table width="1000" border="0" align="center" cellpadding="0" cellspacing="0" bordercolor="#E6FFFF">
   <tr style="background-color: #E6FFFF">
@@ -28,7 +31,7 @@ header('Pragma:');
 
         <table style="margin-bottom:0px" width="750" border="0" align="center" cellpadding="0" cellspacing="0" bordercolor="#CCCCCC">
           <tr style="border-style: none; background-color: #E6FFFF">
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/nyuukinsyoukai.png',array('width'=>'105','height'=>'36'));?></td>
+            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/seikyuuitiran.png',array('width'=>'105','height'=>'36'));?></td>
           </tr>
         </table>
 
@@ -36,20 +39,20 @@ header('Pragma:');
 
         <table style="margin-bottom:0px" width="750" border="0" align="center" cellpadding="0" cellspacing="0" bordercolor="#CCCCCC">
           <tr style="border-style: none; background-color: #E6FFFF">
-            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/nyuukinngaku.png',array('width'=>'105','height'=>'36'));?></td>
+            <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/seikyuuzumi.png',array('width'=>'105','height'=>'36'));?></td>
           </tr>
         </table>
 
         <hr size="1" style="margin: 0.5rem">
 
-        <?= $this->Form->create($nyuukins, ['url' => ['action' => 'nyuukinsyoukaisyousai']]) ?>
+        <?= $this->Form->create($nyuukins, ['url' => ['action' => 'seikyuusyuuseiview']]) ?>
 
 
         <br>
         <table align="center">
           <tr>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">期間</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金額合計</strong></td>
+            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求額合計</strong></td>
           </tr>
           <tr>
             <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($date_sta." ～ ".$date_fin) ?></div></td>
@@ -62,21 +65,28 @@ header('Pragma:');
   <tbody border="2" bordercolor="#E6FFFF" bgcolor="#FFFFCC" style="border-bottom: 0px;border-width: 1px">
         <thead>
             <tr border="2" bordercolor="#E6FFFF" bgcolor="#FFFFCC">
-              <td width="200" height="30" colspan="20" nowrap="nowrap"><div align="center"><strong style="font-size: 12pt">取引先</strong></div></td>
-              <td width="200" height="30" colspan="20" nowrap="nowrap"><div align="center"><strong style="font-size: 12pt">入金日</strong></div></td>
-              <td width="200" height="30" colspan="20" nowrap="nowrap"><div align="center"><strong style="font-size: 12pt">入金額</strong></div></td>
+              <td width="300" height="30" colspan="20" nowrap="nowrap"><div align="center"><strong style="font-size: 12pt">取引先</strong></div></td>
+              <td width="200" height="30" colspan="20" nowrap="nowrap"><div align="center"><strong style="font-size: 12pt">請求日</strong></div></td>
+              <td width="200" height="30" colspan="20" nowrap="nowrap"><div align="center"><strong style="font-size: 12pt">請求額</strong></div></td>
               <td width="50" height="30" colspan="20" nowrap="nowrap"><div align="center"><strong style="font-size: 12pt"></strong></div></td>
             </tr>
         </thead>
         <tbody border="2" bordercolor="#E6FFFF" bgcolor="#FFFFCC">
-          <?php foreach ($Nyuukins as $Nyuukins): ?>
+          <?php foreach ($Seikyuus as $Seikyuus): ?>
           <tr>
-            <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Nyuukins->customer) ?></font></td>
-            <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Nyuukins->datenyuukin->format('Y年m月d日')) ?></font></td>
-            <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Nyuukins->nyuukinngaku." 円") ?></font></td>
+
+            <?php
+            $Customers = $this->Customers->find('all', ['conditions' => ['id' => $Seikyuus->customerId]])->toArray();
+            $customer = $Customers[0]->name.' '.$Customers[0]->siten;
+
+            ?>
+
+            <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($customer) ?></font></td>
+            <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Seikyuus->date_seikyuu->format('Y年m月d日')) ?></font></td>
+            <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Seikyuus->total_price." 円") ?></font></td>
             <?php
             echo "<td colspan='20' nowrap='nowrap'><div align='center'>";
-            echo $this->Form->submit("詳細" , ['action'=>'nyuukinsyoukaisyousai', 'name' => $Nyuukins->id]) ;
+            echo $this->Form->submit("詳細" , ['action'=>'seikyuusyuuseiview', 'name' => $Seikyuus->id]) ;
             echo "</div></td>";
             ?>
           </tr>

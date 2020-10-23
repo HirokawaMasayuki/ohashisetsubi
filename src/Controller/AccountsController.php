@@ -21,6 +21,8 @@ class AccountsController extends AppController
 			$this->Uriages = TableRegistry::get('uriages');
 			$this->Nyuukins = TableRegistry::get('nyuukins');
 			$this->Seikyuus = TableRegistry::get('seikyuus');
+			$this->Zandakas = TableRegistry::get('zandakas');
+			$this->Miseikyuus = TableRegistry::get('miseikyuus');
 		  }
 
 		 public function index()
@@ -415,20 +417,20 @@ class AccountsController extends AppController
 			 $month = date('m', strtotime('+9hour'));
 			 $day = date('d', strtotime('+9hour'));
 
-			 if(is_dir("C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$year/$month/$day")){//ディレクトリが存在すればOK
+			 if(is_dir("C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/納品書/$year/$month/$day")){//ディレクトリが存在すればOK
 
 				 $file_name = $data["name"]."_".$datetime.".xlsx";
-				 $outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$year/$month/$day/$file_name"; //出力したいファイルの指定
+				 $outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/納品書/$year/$month/$day/$file_name"; //出力したいファイルの指定
 
 			 }else{//ディレクトリが存在しなければ作成する
 
-				 mkdir("C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$year/$month/$day", 0777, true);
+				 mkdir("C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/納品書/$year/$month/$day", 0777, true);
 				 $file_name = $data["name"]."_".$datetime.".xlsx";
-				 $outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$year/$month/$day/$file_name"; //出力したいファイルの指定
+				 $outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/納品書/$year/$month/$day/$file_name"; //出力したいファイルの指定
 
 			 }
 
-			 $mesxlsx = "「エクセル出力/".$year."/".$month."/".$day."」フォルダにエクセルシート「".$file_name."」が出力されました。";
+			 $mesxlsx = "「エクセル出力/納品書/".$year."/".$month."/".$day."」フォルダにエクセルシート「".$file_name."」が出力されました。";
 			 $this->set('mesxlsx',$mesxlsx);
 
 			 $writer->save($outfilepath);
@@ -444,6 +446,26 @@ class AccountsController extends AppController
        $connection->begin();//トランザクション3
        try {//トランザクション4
          if ($this->Uriages->save($uriage)) {
+
+					 $Miseikyuus = $this->Miseikyuus->find('all', ['conditions' => ['customerId' => $data["id"], 'delete_flag' => 0]])->toArray();
+					 if(isset($Miseikyuus[0])){
+
+						 $miseikyuugaku = $Miseikyuus[0]->miseikyuugaku + $total_price;
+
+						 $this->Miseikyuus->updateAll(
+							 ['miseikyuugaku' => $miseikyuugaku, 'kousinbi' => date('Y-m-d', strtotime('+9hour')), 'updated_at' => date('Y-m-d H:i:s', strtotime('+9hour'))],
+							 ['id'  => $Miseikyuus[0]->id]
+						 );
+
+					 }else{
+
+						 $arrMiseikyuu = array('customerId' => $data["id"], 'furigana' => $data["furigana"], 'miseikyuugaku' => $total_price, 'kousinbi' => date('Y-m-d', strtotime('+9hour')),
+						'delete_flag' => 0, 'created_at' => date('Y-m-d H:i:s', strtotime('+9hour')));
+
+						 $Miseikyuu = $this->Miseikyuus->patchEntity($this->Miseikyuus->newEntity(), $arrMiseikyuu);
+						 $this->Miseikyuus->save($Miseikyuu);
+
+					 }
 
            $mes = "※下記のように登録されました";
            $this->set('mes',$mes);
@@ -832,6 +854,7 @@ class AccountsController extends AppController
 		       }
 		       $this->set('mess',$mess);
 
+					 $total_price = 0;
 					 for($i=1; $i<=20; $i++){
 
 						 if(!empty($data["pro_".$i])){
@@ -841,6 +864,9 @@ class AccountsController extends AppController
 							 $data["tani_".$i] = $data["tani_".$i];
 							 $data["tanka_".$i] = $data["tanka_".$i];
 							 $data["bik_".$i] = $data["bik_".$i];
+							 ${"price_".$i} = $data["tanka_".$i]*$data["amount_".$i];
+
+							 $total_price = $total_price + $data["tanka_".$i]*$data["amount_".$i];
 
 						 }else{
 
@@ -849,16 +875,29 @@ class AccountsController extends AppController
 							 $data["tani_".$i] = NULL;
 							 $data["tanka_".$i] = NULL;
 							 $data["bik_".$i] = NULL;
+							 ${"price_".$i} = NULL;
 
 						 }
 
 					 }
 
-/*
-					 echo "<pre>";
-		       print_r($data);
-		       echo "</pre>";
-*/
+					 $total_price = $total_price * 1.1;
+
+					 $total_price_moto = 0;
+					 $Uriages = $this->Uriages->find()->where(['id' => $id])->toArray();
+					 $customerId = $Uriages[0]->customerId;
+
+					 for($i=1; $i<=20; $i++){
+
+						 if(!empty($Uriages[0]["pro_".$i])){
+
+							 $total_price_moto = $total_price_moto + $Uriages[0]["price_".$i];
+
+						 }
+
+					 }
+					 $total_price_moto = $total_price_moto * 1.1;
+
 					 $uriage = $this->Uriages->patchEntity($uriages, $data);
 		       $connection = ConnectionManager::get('default');//トランザクション1
 		       // トランザクション開始2
@@ -886,6 +925,11 @@ class AccountsController extends AppController
 							 'tanka_9' => $data['tanka_9'], 'tanka_10' => $data['tanka_10'], 'tanka_11' => $data['tanka_11'], 'tanka_12' => $data['tanka_12'],
 							 'tanka_13' => $data['tanka_13'], 'tanka_14' => $data['tanka_14'], 'tanka_15' => $data['tanka_15'], 'tanka_16' => $data['tanka_16'],
 							 'tanka_17' => $data['tanka_17'], 'tanka_18' => $data['tanka_18'], 'tanka_19' => $data['tanka_19'], 'tanka_20' => $data['tanka_20'],
+							 'price_1' => $price_1, 'price_2' => $price_2, 'price_3' => $price_3, 'price_4' => $price_4,
+							 'price_5' => $price_5, 'price_6' => $price_6, 'price_7' => $price_7, 'price_8' => $price_8,
+							 'price_9' => $price_9, 'price_10' => $price_10, 'price_11' => $price_11, 'price_12' => $price_12,
+							 'price_13' => $price_13, 'price_14' => $price_14, 'price_15' => $price_15, 'price_16' => $price_16,
+							 'price_17' => $price_17, 'price_18' => $price_18, 'price_19' => $price_19, 'price_20' => $price_20,
 							 'bik_1' => $data['bik_1'], 'bik_2' => $data['bik_2'], 'bik_3' => $data['bik_3'], 'bik_4' => $data['bik_4'],
 							 'bik_5' => $data['bik_5'], 'bik_6' => $data['bik_6'], 'bik_7' => $data['bik_7'], 'bik_8' => $data['bik_8'],
 							 'bik_9' => $data['bik_9'], 'bik_10' => $data['bik_10'], 'bik_11' => $data['bik_11'], 'bik_12' => $data['bik_12'],
@@ -894,6 +938,22 @@ class AccountsController extends AppController
 							 'delete_flag' => $data['delete_flag']],
 		           ['id'  => $data['id']]
 		         )){
+
+							 $Miseikyuus = $this->Miseikyuus->find('all', ['conditions' => ['customerId' => $customerId, 'delete_flag' => 0]])->toArray();
+							 if(isset($Miseikyuus[0])){
+
+								 $miseikyuugaku = $Miseikyuus[0]->miseikyuugaku - $total_price_moto + $total_price;
+/*
+								 echo "<pre>";
+								 print_r($Miseikyuus[0]->miseikyuugaku." - ".$total_price_moto." + ".$total_price." = ".$miseikyuugaku);
+								 echo "</pre>";
+*/
+								 $this->Miseikyuus->updateAll(
+									 ['miseikyuugaku' => $miseikyuugaku, 'kousinbi' => date('Y-m-d', strtotime('+9hour')), 'updated_at' => date('Y-m-d H:i:s', strtotime('+9hour'))],
+									 ['id'  => $Miseikyuus[0]->id]
+								 );
+
+							 }
 
 		           $connection->commit();// コミット5
 
@@ -1041,13 +1101,28 @@ class AccountsController extends AppController
 					];
 		 			$this->set('arrSyubetu',$arrSyubetu);
 
-					$Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['delete_flag' => '0', 'customerId' => $id]])->order(['date_seikyuu' => 'desc'])->toArray();
-					$date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y年m月d日');
-					$this->set('date_seikyuu',$date_seikyuu);
-					$touroku_date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
-					$this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
-					$totalseikyuu = $Seikyuus[0]->total_price;
-					$this->set('totalseikyuu',$totalseikyuu);
+					$Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['delete_flag' => '0', 'customerId' => $id]])->order(['created_at' => 'desc'])->toArray();
+					if(isset($Seikyuus[0])){
+						$date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y年m月d日');
+						$this->set('date_seikyuu',$date_seikyuu);
+						$touroku_date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
+						$this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
+						$totalseikyuu = $Seikyuus[0]->total_price;
+						$this->set('totalseikyuu',$totalseikyuu);
+					}else{
+						$date_seikyuu = "";
+						$this->set('date_seikyuu',$date_seikyuu);
+						$touroku_date_seikyuu = "";
+						$this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
+						$totalseikyuu = "";
+						$this->set('totalseikyuu',$totalseikyuu);
+
+						echo "<pre>";
+						print_r("請求書を発行していない顧客が選択されています。");
+  					 echo "</pre>";
+					}
+
+
 		     }
 
 				 public function nyuukinconfirm()
@@ -1094,13 +1169,26 @@ class AccountsController extends AppController
 		       $customers = $this->Customers->newEntity();
 		       $this->set('customers',$customers);
 
-					 $Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['delete_flag' => '0', 'customerId' => $data["id"]]])->order(['date_seikyuu' => 'desc'])->toArray();
-					 $date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y年m月d日');
-					 $this->set('date_seikyuu',$date_seikyuu);
-					 $touroku_date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
-					 $this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
-					 $totalseikyuu = $Seikyuus[0]->total_price;
-					 $this->set('totalseikyuu',$totalseikyuu);
+					 $Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['delete_flag' => '0', 'customerId' => $data["id"]]])->order(['created_at' => 'desc'])->toArray();
+					 if(isset($Seikyuus[0])){
+ 						$date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y年m月d日');
+ 						$this->set('date_seikyuu',$date_seikyuu);
+ 						$touroku_date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
+ 						$this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
+ 						$totalseikyuu = $Seikyuus[0]->total_price;
+ 						$this->set('totalseikyuu',$totalseikyuu);
+ 					}else{
+ 						$date_seikyuu = "";
+ 						$this->set('date_seikyuu',$date_seikyuu);
+ 						$touroku_date_seikyuu = "";
+ 						$this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
+ 						$totalseikyuu = "";
+ 						$this->set('totalseikyuu',$totalseikyuu);
+
+ 						echo "<pre>";
+						print_r("請求書を発行していない顧客が選択されています。");
+   					 echo "</pre>";
+ 					}
 
 		     }
 
@@ -1127,20 +1215,33 @@ class AccountsController extends AppController
 					 $nyuukinyotei = $Customer[0]->nyuukinbi;
 					 $this->set('nyuukinyotei',$nyuukinyotei);
 
-					 $Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['delete_flag' => '0', 'customerId' => $data["id"]]])->order(['date_seikyuu' => 'desc'])->toArray();
-					 $date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y年m月d日');
-					 $this->set('date_seikyuu',$date_seikyuu);
-					 $touroku_date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
-					 $this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
-					 $totalseikyuu = $Seikyuus[0]->total_price;
-					 $this->set('totalseikyuu',$totalseikyuu);
+					 $Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['delete_flag' => '0', 'customerId' => $data["id"]]])->order(['created_at' => 'desc'])->toArray();
+					 if(isset($Seikyuus[0])){
+ 						$date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y年m月d日');
+ 						$this->set('date_seikyuu',$date_seikyuu);
+ 						$touroku_date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
+ 						$this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
+ 						$totalseikyuu = $Seikyuus[0]->total_price;
+ 						$this->set('totalseikyuu',$totalseikyuu);
+ 					}else{
+ 						$date_seikyuu = "";
+ 						$this->set('date_seikyuu',$date_seikyuu);
+ 						$touroku_date_seikyuu = "";
+ 						$this->set('touroku_date_seikyuu',$touroku_date_seikyuu);
+ 						$totalseikyuu = "";
+ 						$this->set('totalseikyuu',$totalseikyuu);
+
+ 						echo "<pre>";
+ 						print_r("請求書を発行していない顧客が選択されています。");
+   					 echo "</pre>";
+ 					}
 
 					 $tourokuArr = array();
 
 					 $tourokuArr = array('customerId' => $data["id"],'customer' => $namehyouji,'furigana' => $furigana,
 					 'syuukinfurikomi' => $data["syuukinfurikomi"],'syubetu' => $data["syubetu"],'bik' => $data["bik"],
 					 'nyuukinngaku' => $data["nyuukinngaku"],'seikyuu' => $totalseikyuu,
-					  'dateseikyuu' => $touroku_date_seikyuu, 'datenyuukin' => $data["datenyuukintouroku"],
+					 'dateseikyuu' => $touroku_date_seikyuu, 'datenyuukin' => $data["datenyuukintouroku"],
 					 'delete_flag' => 0,'created_at' => date('Y-m-d H:i:s', strtotime('+9hour')));
 /*
 						echo "<pre>";
@@ -1156,6 +1257,18 @@ class AccountsController extends AppController
 		        $connection->begin();//トランザクション3
 		        try {//トランザクション4
 		          if ($this->Nyuukins->save($nyuukin)) {
+
+								$Zandakas = $this->Zandakas->find('all', ['conditions' => ['customerId' => $data["id"], 'delete_flag' => 0]])->toArray();
+								if(isset($Zandakas[0])){
+
+									$zandaka = $Zandakas[0]->zandaka - $data["nyuukinngaku"];
+
+									$this->Zandakas->updateAll(
+										['zandaka' => $zandaka, 'koushinbi' =>  date('Y-m-d', strtotime('+9hour')), 'updated_at' => date('Y-m-d H:i:s', strtotime('+9hour'))],
+										['id'  => $Zandakas[0]->id]
+									);
+
+								}
 
 		            $mes = "※下記のように登録されました";
 		            $this->set('mes',$mes);
@@ -1206,17 +1319,16 @@ class AccountsController extends AppController
 					 $this->set('date_fin',$date_fin);
 
 					 $date_fin = strtotime($date_fin);
-					 $date_fin = date('Y-m-d', strtotime('+1 day', $date_fin));
 
 					 $Nyuukins = $this->Nyuukins->find()
-					 ->where(['dateseikyuu >=' => $date_sta, 'dateseikyuu <=' => $date_fin, 'delete_flag' => 0])->order(["dateseikyuu"=>"ASC"])->toArray();
+					 ->where(['datenyuukin >=' => $date_sta, 'datenyuukin <=' => $date_fin, 'delete_flag' => 0])->order(["dateseikyuu"=>"ASC"])->toArray();
 					 $this->set('Nyuukins',$Nyuukins);
 
 					 $count = count($Nyuukins);
 
 					 $totalkingaku = 0;
 					 for ($k=0; $k<$count; $k++){
-						 $totalkingaku = $totalkingaku + $Nyuukins[$k]->seikyuu;
+						 $totalkingaku = $totalkingaku + $Nyuukins[$k]->nyuukinngaku;
 					 }
 					 $this->set('totalkingaku',$totalkingaku);
 
@@ -1391,12 +1503,10 @@ class AccountsController extends AppController
 
 					 $datenyuukin = $data['datenyuukin']['year']."-".$data['datenyuukin']['month']."-".$data['datenyuukin']['day'];
 					 $this->set('datenyuukin',$datenyuukin);
-					 echo "<pre>";
-					 print_r($data);
-					 echo "</pre>";
 
 					 $Nyuukin = $this->Nyuukins->find('all', ['conditions' => ['id' => $id]])->toArray();
 					 $customerId = $Nyuukin[0]->customerId;
+					 $nyuukinmoto = $Nyuukin[0]->nyuukinngaku;
 
 					 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $customerId]])->toArray();
 					 $nyuukinyotei = $Customer[0]->nyuukinbi;
@@ -1429,6 +1539,18 @@ class AccountsController extends AppController
 							 'delete_flag' => $data['delete_flag']],
 		           ['id'  => $data['id']]
 		         )){
+
+							 $Zandakas = $this->Zandakas->find('all', ['conditions' => ['customerId' => $customerId, 'delete_flag' => 0]])->toArray();
+							 if(isset($Zandakas[0])){
+
+								 $zandaka = $Zandakas[0]->zandaka + $nyuukinmoto - $data['nyuukinngaku'];
+
+								 $this->Zandakas->updateAll(
+									 ['zandaka' => $zandaka, 'koushinbi' =>  date('Y-m-d', strtotime('+9hour')), 'updated_at' => date('Y-m-d H:i:s', strtotime('+9hour'))],
+									 ['id'  => $Zandakas[0]->id]
+								 );
+
+							 }
 
 		           $connection->commit();// コミット5
 
@@ -1496,10 +1618,12 @@ class AccountsController extends AppController
 
 					 }
 
+					 $dataId = array_keys($data, '請求処理へ');
+/*
 					 echo "<pre>";
 					 print_r($data);
 					 echo "</pre>";
-
+*/
 					 if(!empty($data["name1"])){
 						 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $data["name1"]]])->toArray();
 						 $name = $Customer[0]->name;
@@ -1520,12 +1644,23 @@ class AccountsController extends AppController
 						 $this->set('id',$data["name2"]);
 						 $simebi = $Customer[0]->simebi;
 						 $this->set('simebi',$simebi);
+					 }elseif(!empty($dataId[0])){
+						 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $dataId[0]]])->toArray();
+						 $name = $Customer[0]->name;
+						 $siten = $Customer[0]->siten;
+						 $namehyouji = $name." ".$siten;
+						 $this->set('namehyouji',$namehyouji);
+						 $id = $dataId[0];
+						 $this->set('id',$dataId[0]);
+						 $simebi = $Customer[0]->simebi;
+						 $this->set('simebi',$simebi);
 					 }else{
 						 $name = "";
 					 }
 
-					 $Uriage = $this->Uriages->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0, 'seikyuuId' => 0]])->order(['	syutsuryokubi' => 'ASC'])->toArray();
+					 $Uriage = $this->Uriages->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0, 'seikyuuId' => 0]])->order(['syutsuryokubi' => 'ASC'])->toArray();
 					 $count = count($Uriage);
+					 $this->set('count',$count);
 
 					 $totalkingaku = 0;
 					 $arrPro_1 = array();
@@ -1573,7 +1708,7 @@ class AccountsController extends AppController
 					 $monthSeikyuu = date('Y', strtotime('+9hour'))."年 ".date('m', strtotime('+9hour'))."月度";
 					 $this->set('monthSeikyuu',$monthSeikyuu);
 
-					 $Seikyuu = $this->Seikyuus->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0]])->order(['	date_seikyuu' => 'desc'])->toArray();
+					 $Seikyuu = $this->Seikyuus->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0]])->order(['date_seikyuu' => 'desc'])->toArray();
 
 					 $nyuukinntotal = 0;
 					 $tyouseitotal = 0;
@@ -1582,9 +1717,6 @@ class AccountsController extends AppController
 					 if(isset($Seikyuu[0])){
 						 $Zenkai = $Seikyuu[0]->total_price;
 						 $datezenkai = $Seikyuu[0]->date_seikyuu->format('Y-m-d');
-						 echo "<pre>";
-						 print_r($datezenkai);
-						 echo "</pre>";
 
 						 $Nyuukins = $this->Nyuukins->find()
 						 ->where(['datenyuukin >=' => $datezenkai, 'customerId' => $id, 'delete_flag' => 0,
@@ -1627,11 +1759,11 @@ class AccountsController extends AppController
 				 public function seikyuuconfirm()
 		     {
 					 $data = $this->request->getData();
-
+/*
 					 echo "<pre>";
 					 print_r($data);
 					 echo "</pre>";
-
+*/
 					 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $data["id"]]])->toArray();
 					 $name = $Customer[0]->name;
 					 $siten = $Customer[0]->siten;
@@ -1642,8 +1774,9 @@ class AccountsController extends AppController
 					 $simebi = $Customer[0]->simebi;
 					 $this->set('simebi',$simebi);
 
-					 $Uriage = $this->Uriages->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0, 'seikyuuId' => 0]])->order(['	syutsuryokubi' => 'ASC'])->toArray();
+					 $Uriage = $this->Uriages->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0, 'seikyuuId' => 0]])->order(['syutsuryokubi' => 'ASC'])->toArray();
 					 $count = count($Uriage);
+					 $this->set('count',$count);
 
 					 $totalkingaku = 0;
 					 $arrPro_1 = array();
@@ -1712,8 +1845,19 @@ class AccountsController extends AppController
 					 $this->set('id',$data["id"]);
 					 $simebi = $Customer[0]->simebi;
 					 $this->set('simebi',$simebi);
+					 $yuubin = $Customer[0]->yuubin;
+					 $address = $Customer[0]->address;
+					 $keisyou = $Customer[0]->keisyou;
 
-					 $Uriage = $this->Uriages->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0, 'seikyuuId' => 0]])->order(['	syutsuryokubi' => 'ASC'])->toArray();
+					 if($keisyou == 1){
+						 $keisyou = '様';
+					 }elseif($keisyou == 2){
+						 $keisyou = '御中';
+					 }else{
+						 $keisyou = '殿';
+					 }
+
+					 $Uriage = $this->Uriages->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0, 'seikyuuId' => 0]])->order(['syutsuryokubi' => 'ASC'])->toArray();
 					 $count = count($Uriage);
 
 					 $totalkingaku = 0;
@@ -1757,7 +1901,7 @@ class AccountsController extends AppController
 		       $customers = $this->Customers->newEntity();
 		       $this->set('customers',$customers);
 
-					 $Today = date('m')."/".date('d', strtotime('+9hour'));
+					 $Today = date('m', strtotime('+9hour'))."/".date('d', strtotime('+9hour'));
 					 $this->set('Today',$Today);
 					 $monthSeikyuu = date('Y', strtotime('+9hour'))."年 ".date('m', strtotime('+9hour'))."月度";
 					 $this->set('monthSeikyuu',$monthSeikyuu);
@@ -1776,12 +1920,256 @@ class AccountsController extends AppController
 						$seikyuus = $this->Seikyuus->newEntity();
 						$this->set('seikyuus',$seikyuus);
 
+						$Seikyuu = $this->Seikyuus->find('all')->order(['id' => 'desc'])->toArray();
+						if(isset($Seikyuu[0])){
+							$SeikyuuId = $Seikyuu[0]->id + 1;
+						}else{
+							$SeikyuuId = 1;
+						}
+
+						$month = (int)date('m', strtotime('+9hour'));
+						$day = (int)date('d', strtotime('+9hour'));
+						$dateexcl = date('Y', strtotime('+9hour'))."年".$month."月".$day."日";
+
+						$arrPros = array();
+
+						$Uriage = $this->Uriages->find('all', ['conditions' => ['customerId' => $id, 'delete_flag' => 0, 'seikyuuId' => 0]])->order(['syutsuryokubi' => 'ASC'])->toArray();
+						$count = count($Uriage);
+
+ 					 if($count > 0){
+
+ 							 for ($k=0; $k<$count; $k++){
+
+ 								 for($i=1; $i<=20; $i++){
+
+ 									 if(!empty($Uriage[$k]->{"pro_{$i}"})){
+
+										 $arrPros[] = array('pro' => $Uriage[$k]->{"pro_{$i}"}, 'amount' => $Uriage[$k]->{"amount_{$i}"},
+										 'tani' => $Uriage[$k]->{"tani_{$i}"}, 'tanka' => $Uriage[$k]->{"tanka_{$i}"},
+										 'price' => $Uriage[$k]->{"price_{$i}"}, 'bik' => $Uriage[$k]->{"bik_{$i}"});
+
+ 									 }
+
+ 								 }
+
+ 							 }
+
+ 					 }
+/*
+					 echo "<pre>";
+					 print_r($arrPros);
+					 echo "</pre>";
+*/
+						$amari = count($arrPros) % 20;
+						$syou = floor(count($arrPros)/20);
+
+						//エクセル出力
+		 			 $filepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル原本\請求書.xlsx'; //読み込みたいファイルの指定
+		 			 $reader = new XlsxReader();
+		 			 $spreadsheet = $reader->load($filepath);
+
+					 $sheet = $spreadsheet->getSheetByName("合計表");
+					 $sheet->setCellValue('H1', "No.".$SeikyuuId);
+					 $sheet->setCellValue('A2', "〒 ".$yuubin);
+					 $sheet->setCellValue('A3', $address);
+					 $sheet->setCellValue('A5', $namehyouji);
+					 $sheet->setCellValue('E5', $keisyou);
+					 $sheet->setCellValue('F2', $dateexcl);
+					 $sheet->setCellValue('A12', $data["Zenkai"]);
+					 $sheet->setCellValue('B12', $data["nyuukingaku"]);
+					 $sheet->setCellValue('C12', $data["tyousei"]);
+					 $sheet->setCellValue('D12', $data["sousai"]);
+					 $sheet->setCellValue('E12', $data["kurikosi"]);
+					 $sheet->setCellValue('F12', $totalkingaku);
+					 $sheet->setCellValue('G12', $totalkingaku*0.1);
+					 $sheet->setCellValue('I12', $data["totalseikyuu"]);
+
+					 $writer = new XlsxWriter($spreadsheet);
+
+					 $sheet = $spreadsheet->getSheetByName("Sheet1");
+					 $sheet->setCellValue('H1', "No.".$SeikyuuId);
+					 $sheet->setCellValue('A3', "〒 ".$yuubin);
+					 $sheet->setCellValue('A4', $address);
+					 $sheet->setCellValue('A6', $namehyouji);
+					 $sheet->setCellValue('E6', $keisyou);
+					 $sheet->setCellValue('G3', $dateexcl);
+					 $sheet->setCellValue('D14', $totalkingaku*1.1);
+
+		 				for($j=2; $j<2+$syou; $j++){
+
+							$baseSheet = $spreadsheet->getSheet(1);
+							$newSheet = $baseSheet->copy();
+							$newSheet->setTitle( "Sheet".$j );
+							$spreadsheet->addSheet( $newSheet );
+
+		 	 			 $writer = new XlsxWriter($spreadsheet);
+
+		 				}
+
+		 			 $pro_check = 0;
+
+		 			 if($amari == 0){//以下余白がいらない場合
+
+		 				 for($i=0; $i<20; $i++){
+
+		 					 if($i == count($arrPros)){
+		 						 break;
+		 					 }
+
+		 					 $num = 17 + $i;
+
+		 					 $sheet->setCellValue("A".$num, $arrPros[$i]["pro"]);
+		 					 $sheet->setCellValue("E".$num, $arrPros[$i]["amount"]);
+		 					 $sheet->setCellValue("F".$num, $arrPros[$i]["tani"]);
+		 					 $sheet->setCellValue("G".$num, $arrPros[$i]["tanka"]);
+		 					 $sheet->setCellValue("H".$num, $arrPros[$i]["price"]);
+		 					 $sheet->setCellValue("I".$num, $arrPros[$i]["bik"]);
+
+		 			 }
+
+		 		 }else{//以下余白がいる場合
+
+		 				 for($i=0; $i<20; $i++){
+
+		 					 if($i == count($arrPros)+1){
+		 						 break;
+		 					 }
+
+		 					 $num = 17 + $i;
+
+		 					 if($i < count($arrPros)){
+
+								 $sheet->setCellValue("A".$num, $arrPros[$i]["pro"]);
+			 					 $sheet->setCellValue("E".$num, $arrPros[$i]["amount"]);
+			 					 $sheet->setCellValue("F".$num, $arrPros[$i]["tani"]);
+			 					 $sheet->setCellValue("G".$num, $arrPros[$i]["tanka"]);
+			 					 $sheet->setCellValue("H".$num, $arrPros[$i]["price"]);
+			 					 $sheet->setCellValue("I".$num, $arrPros[$i]["bik"]);
+
+		 					 }else{
+
+								 $sheet->setCellValue("A".$num, "以下余白");
+
+							 }
+
+		 			 }
+
+		 		 }
+
+		 		 $writer = new XlsxWriter($spreadsheet);
+
+		 		 for($j=2; $j<2+$syou; $j++){
+
+		 			 $sheet = $spreadsheet->getSheetByName("Sheet".$j);
+					 $sheet->setCellValue('H1', "No.".$SeikyuuId);
+					 $sheet->setCellValue('A3', "〒 ".$yuubin);
+					 $sheet->setCellValue('A4', $address);
+					 $sheet->setCellValue('A6', $namehyouji);
+					 $sheet->setCellValue('E6', $keisyou);
+					 $sheet->setCellValue('G3', $dateexcl);
+					 $sheet->setCellValue('D14', $totalkingaku*1.1);
+
+		 			 for($i=20*($j - 1); $i<20*$j; $i++){
+
+		 				 if($i == count($arrPros)+1){
+		 					 break;
+		 				 }
+
+		 				 $num = 17 + $i - 20*($j - 1);
+
+						 if($i < count($arrPros)){
+
+							 $sheet->setCellValue("A".$num, $arrPros[$i]["pro"]);
+							 $sheet->setCellValue("E".$num, $arrPros[$i]["amount"]);
+							 $sheet->setCellValue("F".$num, $arrPros[$i]["tani"]);
+							 $sheet->setCellValue("G".$num, $arrPros[$i]["tanka"]);
+							 $sheet->setCellValue("H".$num, $arrPros[$i]["price"]);
+							 $sheet->setCellValue("I".$num, $arrPros[$i]["bik"]);
+
+						 }else{
+
+							 $sheet->setCellValue("A".$num, "以下余白");
+
+						 }
+
+		 			 }
+
+		 		 }
+
+				 $writer = new XlsxWriter($spreadsheet);
+
+		 			 $datetime = date('H時i分s秒出力', strtotime('+9hour'));
+		 			 $year = date('Y', strtotime('+9hour'));
+		 			 $month = date('m', strtotime('+9hour'));
+		 			 $day = date('d', strtotime('+9hour'));
+
+		 			 if(is_dir("C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/請求書/$year/$month/$day")){//ディレクトリが存在すればOK
+
+		 				 $file_name = $namehyouji."_".$datetime.".xlsx";
+		 				 $outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/請求書/$year/$month/$day/$file_name"; //出力したいファイルの指定
+
+		 			 }else{//ディレクトリが存在しなければ作成する
+
+		 				 mkdir("C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/請求書/$year/$month/$day", 0777, true);
+		 				 $file_name = $namehyouji."_".$datetime.".xlsx";
+		 				 $outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/請求書/$year/$month/$day/$file_name"; //出力したいファイルの指定
+
+		 			 }
+
+		 			 $mesxlsx = "「エクセル出力/請求書/".$year."/".$month."/".$day."」フォルダにエクセルシート「".$file_name."」が出力されました。";
+		 			 $this->set('mesxlsx',$mesxlsx);
+
+		 			 $writer->save($outfilepath);
+
 						$seikyuu = $this->Seikyuus->patchEntity($seikyuus, $tourokuArr);
 						$connection = ConnectionManager::get('default');//トランザクション1
 		        // トランザクション開始2
 		        $connection->begin();//トランザクション3
 		        try {//トランザクション4
 		          if ($this->Seikyuus->save($seikyuu)) {
+
+								$Uriage = $this->Uriages->find('all', ['conditions' => ['customerId' => $data["id"], 'delete_flag' => 0, 'seikyuuId' => 0]])->toArray();
+								$count = count($Uriage);
+
+								$SeikyuusId = $this->Seikyuus->find('all', ['conditions' => ['customerId' => $data["id"], 'delete_flag' => 0]])->order(['	id' => 'desc'])->toArray();
+
+								for ($k=0; $k<$count; $k++){
+
+									$this->Uriages->updateAll(
+										['seikyuuId' => $SeikyuusId[0]->id],
+										['id'  => $Uriage[$k]->id]
+									);
+
+								}
+
+								$Zandakas = $this->Zandakas->find('all', ['conditions' => ['customerId' => $data["id"], 'delete_flag' => 0]])->toArray();
+								if(isset($Zandakas[0])){
+
+									$this->Zandakas->updateAll(
+										['zandaka' => $data["totalseikyuu"], 'koushinbi' =>  date('Y-m-d', strtotime('+9hour')), 'updated_at' => date('Y-m-d H:i:s', strtotime('+9hour'))],
+										['id'  => $Zandakas[0]->id]
+									);
+
+								}else{
+
+									$arrZandaka = array('customerId' => $data["id"], 'furigana' => $furigana, 'zandaka' => $data["totalseikyuu"], 'koushinbi' => date('Y-m-d', strtotime('+9hour')),
+			 					 'delete_flag' => 0,'created_at' => date('Y-m-d H:i:s', strtotime('+9hour')));
+
+									$Zandaka = $this->Zandakas->patchEntity($this->Zandakas->newEntity(), $arrZandaka);
+									$this->Zandakas->save($Zandaka);
+
+								}
+
+
+								$Miseikyuus = $this->Miseikyuus->find('all', ['conditions' => ['customerId' => $data["id"], 'delete_flag' => 0]])->toArray();
+		 					 if(isset($Miseikyuus[0])){
+
+		 						 $this->Miseikyuus->updateAll(
+		 							 ['miseikyuugaku' => 0, 'kousinbi' => date('Y-m-d', strtotime('+9hour')), 'updated_at' => date('Y-m-d H:i:s', strtotime('+9hour'))],
+		 							 ['id'  => $Miseikyuus[0]->id]
+		 						 );
+
+		 					 }
 
 		            $mes = "※下記のように登録されました";
 		            $this->set('mes',$mes);
@@ -1802,6 +2190,208 @@ class AccountsController extends AppController
 		        }//トランザクション10
 
 		     }
+
+				 public function seikyuurirekimenu()
+		     {
+					 $nyuukins = $this->Nyuukins->newEntity();
+					 $this->set('nyuukins',$nyuukins);
+				 }
+
+				 public function seikyuurirekiseikyuuzumiform()
+		     {
+					 $nyuukins = $this->Nyuukins->newEntity();
+					 $this->set('nyuukins',$nyuukins);
+				 }
+
+				 public function seikyuurirekiseikyuuzumiitiran()
+		     {
+					 $nyuukins = $this->Nyuukins->newEntity();
+					 $this->set('nyuukins',$nyuukins);
+
+					 $data = $this->request->getData();
+/*
+					 echo "<pre>";
+					 print_r($data);
+					 echo "</pre>";
+*/
+					 $date_sta = $data['date_sta']['year']."-".$data['date_sta']['month']."-".$data['date_sta']['day'];
+					 $date_fin = $data['date_fin']['year']."-".$data['date_fin']['month']."-".$data['date_fin']['day'];
+					 $this->set('date_sta',$date_sta);
+					 $this->set('date_fin',$date_fin);
+
+					 $date_fin = strtotime($date_fin);
+
+					 $Seikyuus = $this->Seikyuus->find()
+					 ->where(['date_seikyuu >=' => $date_sta, 'date_seikyuu <=' => $date_fin, 'delete_flag' => 0])->order(["date_seikyuu"=>"ASC"])->toArray();
+					 $this->set('Seikyuus',$Seikyuus);
+
+					 $count = count($Seikyuus);
+
+					 $totalkingaku = 0;
+					 for ($k=0; $k<$count; $k++){
+						 $totalkingaku = $totalkingaku + $Seikyuus[$k]->total_price;
+					 }
+					 $this->set('totalkingaku',$totalkingaku);
+				 }
+
+				 public function seikyuurirekimiseikyuuform()
+		     {
+					 $nyuukins = $this->Nyuukins->newEntity();
+					 $this->set('nyuukins',$nyuukins);
+				 }
+
+				 public function seikyuurirekimiseikyuuitiran()
+		     {
+					 $nyuukins = $this->Nyuukins->newEntity();
+					 $this->set('nyuukins',$nyuukins);
+
+					 $data = $this->request->getData();
+/*
+					 echo "<pre>";
+					 print_r($data);
+					 echo "</pre>";
+*/
+					 $date_sta = $data['date_sta']['year']."-".$data['date_sta']['month']."-".$data['date_sta']['day'];
+					 $date_fin = $data['date_fin']['year']."-".$data['date_fin']['month']."-".$data['date_fin']['day'];
+					 $this->set('date_sta',$date_sta);
+					 $this->set('date_fin',$date_fin);
+
+					 $date_fin = strtotime($date_fin);
+
+					 $Miseikyuus = $this->Miseikyuus->find()
+					 ->where(['miseikyuugaku >' => 0, 'delete_flag' => 0])->order(["furigana"=>"ASC"])->toArray();
+					 $this->set('Miseikyuus',$Miseikyuus);
+
+					 $count = count($Miseikyuus);
+
+					 $totalkingaku = 0;
+					 for ($k=0; $k<$count; $k++){
+						 $totalkingaku = $totalkingaku + $Miseikyuus[$k]->miseikyuugaku;
+					 }
+					 $this->set('totalkingaku',$totalkingaku);
+				 }
+
+				 public function nyuukinminyuukinform()
+		     {
+					 $nyuukins = $this->Nyuukins->newEntity();
+					 $this->set('nyuukins',$nyuukins);
+				 }
+
+				 public function nyuukinminyuukinitiran()
+		     {
+					 $nyuukins = $this->Nyuukins->newEntity();
+					 $this->set('nyuukins',$nyuukins);
+
+					 $data = $this->request->getData();
+/*
+					 echo "<pre>";
+					 print_r($data);
+					 echo "</pre>";
+*/
+					 $date_sta = $data['date_sta']['year']."-".$data['date_sta']['month']."-".$data['date_sta']['day'];
+					 $date_fin = $data['date_fin']['year']."-".$data['date_fin']['month']."-".$data['date_fin']['day'];
+					 $this->set('date_sta',$date_sta);
+					 $this->set('date_fin',$date_fin);
+
+					 $date_fin = strtotime($date_fin);
+
+					 $Zandakas = $this->Zandakas->find()
+					 ->where(['zandaka >' => 0, 'delete_flag' => 0])->order(["furigana"=>"ASC"])->toArray();
+					 $this->set('Zandakas',$Zandakas);
+
+					 $count = count($Zandakas);
+
+					 $totalkingaku = 0;
+					 for ($k=0; $k<$count; $k++){
+						 $totalkingaku = $totalkingaku + $Zandakas[$k]->zandaka;
+					 }
+					 $this->set('totalkingaku',$totalkingaku);
+				 }
+
+				 public function seikyuusyuuseiview()
+		     {
+					 $nyuukins = $this->Nyuukins->newEntity();
+					 $this->set('nyuukins',$nyuukins);
+
+					 $data = $this->request->getData();
+					 $data = array_keys($data, '詳細');
+					 $id = $data[0];
+					 $this->set('id',$id);
+
+					 $Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['id' => $id, 'delete_flag' => 0]])->order(['id' => 'desc'])->toArray();
+					 if(isset($Seikyuus[0])){
+						 $customerId = $Seikyuus[0]->customerId;
+						 $date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
+						 $this->set('date_seikyuu',$date_seikyuu);
+						 $nyuukingaku = $Seikyuus[0]->nyuukingaku;
+						 $this->set('nyuukingaku',$nyuukingaku);
+						 $tyousei = $Seikyuus[0]->tyousei;
+						 $this->set('tyousei',$tyousei);
+						 $sousai = $Seikyuus[0]->sousai;
+						 $this->set('sousai',$sousai);
+						 $total_price = $Seikyuus[0]->total_price;
+						 $this->set('total_price',$total_price);
+
+						 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $customerId]])->toArray();
+						 $name = $Customer[0]->name;
+						 $siten = $Customer[0]->siten;
+						 $namehyouji = $name." ".$siten;
+						 $this->set('namehyouji',$namehyouji);
+					 }
+
+				 }
+
+				 public function seikyuusyuuseidelete()
+		     {
+					 $nyuukins = $this->Nyuukins->newEntity();
+					 $this->set('nyuukins',$nyuukins);
+
+					 $data = $this->request->getData();
+					 $id = $data["id"];
+
+					 $Seikyuus = $this->Seikyuus->find('all', ['conditions' => ['id' => $id, 'delete_flag' => 0]])->order(['id' => 'desc'])->toArray();
+					 if(isset($Seikyuus[0])){
+						 $customerId = $Seikyuus[0]->customerId;
+						 $date_seikyuu = $Seikyuus[0]->date_seikyuu->format('Y-m-d');
+						 $this->set('date_seikyuu',$date_seikyuu);
+						 $nyuukingaku = $Seikyuus[0]->nyuukingaku;
+						 $this->set('nyuukingaku',$nyuukingaku);
+						 $tyousei = $Seikyuus[0]->tyousei;
+						 $this->set('tyousei',$tyousei);
+						 $sousai = $Seikyuus[0]->sousai;
+						 $this->set('sousai',$sousai);
+						 $total_price = $Seikyuus[0]->total_price;
+						 $this->set('total_price',$total_price);
+
+						 $Customer = $this->Customers->find('all', ['conditions' => ['id' => $customerId]])->toArray();
+						 $name = $Customer[0]->name;
+						 $siten = $Customer[0]->siten;
+						 $namehyouji = $name." ".$siten;
+						 $this->set('namehyouji',$namehyouji);
+
+			       $connection = ConnectionManager::get('default');//トランザクション1
+			       // トランザクション開始2
+			       $connection->begin();//トランザクション3
+			       try {//トランザクション4
+			         if ($this->Seikyuus->updateAll(['delete_flag' => 1],['id'  => $id])) {
+
+			           $connection->commit();// コミット5
+
+			         } else {
+
+			           $this->Flash->error(__('This data could not be saved. Please, try again.'));
+			           throw new Exception(Configure::read("M.ERROR.INVALID"));//失敗6
+
+			         }
+
+			       } catch (Exception $e) {//トランザクション7
+			       //ロールバック8
+			         $connection->rollback();//トランザクション9
+			       }//トランザクション10
+
+					 }
+
+				 }
 
 
 		 public function test()//エクセル複数作成のテスト
@@ -1841,7 +2431,7 @@ class AccountsController extends AppController
 
 					${"file_name".$i} = "test_".$datetime."_".$i.".xlsx";
 
-					$outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/${"file_name".$i}"; //出力したいファイルの指定
+					$outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/納品書/${"file_name".$i}"; //出力したいファイルの指定
 
 					$writer->save($outfilepath);
 				}
@@ -1863,7 +2453,7 @@ class AccountsController extends AppController
 
 				}
 
-				$outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/copytest.xlsx"; //出力したいファイルの指定
+				$outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/納品書/copytest.xlsx"; //出力したいファイルの指定
 
 				$writer->save($outfilepath);
 */
@@ -1881,7 +2471,7 @@ class AccountsController extends AppController
 
 				$file_name = "test_".$datetime."_.xlsx";
 
-				$outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/$file_name"; //出力したいファイルの指定
+				$outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/納品書/$file_name"; //出力したいファイルの指定
 
 				$writer->save($outfilepath);
 */

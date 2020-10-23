@@ -30,7 +30,7 @@ $this->layout = '';
 
         <?= $this->Form->create($customers, ['url' => ['action' => 'seikyuuform']]) ?>
         <br>
-        <legend align="center"><strong style="font-size: 11pt"><?= __($mes) ?></strong></legend>
+        <legend align="center"><strong style="font-size: 11pt"><?= __($mesxlsx) ?></strong></legend>
         <br>
 
         <table align="center">

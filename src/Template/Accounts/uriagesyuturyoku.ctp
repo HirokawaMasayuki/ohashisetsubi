@@ -29,7 +29,13 @@ $this->layout = '';
 
         <hr size="1" style="margin: 0.5rem">
 
-        <?= $this->Form->create($uriages, ['url' => ['action' => 'uriagesyuturyoku']]) ?>
+        <?= $this->Form->create($uriages, ['url' => ['action' => 'uriageformcustomer']]) ?>
         <br>
         <legend align="center"><strong style="font-size: 13pt"><?= __($mesxlsx) ?></strong></legend>
         <br>
+
+        <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
+        <tr bgcolor="#E6FFFF" >
+          <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('続けて入力'), array('name' => 'confirm')); ?></div></td>
+        </tr>
+        </table>

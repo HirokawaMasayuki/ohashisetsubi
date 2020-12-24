@@ -35,17 +35,24 @@ $this->layout = '';
           <tr>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">取引先名</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求月</strong></td>
+            <td align="center" width="60" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">締め日</strong></td>
+            <td align="center" width="60" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">必着日</strong></td>
+            <td align="center" width="60" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金日</strong></td>
+            <td align="center" width="80" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">回収方法</strong></td>
           </tr>
           <tr>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($namehyouji) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($monthSeikyuu) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($simebi."日") ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($hittyakubi."日") ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($nyuukinbi."日") ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($kaisyuu) ?></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求日</strong></td>
-            <td align="center" width="50" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">締め日</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">前月請求</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金額</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">調整</strong></td>
@@ -57,8 +64,7 @@ $this->layout = '';
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">今月請求</strong></td>
           </tr>
           <tr>
-            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($Today) ?></td>
-            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($simebi) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("date", array('type' => 'date', 'monthNames' => false, 'label'=>false, 'value'=>date('Y-m-d H:i:s', strtotime('+9hour')))); ?></td>
             <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($Zenkai) ?></td>
             <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('nyuukingaku', array('type'=>'text', 'label'=>false, 'value'=>$nyuukinntotal, 'size'=>10)) ?></td>
             <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tyousei', array('type'=>'text', 'label'=>false,  'value'=>$tyouseitotal,'size'=>10)) ?></td>
@@ -79,7 +85,6 @@ $this->layout = '';
             <td align="center" width="70" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 9pt">伝票番号</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">売上先</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">売上日</strong></td>
-            <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求日</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">品名１行目</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">売上額</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">消費税</strong></td>
@@ -93,7 +98,6 @@ $this->layout = '';
             <td align="center"  bgcolor="#FFFFCC"  style="padding: 0.2rem"><?= h($arrDenpyou[$i]) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($namehyouji) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($arrSyuturyoku[$i]) ?></td>
-            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($Today) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($arrPro_1[$i]) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(${"Totalprice".$i}) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(${"Totalprice".$i}*0.1) ?></td>

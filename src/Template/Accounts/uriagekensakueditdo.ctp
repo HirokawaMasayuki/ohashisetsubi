@@ -28,7 +28,7 @@ $this->layout = '';
         </table>
 
         <hr size="1" style="margin: 0.5rem">
-        <?= $this->Form->create($uriages, ['url' => ['action' => 'uriagekensakueditdo']]) ?>
+        <?= $this->Form->create($uriages, ['url' => ['action' => 'uriagekensakumenu']]) ?>
 
         <br>
         <legend align="center"><strong style="font-size: 11pt"><?= __($mess) ?></strong></legend>
@@ -68,17 +68,27 @@ $this->layout = '';
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">日付（備考）</strong></td>
           </tr>
 
-      <?php for ($i=1;$i<=$count;$i++): ?>
+      <?php for ($i=0;$i<count($Uriagesyousais);$i++): ?>
 
           <tr>
-            <td bgcolor="#FFFFCC" width="150"  style="padding: 0.2rem"><?= h(${"pro_".$i}) ?></td>
-            <td bgcolor="#FFFFCC" width="30"  style="padding: 0.2rem"><?= h(${"amount_".$i}) ?></td>
-            <td bgcolor="#FFFFCC" width="30"  style="padding: 0.2rem"><?= h(${"tani_".$i}) ?></td>
-            <td bgcolor="#FFFFCC" width="30"  style="padding: 0.2rem"><?= h(${"tanka_".$i}) ?></td>
-            <td bgcolor="#FFFFCC" width="30"  style="padding: 0.2rem"><?= h(${"price_".$i}) ?></td>
-            <td bgcolor="#FFFFCC" width="100"  style="padding: 0.2rem"><?= h(${"bik_".$i}) ?></td>
+            <td  align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($Uriagesyousais[$i]["pro"]) ?></td>
+            <td  align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($Uriagesyousais[$i]["amount"]) ?></td>
+            <td  align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($Uriagesyousais[$i]["tani"]) ?></td>
+            <td  align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($Uriagesyousais[$i]["tanka"]) ?></td>
+            <td  align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($Uriagesyousais[$i]["price"]) ?></td>
+            <td  align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($Uriagesyousais[$i]["bik"]) ?></td>
           </tr>
 
       <?php endfor;?>
 
     </table>
+    <br>
+
+    <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
+    <tr bgcolor="#E6FFFF" >
+      <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('売上照会メニュー'), array('name' => 'do')); ?></div></td>
+    </tr>
+    </table>
+
+    <br>
+    <br>

@@ -43,38 +43,21 @@ $this->layout = '';
 <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
   <tbody border="2" bordercolor="#E6FFFF" bgcolor="#FFFFCC" style="border-bottom: 0px;border-width: 1px">
     <tr style="border-bottom: 0px;border-width: 0px">
-      <td style='border-bottom: 0px;border-width: 1px'  bgcolor="#FFFFCC" colspan="80"  height='50'  nowrap="nowrap"><div align="center"><strong style="font-size: 12pt">請求日絞り込み</strong></div></td>
+      <td style='border-bottom: 0px;border-width: 1px'  bgcolor="#FFFFCC" colspan="80"  height='50'  nowrap="nowrap"><div align="center"><strong style="font-size: 12pt">更新日絞り込み</strong></div></td>
     </tr>
 
-<?php
-      $dateYMD = date('Y-m-d');
-      $dateYMD1 = strtotime($dateYMD);
-      $dayye = date('Y-m-d', strtotime('-1 day', $dateYMD1));
+    <td align="center"  width="200"  hight="160" colspan="30" style="border-bottom: 0px;border-width: 1px"><?= $this->Form->input("date_sta_y", ["type"=>"select","empty"=>"選択してください", "options"=>$arrYear,'value'=>date('Y'),'label'=>false]) ?>年</td>
+    <td align="center"  width="200"  hight="160" colspan="30" style="border-bottom: 0px;border-width: 1px"><?= $this->Form->input("date_sta_m", ["type"=>"select","empty"=>"選択してください", "options"=>$arrMonth,'value'=>date('n'), 'label'=>false]) ?>月</td>
+  </table>
+  <br>
 
-      echo "<td width='50'  height='50' colspan='10' style='border-bottom: 0px'><div align='center'><strong style='font-size: 13pt; color:blue'>\n";
-      echo "開始";
-      echo "</strong></div></td>\n";
 
-  ?>
-  <td width="250"  hight="160" colspan="30" style="border-bottom: 0px;border-width: 1px"><div align="center"><?= $this->Form->input("date_sta", array('type' => 'date', 'value' => $dayye, 'monthNames' => false, 'label'=>false)); ?></div></td>
-  <?php
 
-      echo "<td width='50'  colspan='10' style='border-bottom: 0px;border-width: 1px'><div align='center'><strong style='font-size: 13pt; color:blue'>\n";
-      echo "終了";
-      echo "</strong></div></td>\n";
+  <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
+    <tr bgcolor="#E6FFFF" >
+      <td align="center" rowspan="2"  colspan="20" width="250" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('検索'), array('name' => 'kensaku')); ?></div></td>
+    </tr>
+  </table>
+  </fieldset>
 
-?>
-<td width="250"   colspan="40" style="border-bottom: 0px;border-width: 1px"><div align="center"><?= $this->Form->input("date_fin", array('type' => 'date', 'value' => $dateYMD, 'monthNames' => false, 'label'=>false)); ?></div></td>
-<?php
-      echo "</tr>\n";
- ?>
-</table>
-<br>
-<table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
-  <tr bgcolor="#E6FFFF" >
-    <td align="center" rowspan="2"  colspan="20" width="250" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('検索'), array('name' => 'kensaku')); ?></div></td>
-  </tr>
-</table>
-</fieldset>
-
-<?=$this->Form->end() ?>
+  <?=$this->Form->end() ?>

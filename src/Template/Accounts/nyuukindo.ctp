@@ -28,7 +28,7 @@ $this->layout = '';
 
         <hr size="2" style="margin: 0.5rem">
 
-        <?= $this->Form->create($nyuukins, ['url' => ['action' => 'nyuukinconfirm']]) ?>
+        <?= $this->Form->create($nyuukins, ['url' => ['action' => 'nyuukinformcustomer']]) ?>
         <br>
         <legend align="center"><strong style="font-size: 11pt;color: red"><?= __($mes) ?></strong></legend>
         <br>
@@ -85,6 +85,12 @@ $this->layout = '';
           </tr>
         </table>
         <br>
+
+        <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
+        <tr bgcolor="#E6FFFF" >
+          <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('続けて入力'), array('name' => 'confirm')); ?></div></td>
+        </tr>
+        </table>
 
     </td>
   </tr>

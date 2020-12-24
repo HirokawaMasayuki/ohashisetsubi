@@ -55,6 +55,8 @@ $this->layout = '';
           <tr>
             <td align="center" width="200" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">顧客名</strong></td>
             <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">支店</strong></td>
+            <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">電話番号</strong></td>
+            <td align="center" width="400" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">住所</strong></td>
           </tr>
         </thead>
         <tbody border="2" bordercolor="#E6FFFF" bgcolor="#FFFFCC">
@@ -62,6 +64,8 @@ $this->layout = '';
           <tr>
             <td align="center" width="200" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><?= h($Customers->name) ?></td>
             <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><?= h($Customers->siten) ?></td>
+            <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><?= h($Customers->tel) ?></td>
+            <td align="center" width="400" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><?= h($Customers->address) ?></td>
           </tr>
           <?php endforeach; ?>
         </tbody>

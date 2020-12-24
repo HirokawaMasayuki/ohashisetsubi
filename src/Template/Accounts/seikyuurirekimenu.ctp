@@ -28,8 +28,9 @@ $this->layout = '';
 
         <hr size="1" style="margin: 0.5rem">
 
-        <table style="margin-bottom:0px" width="1000" border="0" align="center" cellpadding="0" cellspacing="0" bordercolor="#CCCCCC">
+        <table style="margin-bottom:0px" width="800" border="0" align="center" cellpadding="0" cellspacing="0" bordercolor="#CCCCCC">
                   <tr style="border-style: none; background-color: #E6FFFF">
+                    <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/urikakeitiran.png',array('width'=>'105','height'=>'36','url'=>array('action'=>'urikakeitiranform')));?></td>
                     <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/seikyuuzumi.png',array('width'=>'105','height'=>'36','url'=>array('action'=>'seikyuurirekiseikyuuzumiform')));?></td>
                     <td style="padding: 0.1rem 0.1rem;text-align : center"><?php echo $this->Html->image('menu/miseikyuu.png',array('width'=>'105','height'=>'36','url'=>array('action'=>'seikyuurirekimiseikyuuform')));?></td>
                   </tr>

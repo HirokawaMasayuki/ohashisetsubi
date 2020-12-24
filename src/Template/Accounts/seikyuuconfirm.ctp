@@ -34,18 +34,25 @@ $this->layout = '';
         <table align="center">
           <tr>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">取引先名</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求月</strong></td>
+            <td align="center" width="200" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求月</strong></td>
+            <td align="center" width="60" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">締め日</strong></td>
+            <td align="center" width="60" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">必着日</strong></td>
+            <td align="center" width="60" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金日</strong></td>
+            <td align="center" width="80" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">回収方法</strong></td>
           </tr>
           <tr>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($namehyouji) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($monthSeikyuu) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($simebi."日") ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($hittyakubi."日") ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($nyuukinbi."日") ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($kaisyuu) ?></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
-            <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求日</strong></td>
-            <td align="center" width="50" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">締め日</strong></td>
+            <td align="center" width="120" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求日</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">前月請求</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金額</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">調整</strong></td>
@@ -58,7 +65,6 @@ $this->layout = '';
           </tr>
           <tr>
             <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($Today) ?></td>
-            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($simebi) ?></td>
             <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('Zenkai')) ?></td>
             <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('nyuukingaku')) ?></td>
             <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('tyousei')) ?></td>
@@ -71,6 +77,12 @@ $this->layout = '';
           </tr>
         </table>
         <br>
+        <table align="center">
+          <tr>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->control('datehyouji_flag', array('type'=>'checkbox', 'label'=>false)) ?></td>
+            <td align="center" width="380" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">日付を非表示にする場合はチェックを入れてください</strong></td>
+          </tr>
+        </table>
         <br>
 
         <table align="center">
@@ -117,6 +129,7 @@ $this->layout = '';
 </table>
 
 <?= $this->Form->control('id', array('type'=>'hidden', 'value'=>$id, 'label'=>false)) ?>
+<?= $this->Form->control('seikyuubi', array('type'=>'hidden', 'value'=>$Today, 'label'=>false)) ?>
 <?= $this->Form->control('namehyouji', array('type'=>'hidden', 'value'=>$namehyouji, 'label'=>false)) ?>
 <?= $this->Form->control('monthSeikyuu', array('type'=>'hidden', 'value'=>$monthSeikyuu, 'label'=>false)) ?>
 <?= $this->Form->control('Zenkai', array('type'=>'hidden', 'value'=>$this->request->getData('Zenkai'), 'label'=>false)) ?>

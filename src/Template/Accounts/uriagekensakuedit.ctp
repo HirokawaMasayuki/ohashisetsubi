@@ -41,14 +41,14 @@ $this->layout = '';
           </tr>
           <tr>
             <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($customer) ?></td>
-            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><div align="center"><?= h($syutsuryokubi) ?></div></td>
+            <td align="center" width="280"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input("syutsuryokubi", array('type' => 'date', 'monthNames' => false, 'value'=>$syutsuryokubisyousai, 'label'=>false)); ?></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
             <td align="center" width="200" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">郵便番号</strong></td>
-            <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">住所</strong></td>
+            <td align="center" width="300" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">住所</strong></td>
             <td align="center" width="50" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">敬称</strong></td>
           </tr>
           <tr>
@@ -61,8 +61,8 @@ $this->layout = '';
 
         <table align="center">
           <tr>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->control('delete_flag', array('type'=>'checkbox', 'label'=>false)) ?></td>
-            <td align="center" width="320" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">削除する場合はチェックを入れてください</strong></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->control('delete_flag_all', array('type'=>'checkbox', 'label'=>false)) ?></td>
+            <td align="center" width="450" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">以下のデータをすべて削除する場合はチェックを入れてください</strong></td>
           </tr>
         </table>
 
@@ -75,17 +75,23 @@ $this->layout = '';
             <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">単位</strong></td>
             <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">単価</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">日付（備考）</strong></td>
+            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">削除</strong></td>
           </tr>
 
-      <?php for ($i=1;$i<=$count;$i++): ?>
+      <?php for ($i=0;$i<count($Uriagesyousais);$i++): ?>
 
               <tr>
-                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('pro_'.$i, array('type'=>'text', 'label'=>false, 'value'=>${"pro_".$i})) ?></td>
-                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('amount_'.$i, array('type'=>'text', 'label'=>false, 'size'=>3, 'value'=>${"amount_".$i})) ?></td>
-                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tani_'.$i, array('type'=>'text', 'label'=>false, 'size'=>3, 'value'=>${"tani_".$i})) ?></td>
-                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tanka_'.$i, array('type'=>'text', 'label'=>false, 'size'=>3, 'value'=>${"tanka_".$i})) ?></td>
-                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('bik_'.$i, array('type'=>'text', 'label'=>false, 'value'=>${"bik_".$i})) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('pro_'.$i, array('type'=>'text', 'label'=>false, 'value'=>$Uriagesyousais[$i]->pro)) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('amount_'.$i, array('type'=>'text', 'label'=>false, 'size'=>3, 'value'=>$Uriagesyousais[$i]->amount)) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tani_'.$i, array('type'=>'text', 'label'=>false, 'size'=>3, 'value'=>$Uriagesyousais[$i]->tani)) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tanka_'.$i, array('type'=>'text', 'label'=>false, 'size'=>3, 'value'=>$Uriagesyousais[$i]->tanka)) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('bik_'.$i, array('type'=>'text', 'label'=>false, 'value'=>$Uriagesyousais[$i]->bik)) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->control('delete_flag'.$i, array('type'=>'checkbox', 'label'=>false)) ?></td>
               </tr>
+
+              <?= $this->Form->control('num', array('type'=>'hidden', 'value'=>$i, 'label'=>false)) ?>
+              <?= $this->Form->control('uriagesyousaiId'.$i, array('type'=>'hidden', 'value'=>$Uriagesyousais[$i]->id, 'label'=>false)) ?>
+              <?= $this->Form->control('Uriagetotalmoto', array('type'=>'hidden', 'value'=>$this->request->getData('Uriagetotalmoto'), 'label'=>false)) ?>
 
       <?php endfor;?>
 

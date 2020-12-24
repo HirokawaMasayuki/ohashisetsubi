@@ -28,7 +28,7 @@ $this->layout = '';
 
         <hr size="2" style="margin: 0.5rem">
 
-        <?= $this->Form->create($customers, ['url' => ['action' => 'seikyuuform']]) ?>
+        <?= $this->Form->create($customers, ['url' => ['action' => 'seikyuuformcustomer']]) ?>
         <br>
         <legend align="center"><strong style="font-size: 11pt"><?= __($mesxlsx) ?></strong></legend>
         <br>
@@ -37,17 +37,24 @@ $this->layout = '';
           <tr>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">取引先名</strong></td>
             <td align="center" width="280" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求月</strong></td>
+            <td align="center" width="60" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">締め日</strong></td>
+            <td align="center" width="60" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">必着日</strong></td>
+            <td align="center" width="60" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金日</strong></td>
+            <td align="center" width="80" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">回収方法</strong></td>
           </tr>
           <tr>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($namehyouji) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($monthSeikyuu) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($simebi."日") ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($hittyakubi."日") ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($nyuukinbi."日") ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($kaisyuu) ?></td>
           </tr>
         </table>
         <br>
         <table align="center">
           <tr>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求日</strong></td>
-            <td align="center" width="50" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">締め日</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">前月請求</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">入金額</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">調整</strong></td>
@@ -59,8 +66,7 @@ $this->layout = '';
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">今月請求</strong></td>
           </tr>
           <tr>
-            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($Today) ?></td>
-            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($simebi) ?></td>
+            <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('seikyuubi')) ?></td>
             <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('Zenkai')) ?></td>
             <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('nyuukingaku')) ?></td>
             <td align="center" bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($this->request->getData('tyousei')) ?></td>
@@ -81,7 +87,6 @@ $this->layout = '';
             <td align="center" width="70" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 9pt">伝票番号</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">売上先</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">売上日</strong></td>
-            <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求日</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">品名１行目</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">売上額</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">消費税</strong></td>
@@ -95,7 +100,6 @@ $this->layout = '';
             <td align="center"  bgcolor="#FFFFCC"  style="padding: 0.2rem"><?= h($arrDenpyou[$i]) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($namehyouji) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($arrSyuturyoku[$i]) ?></td>
-            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($Today) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($arrPro_1[$i]) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(${"Totalprice".$i}) ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(${"Totalprice".$i}*0.1) ?></td>
@@ -106,6 +110,13 @@ $this->layout = '';
 
     </table>
     <br>
+
+    <table align="center" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
+    <tr bgcolor="#E6FFFF" >
+      <td align="left" rowspan="2" width="30" bgcolor="#E6FFFF" style="border: none"><div align="center"><?= $this->Form->submit(__('続けて入力'), array('name' => 'confirm')); ?></div></td>
+    </tr>
+    </table>
+
     </td>
   </tr>
 </table>

@@ -7,6 +7,10 @@ use Cake\Core\Exception\Exception;//トランザクション
 use Cake\Core\Configure;//トランザクション
 use Cake\ORM\TableRegistry;//独立したテーブルを扱う
 
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx as XlsxWriter;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx as XlsxReader;
+
 /**
  * Customers Controller
  *
@@ -844,6 +848,147 @@ class CustomersController extends AppController
 
       $Suppliers = $this->Suppliers->find()->where(['delete_flag' => 0])->order(["furigana"=>"ASC"]);
       $this->set('Suppliers',$Suppliers);
+    }
+
+    public function printmennu()
+    {
+      $Customer = $this->Customers->newEntity();
+      $this->set('Customer', $Customer);
+
+      $Customers = $this->Customers->find()->where(['delete_flag' => 0])->order(["furigana"=>"ASC"]);
+      $this->set('Customers',$Customers);
+    }
+
+    public function printcustomer()
+    {
+      $Customer = $this->Customers->newEntity();
+      $this->set('Customer', $Customer);
+
+      $Customers = $this->Customers->find()->where(['delete_flag' => 0])->order(["id"=>"ASC"])->toArray();
+      $this->set('Customers',$Customers);
+      $Suppliers = $this->Suppliers->find()->where(['delete_flag' => 0])->order(["id"=>"ASC"])->toArray();
+
+      $Customers = array_merge($Customers, $Suppliers);
+
+      $data = $this->request->getData();
+
+      $mess = "登録済み取引先データをエクセルに出力します。";
+      if(isset($data["confirm"])){
+
+        $filepath = 'C:\xampp\htdocs\CakePHPapp\webroot\エクセル原本\取引先データ一覧.xlsx'; //読み込みたいファイルの指定
+        $reader = new XlsxReader();
+        $spreadsheet = $reader->load($filepath);
+        $sheet = $spreadsheet->getSheetByName("Sheet1");
+
+        $syou = floor(count($Customers)/24);
+
+        for($j=2; $j<2+$syou; $j++){
+
+          $baseSheet = $spreadsheet->getSheet(0);
+          $newSheet = $baseSheet->copy();
+          $newSheet->setTitle( "Sheet".$j );
+          $spreadsheet->addSheet( $newSheet );
+
+          $writer = new XlsxWriter($spreadsheet);
+
+        }
+
+          for($j=1; $j<26; $j++){
+
+            $num = 2*$j;
+            $numodd = 2*$j+1;
+            $No = $j;
+
+              $sheet->setCellValue("A".$num, $No);
+              $sheet->setCellValue("B".$num, $Customers[$j-1]["id"]);
+              $sheet->setCellValue("C".$num, $Customers[$j-1]["name"]);
+              $sheet->setCellValue("C".$numodd, $Customers[$j-1]["furigana"]);
+              $sheet->setCellValue("D".$num, $Customers[$j-1]["yuubin"]);
+              $sheet->setCellValue("E".$num, $Customers[$j-1]["address"]);
+
+          }
+
+          $writer = new XlsxWriter($spreadsheet);
+
+          for($j=2; $j<2+$syou; $j++){
+
+            if($j < $syou + 1){
+
+              for($i=1; $i<26; $i++){
+
+                $num = 2*$i;
+                $No = $i + 25*($j - 1);
+
+                $sheet = $spreadsheet->getSheetByName("Sheet".$j);
+                $sheet->setCellValue("A".$num, $No);
+                $sheet->setCellValue("B".$num, $Customers[$No-1]["id"]);
+                $sheet->setCellValue("C".$num, $Customers[$No-1]["name"]);
+                $sheet->setCellValue("C".$numodd, $Customers[$No-1]["furigana"]);
+                $sheet->setCellValue("D".$num, $Customers[$No-1]["yuubin"]);
+                $sheet->setCellValue("E".$num, $Customers[$No-1]["address"]);
+
+                }
+
+            }else{//最後のシートの時
+
+              $last = count($Customers) - $syou * 25;
+              for($i=1; $i<=$last; $i++){
+
+                $num = 2*$i;
+                $No = $i + 25*($j - 1);
+
+                $sheet = $spreadsheet->getSheetByName("Sheet".$j);
+                $sheet->setCellValue("A".$num, $No);
+                $sheet->setCellValue("B".$num, $Customers[$No-1]["id"]);
+                $sheet->setCellValue("C".$num, $Customers[$No-1]["name"]);
+                $sheet->setCellValue("C".$numodd, $Customers[$No-1]["furigana"]);
+                $sheet->setCellValue("D".$num, $Customers[$No-1]["yuubin"]);
+                $sheet->setCellValue("E".$num, $Customers[$No-1]["address"]);
+
+                }
+
+            }
+
+            }
+
+          $datetime = date('H時i分s秒出力', strtotime('+9hour'));
+          $year = date('Y', strtotime('+9hour'));
+          $month = date('m', strtotime('+9hour'));
+          $day = date('d', strtotime('+9hour'));
+          $date_m = date('m', strtotime('+9hour'));
+          $date_y = date('Y', strtotime('+9hour'));
+
+        if(is_dir("C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/取引先データ一覧/$year/$month/$day")){//ディレクトリが存在すればOK
+
+          $file_name = "取引先データ一覧_".$year."-".$month."-".$day."-".$datetime.".xlsx";
+          $outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/取引先データ一覧/$year/$month/$day/$file_name"; //出力したいファイルの指定
+
+        }else{//ディレクトリが存在しなければ作成する
+
+          mkdir("C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/取引先データ一覧/$year/$month/$day", 0777, true);
+          $file_name = "取引先データ一覧_".$year."-".$month."-".$day."-".$datetime.".xlsx";
+          $outfilepath = "C:/xampp/htdocs/CakePHPapp/webroot/エクセル出力/取引先データ一覧/$year/$month/$day/$file_name"; //出力したいファイルの指定
+
+        }
+
+        $writer->save($outfilepath);
+
+        $mess = "「エクセル出力/取引先データ一覧/".$year."/".$month."/".$day."」フォルダにエクセルシート「".$file_name."」が出力されました。";
+
+      }
+
+      $this->set('mess',$mess);
+/*
+      echo "<pre>";
+      print_r(count($Customers));
+      echo "</pre>";
+      echo "<pre>";
+      print_r($Customers[0]);
+      echo "</pre>";
+      echo "<pre>";
+      print_r($Customers[count($Customers)-1]);
+      echo "</pre>";
+*/
     }
 
 }

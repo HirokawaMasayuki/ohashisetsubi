@@ -60,28 +60,41 @@ $this->layout = '';
           </tr>
         </table>
         <br>
-        <br>
-        <legend align="center"><strong style="font-size: 10pt"><?= "単価は税抜きで入力してください。" ?></strong></legend>
-        <br>
-        <table align="center">
-          <tr>
-            <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">品名（現場名）</strong></td>
-            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">数量</strong></td>
-            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">単位</strong></td>
-            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">単価</strong></td>
-            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">金額</strong></td>
-            <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">日付（備考）</strong></td>
-          </tr>
-          <tr>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('pro_1', array('type'=>'text', 'label'=>false)) ?></td>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('amount_1', array('type'=>'text', 'label'=>false, 'size'=>3)) ?></td>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tani_1', array('type'=>'text', 'label'=>false, 'size'=>3)) ?></td>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tanka_1', array('type'=>'text', 'label'=>false, 'size'=>3)) ?></td>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><strong style="font-size: 9pt"><?= h("自動計算") ?></strong></td>
-            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('bik_1', array('type'=>'text', 'label'=>false)) ?></td>
-          </tr>
+        <table align="right" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
+        <tr bgcolor="#E6FFFF" >
+          <td align="right" rowspan="2" width="50" bgcolor="#E6FFFF" style="border: none"><div align="right"><?= $this->Form->submit(__('前回登録情報反映'), array('name' => 'zenkai')); ?></div></td>
+          <td width="200"  style="border-style: none;"></td>
+        </tr>
         </table>
-        <?= $this->Form->control('num', array('type'=>'hidden', 'value'=>1, 'label'=>false)) ?>
+        <br>
+
+      <br>
+      <legend align="center"><strong style="font-size: 10pt"><?= "※単価は税抜きで入力してください。　　" ?></strong></legend>
+      <legend align="center"><strong style="font-size: 10pt"><?= "※不要な行は品名を空白にしてください。" ?></strong></legend>
+        <br>
+
+
+        <?php if($zenkaicheck != 1): ?>
+
+          <table align="center">
+              <tr>
+                <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">品名（現場名）</strong></td>
+                <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">数量</strong></td>
+                <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">単位</strong></td>
+                <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">単価</strong></td>
+                <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">金額</strong></td>
+                <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">日付（備考）</strong></td>
+              </tr>
+              <tr>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('pro_1', array('type'=>'text', 'label'=>false)) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('amount_1', array('type'=>'text',  'label'=>false, 'size'=>3)) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tani_1', array('type'=>'text', 'label'=>false, 'size'=>3)) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tanka_1', array('type'=>'text',  'label'=>false, 'size'=>3)) ?></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><strong style="font-size: 9pt"><?= h("自動計算") ?></strong></td>
+                <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('bik_1', array('type'=>'text', 'label'=>false)) ?></td>
+              </tr>
+            </table>
+            <?= $this->Form->control('num', array('type'=>'hidden', 'value'=>1, 'label'=>false)) ?>
 
       <?php for ($i=2;$i<=$tuika;$i++): ?>
 
@@ -98,6 +111,47 @@ $this->layout = '';
         <?= $this->Form->control('num', array('type'=>'hidden', 'value'=>$i, 'label'=>false)) ?>
 
       <?php endfor;?>
+
+    <?php else: ?>
+
+      <table align="center">
+          <tr>
+            <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">品名（現場名）</strong></td>
+            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">数量</strong></td>
+            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">単位</strong></td>
+            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">単価</strong></td>
+            <td align="center" width="30" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">金額</strong></td>
+            <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">日付（備考）</strong></td>
+          </tr>
+          <tr>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('pro_1', array('type'=>'text', 'value'=>$pro_1, 'label'=>false)) ?></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('amount_1', array('type'=>'text', 'value'=>$amount_1,  'label'=>false, 'size'=>3)) ?></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tani_1', array('type'=>'text', 'value'=>$tani_1, 'label'=>false, 'size'=>3)) ?></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tanka_1', array('type'=>'text', 'value'=>$tanka_1,  'label'=>false, 'size'=>3)) ?></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><strong style="font-size: 9pt"><?= h("自動計算") ?></strong></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('bik_1', array('type'=>'text', 'value'=>$bik_1, 'label'=>false)) ?></td>
+          </tr>
+        </table>
+        <?= $this->Form->control('num', array('type'=>'hidden', 'value'=>1, 'label'=>false)) ?>
+
+      <?php for ($i=2;$i<=$tuika;$i++): ?>
+
+        <table align="center">
+          <tr>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('pro_'.$i, array('type'=>'text', 'value'=>${"pro_".$i}, 'label'=>false)) ?></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('amount_'.$i, array('type'=>'text', 'value'=>${"amount_".$i}, 'label'=>false, 'size'=>3)) ?></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tani_'.$i, array('type'=>'text', 'value'=>${"tani_".$i}, 'label'=>false, 'size'=>3)) ?></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('tanka_'.$i, array('type'=>'text', 'value'=>${"tanka_".$i}, 'label'=>false, 'size'=>3)) ?></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><strong style="font-size: 9pt"><?= h("自動計算") ?></strong></td>
+            <td bgcolor="#FFFFCC" style="padding: 0.2rem"><?= $this->Form->input('bik_'.$i, array('type'=>'text', 'value'=>${"bik_".$i}, 'label'=>false)) ?></td>
+          </tr>
+        </table>
+        <?= $this->Form->control('num', array('type'=>'hidden', 'value'=>$i, 'label'=>false)) ?>
+
+      <?php endfor;?>
+
+    <?php endif; ?>
+
 
       <table align="right" border="2" bordercolor="#E6FFFF" cellpadding="0" cellspacing="0">
       <tr bgcolor="#E6FFFF" >

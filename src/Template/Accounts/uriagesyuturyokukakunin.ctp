@@ -163,3 +163,7 @@ $this->layout = '';
         <?= $this->Form->control('bunrui', array('type'=>'hidden', 'value'=>$bunrui, 'label'=>false)) ?>
         <?= $this->Form->control('total_price', array('type'=>'hidden', 'value'=>$total_price, 'label'=>false)) ?>
         <?= $this->Form->control('total_price_tax', array('type'=>'hidden', 'value'=>$total_price_tax, 'label'=>false)) ?>
+        <?= $this->Form->control('tax_8', array('type'=>'hidden', 'value'=>$tax_8, 'label'=>false)) ?>
+        <?= $this->Form->control('total_8', array('type'=>'hidden', 'value'=>$total_8, 'label'=>false)) ?>
+        <?= $this->Form->control('tax_10', array('type'=>'hidden', 'value'=>$tax_10, 'label'=>false)) ?>
+        <?= $this->Form->control('total_10', array('type'=>'hidden', 'value'=>$total_10, 'label'=>false)) ?>

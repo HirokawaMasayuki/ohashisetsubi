@@ -1021,6 +1021,24 @@ class AccountsController extends AppController
 		$this->set('total_price_tax',$total_price_tax);
 		$this->set('arrayZeiritu',$arrayZeiritu);
 
+		//税率8%と10%の税額と合計金額を取得しておく
+		$tax_8 = 0;
+		$total_8 = 0;
+		$tax_10 = 0;
+		$total_10 = 0;
+		for($i=0; $i<count($arrayZeiritu); $i++){
+			if($arrayZeiritu[$i]["zeiritu"] == 8){
+				$tax_8 = $arrayZeiritu[$i]["total_tax"];
+				$total_8 = $arrayZeiritu[$i]["total_tax"] + $arrayZeiritu[$i]["total_price"];
+			}elseif($arrayZeiritu[$i]["zeiritu"] == 10){
+				$tax_10 = $arrayZeiritu[$i]["total_tax"];
+				$total_10 = $arrayZeiritu[$i]["total_tax"] + $arrayZeiritu[$i]["total_price"];
+			}
+		}
+		$this->set('tax_8',$tax_8);
+		$this->set('total_8',$total_8);
+		$this->set('tax_10',$tax_10);
+		$this->set('total_10',$total_10);
 	}
 
 	public function uriagesyuturyoku()
@@ -1029,6 +1047,11 @@ class AccountsController extends AppController
 		$this->set('uriages',$uriages);
 
 		$data = $this->request->getData();
+
+		echo "<pre>";
+		print_r($data);
+		echo "</pre>";
+
 		$this->set('customerId',$data["id"]);
 
 		if(isset($data["tugihe"])){
@@ -3929,7 +3952,7 @@ class AccountsController extends AppController
 									$totalkingaku = $totalkingaku + $Uriagesyousais[$i]->price;
 									${"Totalprice".$k} = ${"Totalprice".$k} + $Uriagesyousais[$i]->price;
 									$zeiritu = 10;
-									if($Uriagesyousais[$i]->zeiritu > 0){
+									if(strlen($Uriagesyousais[$i]->zeiritu) > 0){
 										$zeiritu = $Uriagesyousais[$i]->zeiritu;
 									}
 									${"Totaltax".$k} = ${"Totaltax".$k} + $Uriagesyousais[$i]->price*$zeiritu/100;
@@ -4112,7 +4135,7 @@ class AccountsController extends AppController
 										$totalkingaku = $totalkingaku + $Uriagesyousais[$i]->price;
 										${"Totalprice".$k} = ${"Totalprice".$k} + $Uriagesyousais[$i]->price;
 										$zeiritu = 10;
-										if($Uriagesyousais[$i]->zeiritu > 0){
+										if(strlen($Uriagesyousais[$i]->zeiritu) > 0){
 											$zeiritu = $Uriagesyousais[$i]->zeiritu;
 										}
 										${"Totaltax".$k} = ${"Totaltax".$k} + $Uriagesyousais[$i]->price*$zeiritu/100;
@@ -4490,7 +4513,7 @@ class AccountsController extends AppController
 										$totalkingaku = $totalkingaku + $Uriagesyousais[$i]->price;
 										${"Totalprice".$k} = ${"Totalprice".$k} + $Uriagesyousais[$i]->price;
 										$zeiritu = 10;
-										if($Uriagesyousais[$i]->zeiritu > 0){
+										if(strlen($Uriagesyousais[$i]->zeiritu) > 0){
 											$zeiritu = $Uriagesyousais[$i]->zeiritu;
 										}
 										${"Totaltax".$k} = ${"Totaltax".$k} + $Uriagesyousais[$i]->price*$zeiritu/100;

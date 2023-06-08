@@ -277,7 +277,8 @@ class AccountsController extends AppController
 
 		$arrZeiritu = [
 			10 => 10,
-			8 => 8
+			8 => 8,
+			0 => "非課税"
 		];
 		$this->set('arrZeiritu',$arrZeiritu);
 
@@ -880,6 +881,7 @@ class AccountsController extends AppController
 
 		$numpro = 0;
 		$arrayNum = array();
+		$arrayZeiritu = array();
 		$arrayNumjun = array();
 		$numcheck = 0;
 
@@ -911,7 +913,7 @@ class AccountsController extends AppController
 			$total_price = 0;
 
 			for($k=0; $k<count($arrayNumjun); $k++){
-
+		
 				$i = $arrayNumjun[$k];
 
 				if(!empty($data["pro_".$i]) && $data["delete_flag_".$i] == 0){
@@ -937,16 +939,27 @@ class AccountsController extends AppController
 
 					if(strlen($data['tanka_'.$i]) > 0){
 						${"price_".$numpro} = (int)$data["tanka_".$i] * (int)$data["amount_".$i];
-
 						$total_price = $total_price + ${"price_".$numpro};
 						${"zeiritu_".$numpro} = $data["zeiritu_".$i];
-
 					}else{
 						${"price_".$numpro} = "";
 						${"zeiritu_".$numpro} = "";
 					}
 					$this->set('price_'.$numpro,${"price_".$numpro});
 					$this->set('zeiritu_'.$numpro,${"zeiritu_".$numpro});
+
+					if(isset($arrayZeiritu[${"zeiritu_".$numpro}]) && strlen(${"zeiritu_".$numpro}) > 0){
+						$arrayZeiritu[${"zeiritu_".$numpro}]["total_price"] = $arrayZeiritu[${"zeiritu_".$numpro}]["total_price"] + ${"price_".$numpro};
+						$arrayZeiritu[${"zeiritu_".$numpro}]["total_tax"] = $arrayZeiritu[${"zeiritu_".$numpro}]["total_price"] * $arrayZeiritu[${"zeiritu_".$numpro}]["zeiritu"] / 100;
+					}elseif(strlen(${"zeiritu_".$numpro}) > 0){
+						$arrayZeiritu[${"zeiritu_".$numpro}]["total_price"] = ${"price_".$numpro};
+						if(${"zeiritu_".$numpro} == 0){
+							$arrayZeiritu[${"zeiritu_".$numpro}]["zeiritu"] = "非課税";
+						}else{
+							$arrayZeiritu[${"zeiritu_".$numpro}]["zeiritu"] = ${"zeiritu_".$numpro};
+						}
+						$arrayZeiritu[${"zeiritu_".$numpro}]["total_tax"] = ${"price_".$numpro} * ${"zeiritu_".$numpro} / 100;
+					}
 
 				}
 
@@ -983,15 +996,30 @@ class AccountsController extends AppController
 					$this->set('price_'.$numpro,${"price_".$numpro});
 					$this->set('zeiritu_'.$numpro,${"zeiritu_".$numpro});
 
+					if(isset($arrayZeiritu[${"zeiritu_".$numpro}]) && strlen(${"zeiritu_".$numpro}) > 0){
+						$arrayZeiritu[${"zeiritu_".$numpro}]["total_price"] = $arrayZeiritu[${"zeiritu_".$numpro}]["total_price"] + ${"price_".$numpro};
+						$arrayZeiritu[${"zeiritu_".$numpro}]["total_tax"] = $arrayZeiritu[${"zeiritu_".$numpro}]["total_price"] * $arrayZeiritu[${"zeiritu_".$numpro}]["zeiritu"] / 100;
+					}elseif(strlen(${"zeiritu_".$numpro}) > 0){
+						$arrayZeiritu[${"zeiritu_".$numpro}]["total_price"] = ${"price_".$numpro};
+						if(${"zeiritu_".$numpro} == 0){
+							$arrayZeiritu[${"zeiritu_".$numpro}]["zeiritu"] = "非課税";
+						}else{
+							$arrayZeiritu[${"zeiritu_".$numpro}]["zeiritu"] = ${"zeiritu_".$numpro};
+						}
+						$arrayZeiritu[${"zeiritu_".$numpro}]["total_tax"] = ${"price_".$numpro} * ${"zeiritu_".$numpro} / 100;
+					}
+
 				}
 
 			}
 
 		}
+        $arrayZeiritu = array_values($arrayZeiritu);
 
 		$total_price_tax = $total_price * 0.1;
 		$this->set('total_price',$total_price);
 		$this->set('total_price_tax',$total_price_tax);
+		$this->set('arrayZeiritu',$arrayZeiritu);
 
 	}
 
@@ -3893,16 +3921,22 @@ class AccountsController extends AppController
 							$arrPro_1[] = $Uriagesyousais[0]->pro;
 
 							${"Totalprice".$k} = 0;
+							${"Totaltax".$k} = 0;
 							for($i=0; $i<count($Uriagesyousais); $i++){
 
 								if(!empty($Uriagesyousais[$i]->pro)){
 
 									$totalkingaku = $totalkingaku + $Uriagesyousais[$i]->price;
 									${"Totalprice".$k} = ${"Totalprice".$k} + $Uriagesyousais[$i]->price;
+									$zeiritu = 10;
+									if($Uriagesyousais[$i]->zeiritu > 0){
+										$zeiritu = $Uriagesyousais[$i]->zeiritu;
+									}
+									${"Totaltax".$k} = ${"Totaltax".$k} + $Uriagesyousais[$i]->price*$zeiritu/100;
 
 									if($Uriage[$k]->tax_include_flag == 0){//税別の場合
-										$totaltax = $totaltax + $Uriagesyousais[$i]->price*0.1;
-										$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price*1.1;
+										$totaltax = $totaltax + $Uriagesyousais[$i]->price*$zeiritu/100;
+										$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price + $Uriagesyousais[$i]->price*$zeiritu/100;
 									}else{
 										$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price;
 									}
@@ -3915,6 +3949,7 @@ class AccountsController extends AppController
 
 							}
 							$this->set("Totalprice".$k,${"Totalprice".$k});
+							$this->set("Totaltax".$k,${"Totaltax".$k});
 
 						}
 
@@ -4069,29 +4104,36 @@ class AccountsController extends AppController
 								$arrPro_1[] = $Uriagesyousais[0]->pro;
 
 								${"Totalprice".$k} = 0;
+								${"Totaltax".$k} = 0;
 								for($i=0; $i<count($Uriagesyousais); $i++){
-
+	
 									if(!empty($Uriagesyousais[$i]->pro)){
-
+	
 										$totalkingaku = $totalkingaku + $Uriagesyousais[$i]->price;
 										${"Totalprice".$k} = ${"Totalprice".$k} + $Uriagesyousais[$i]->price;
-
+										$zeiritu = 10;
+										if($Uriagesyousais[$i]->zeiritu > 0){
+											$zeiritu = $Uriagesyousais[$i]->zeiritu;
+										}
+										${"Totaltax".$k} = ${"Totaltax".$k} + $Uriagesyousais[$i]->price*$zeiritu/100;
+	
 										if($Uriage[$k]->tax_include_flag == 0){//税別の場合
-											$totaltax = $totaltax + $Uriagesyousais[$i]->price*0.1;
-											$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price*1.1;
+											$totaltax = $totaltax + $Uriagesyousais[$i]->price*$zeiritu/100;
+											$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price + $Uriagesyousais[$i]->price*$zeiritu/100;
 										}else{
 											$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price;
 										}
-
+	
 										${"Uriagemasters".$k} = $this->Uriagemasters->find('all', ['conditions' => ['id' => $Uriagesyousais[$i]->uriagemasterId]])->toArray();
 										${"namehyouji".$k} = ${"Uriagemasters".$k}[0]->customer;
 										$this->set("namehyouji".$k,${"namehyouji".$k});
-
+	
 									}
-
+	
 								}
 								$this->set("Totalprice".$k,${"Totalprice".$k});
-
+								$this->set("Totaltax".$k,${"Totaltax".$k});
+	
 							}
 
 						}
@@ -4440,29 +4482,36 @@ class AccountsController extends AppController
 								$arrPro_1[] = $Uriagesyousais[0]->pro;
 
 								${"Totalprice".$k} = 0;
+								${"Totaltax".$k} = 0;
 								for($i=0; $i<count($Uriagesyousais); $i++){
-
+	
 									if(!empty($Uriagesyousais[$i]->pro)){
-
+	
 										$totalkingaku = $totalkingaku + $Uriagesyousais[$i]->price;
 										${"Totalprice".$k} = ${"Totalprice".$k} + $Uriagesyousais[$i]->price;
-
+										$zeiritu = 10;
+										if($Uriagesyousais[$i]->zeiritu > 0){
+											$zeiritu = $Uriagesyousais[$i]->zeiritu;
+										}
+										${"Totaltax".$k} = ${"Totaltax".$k} + $Uriagesyousais[$i]->price*$zeiritu/100;
+	
 										if($Uriage[$k]->tax_include_flag == 0){//税別の場合
-											$totaltax = $totaltax + $Uriagesyousais[$i]->price*0.1;
-											$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price*1.1;
+											$totaltax = $totaltax + $Uriagesyousais[$i]->price*$zeiritu/100;
+											$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price + $Uriagesyousais[$i]->price*$zeiritu/100;
 										}else{
 											$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price;
 										}
-
+	
 										${"Uriagemasters".$k} = $this->Uriagemasters->find('all', ['conditions' => ['id' => $Uriagesyousais[$i]->uriagemasterId]])->toArray();
 										${"namehyouji".$k} = ${"Uriagemasters".$k}[0]->customer;
 										$this->set("namehyouji".$k,${"namehyouji".$k});
-										${"customerId".$k} = ${"Uriagemasters".$k}[0]->customerId;
-
+	
 									}
-
+	
 								}
 								$this->set("Totalprice".$k,${"Totalprice".$k});
+								$this->set("Totaltax".$k,${"Totaltax".$k});
+	
 							}
 
 						}

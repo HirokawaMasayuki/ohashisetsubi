@@ -130,6 +130,7 @@ class InsatsuuriagesController extends AppController
 
 				if(isset($Uriagemasters[0])){
 
+					$genba = "";
 					if($Uriagesyousais[$i]["num"] == 1){
 						$genba = $Uriagesyousais[$i]["pro"];
 					}
@@ -191,7 +192,11 @@ class InsatsuuriagesController extends AppController
 				$sheet->setCellValue("D".$num, $Uriages[$j]["genba"]);
 				$sheet->setCellValue("E".$num, $Uriages[$j]["id"]);
 				$sheet->setCellValue("F".$num, $Uriages[$j]["num"]);
-				$sheet->setCellValue("G".$num, $Uriages[$j]["pro"]);
+				if($Uriages[$j]["zeiritu"] == 8){
+					$sheet->setCellValue("G".$num, $Uriages[$j]["pro"]."　※");
+				}else{
+					$sheet->setCellValue("G".$num, $Uriages[$j]["pro"]);
+				}
 				$sheet->setCellValue("H".$num, $Uriages[$j]["amount"]);
 				$sheet->setCellValue("I".$num, $Uriages[$j]["tani"]);
 				$sheet->setCellValue("J".$num, $Uriages[$j]["tanka"]);

@@ -89,7 +89,12 @@ $this->layout = '';
           <?php else: ?>
             <td bgcolor="#FFFFCC" width="30"  style="padding: 0.2rem"><?= h((${"price_".$i})) ?></td>
           <?php endif; ?>
-          <td bgcolor="#FFFFCC" width="30"  style="padding: 0.2rem;text-align : center"><?= h((${"zeiritu_".$i})) ?></td>
+          <td bgcolor="#FFFFCC" width="30"  style="padding: 0.2rem;text-align : center">
+          <?php if(strlen(${"zeiritu_".$i}) > 0 && ${"zeiritu_".$i} == 0): ?>
+            非課税</td>
+          <?php else: ?>
+            <?= h((${"zeiritu_".$i})) ?></td>
+          <?php endif; ?>
             <td bgcolor="#FFFFCC" width="100"  style="padding: 0.2rem"><?= h(${"bik_".$i}) ?></td>
           </tr>
 
@@ -114,12 +119,14 @@ $this->layout = '';
             <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">消費税</strong></td>
             <td align="center" width="150" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">税込売上額</strong></td>
           </tr>
+          <?php for ($i=0;$i<count($arrayZeiritu);$i++): ?>
           <tr>
-            <td align="center" width="80"  bgcolor="#FFFFCC" style="padding: 0.2rem"></td>
-            <td align="center" width="150"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format($total_price)) ?></td>
-            <td align="center" width="150"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format($total_price_tax)) ?></td>
-            <td align="center" width="150"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format($total_price + $total_price_tax)) ?></td>
+            <td align="center" width="80"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($arrayZeiritu[$i]["zeiritu"]) ?></td>
+            <td align="center" width="150"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format($arrayZeiritu[$i]["total_price"])) ?></td>
+            <td align="center" width="150"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format($arrayZeiritu[$i]["total_tax"])) ?></td>
+            <td align="center" width="150"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format($arrayZeiritu[$i]["total_price"] + $arrayZeiritu[$i]["total_tax"])) ?></td>
           </tr>
+        <?php endfor;?>
         </table>
 
         <br>

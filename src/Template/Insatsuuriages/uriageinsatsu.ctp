@@ -138,7 +138,11 @@ echo "<tr style='border-bottom: 0px;border-width: 0px'>\n";
             <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Uriages->uriagebi->format('Y-m-d')) ?></font></td>
             <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Uriages->created_at) ?></font></td>
             <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Uriages->num) ?></font></td>
-            <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Uriages->pro) ?></font></td>
+            <?php if($Uriages->zeiritu == 8): ?>
+              <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Uriages->pro) ?>　※</font></td>
+            <?php else: ?>
+              <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Uriages->pro) ?></font></td>
+            <?php endif; ?>
             <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Uriages->id) ?></font></td>
             <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Uriages->amount) ?></font></td>
             <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap"><font><?= h($Uriages->tani) ?></font></td>

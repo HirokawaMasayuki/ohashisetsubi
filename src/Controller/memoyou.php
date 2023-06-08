@@ -3,3 +3,8 @@
 'bik_9' => $data['bik_9'], 'bik_10' => $data['bik_10'], 'bik_11' => $data['bik_11'], 'bik_12' => $data['bik_12'],
 'bik_13' => $data['bik_13'], 'bik_14' => $data['bik_14'], 'bik_15' => $data['bik_15'], 'bik_16' => $data['bik_16'],
 'bik_17' => $data['bik_17'], 'bik_18' => $data['bik_18'], 'bik_19' => $data['bik_19'], 'bik_20' => $data['bik_20'],
+
+
+        echo "<pre>";
+		print_r("aaa");
+		echo "</pre>";

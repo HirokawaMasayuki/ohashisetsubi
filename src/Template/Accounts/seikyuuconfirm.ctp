@@ -103,7 +103,6 @@ $this->layout = '';
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">請求日</strong></td>
             <td align="center" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">品名１行目</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">売上額</strong></td>
-            <td align="center" width="50" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">税率</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">消費税</strong></td>
             <td align="center" width="100" bgcolor="#FFFFCC" style="font-size: 12pt;padding: 0.2rem"><strong style="font-size: 11pt">税込売上額</strong></td>
           </tr>
@@ -119,12 +118,10 @@ $this->layout = '';
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h($arrPro_1[$i]) ?></td>
             <?php if($arrTaxinc[$i] == 0): ?>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format(${"Totalprice".$i})) ?></td>
-            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"></td>
-            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format(${"Totalprice".$i}*0.1)) ?></td>
-            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format(${"Totalprice".$i}*1.1)) ?></td>
+            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format(${"Totaltax".$i})) ?></td>
+            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format(${"Totalprice".$i} + ${"Totaltax".$i})) ?></td>
           <?php else: ?>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format(${"Totalprice".$i})) ?></td>
-            <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h("内税") ?></td>
             <td align="center"  bgcolor="#FFFFCC" style="padding: 0.2rem"><?= h(number_format(${"Totalprice".$i})) ?></td>
           <?php endif; ?>

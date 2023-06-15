@@ -4086,6 +4086,34 @@ class AccountsController extends AppController
 
 		$this->set('flag_utizei', 0);
 
+		$Uriage = array();
+		for ($k = 0; $k <= $data["num"]; $k++) {
+			$arrUriage = $this->Uriagemasters->find('all', ['conditions' => ['id' => $data["id" . $k]]])->toArray();
+			$Uriage = array_merge($Uriage, $arrUriage);
+		}
+
+		$arrTotal_dempyou = array();
+		$count = count($Uriage);
+		for ($k = 0; $k < $count; $k++) {
+			$totalkingakutaxinc = 0;
+			$Uriagesyousais = $this->Uriagesyousais->find()
+				->where(['uriagemasterId' => $Uriage[$k]->id, 'delete_flag' => 0])->order(['num' => 'asc'])->toArray();
+			for ($i = 0; $i < count($Uriagesyousais); $i++) {
+
+				if (!empty($Uriagesyousais[$i]->pro)) {
+
+					if ($Uriage[$k]->tax_include_flag == 0) { //税別の場合
+						$totaltax = $totaltax + $Uriagesyousais[$i]->price * $Uriagesyousais[$i]->zeiritu / 100;
+						$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price + $Uriagesyousais[$i]->price * $Uriagesyousais[$i]->zeiritu / 100;
+					} else {
+						$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price;
+					}
+				}
+			}
+			$arrTotal_dempyou[$k]["dempyou"] = $Uriage[$k]->denpyou_num;
+			$arrTotal_dempyou[$k]["total_price"] = $totalkingakutaxinc;
+		}
+
 		if (!isset($data["num"])) { //合計表のみの出力
 
 			$Uriage = array();
@@ -4221,10 +4249,8 @@ class AccountsController extends AppController
 			$sheet->setCellValue('E15', $data["sousai"]);
 			$sheet->setCellValue('F15', $data["kurikosi"]);
 
-			$totalkingaku = 0;
-
-			$sheet->setCellValue('H15', $totalkingaku);
-			$sheet->setCellValue('I15', $totalkingaku * 0.1);
+			$sheet->setCellValue('H15', 0);
+			$sheet->setCellValue('I15', 0);
 
 			$sheet->setCellValue('J15', $data["totalseikyuu"]); //合計表のみの場合は税抜（すでに税込）
 
@@ -4370,6 +4396,8 @@ class AccountsController extends AppController
 
 					$arrPro_1[] = $Uriagesyousais[0]->pro;
 
+					${"Totaltax8" . $k} = 0;
+					${"Totaltax10" . $k} = 0;
 					${"Totalprice" . $k} = 0;
 					${"Totaltax" . $k} = 0;
 					for ($i = 0; $i < count($Uriagesyousais); $i++) {
@@ -4377,6 +4405,11 @@ class AccountsController extends AppController
 						if (!empty($Uriagesyousais[$i]->pro)) {
 
 							$totalkingaku = $totalkingaku + $Uriagesyousais[$i]->price;
+							if ($Uriagesyousais[$i]->zeiritu == 8) {
+								${"Totaltax8" . $k} = ${"Totaltax8" . $k} + $Uriagesyousais[$i]->price * $Uriagesyousais[$i]->zeiritu / 100;
+							} elseif ($Uriagesyousais[$i]->zeiritu == 10) {
+								${"Totaltax10" . $k} = ${"Totaltax10" . $k} + $Uriagesyousais[$i]->price * $Uriagesyousais[$i]->zeiritu / 100;
+							}
 							${"Totalprice" . $k} = ${"Totalprice" . $k} + $Uriagesyousais[$i]->price;
 							$zeiritu = 10;
 							if (strlen($Uriagesyousais[$i]->zeiritu) > 0) {
@@ -4396,6 +4429,8 @@ class AccountsController extends AppController
 							$this->set("namehyouji" . $k, ${"namehyouji" . $k});
 						}
 					}
+					$this->set("Totaltax8" . $k, ${"Totaltax8" . $k});
+					$this->set("Totaltax10" . $k, ${"Totaltax10" . $k});
 					$this->set("Totalprice" . $k, ${"Totalprice" . $k});
 					$this->set("Totaltax" . $k, ${"Totaltax" . $k});
 				}
@@ -4474,10 +4509,8 @@ class AccountsController extends AppController
 			$amari = count($arrPros) % 20;
 			if ($amari == 0) {
 				$syou = floor(count($arrPros) / 20) - 1;
-				$sheetcoount = $syou;
 			} else {
 				$syou = floor(count($arrPros) / 20);
-				$sheetcoount = $syou + 1;
 			}
 
 			if ($s == 0) { //合計表
@@ -4566,15 +4599,281 @@ class AccountsController extends AppController
 				$sheet->setCellValue('I15', $data["totaltax"]);
 				$sheet->setCellValue('J15', $data["totalkingakutaxinc"] + $data["kurikosi"]);
 
+				$Total_all = 0;
+				for ($i = 0; $i < count($arrTotal_dempyou); $i++) {
+					if ($i < 20) {
+						$num = 25 + $i;
+						$sheet->setCellValue("B" . $num, $arrTotal_dempyou[$i]["dempyou"]);
+						$sheet->setCellValue("D" . $num, $arrTotal_dempyou[$i]["total_price"]);
+					} else {
+						$num = 5 + $i;
+						$sheet->setCellValue("F" . $num, $arrTotal_dempyou[$i]["dempyou"]);
+						$sheet->setCellValue("I" . $num, $arrTotal_dempyou[$i]["total_price"]);
+					}
+					$Total_all = $Total_all +  $arrTotal_dempyou[$i]["total_price"];
+				}
+				$sheet->setCellValue('F45', $Total_all);
+
 				$writer = new XlsxWriter($spreadsheet);
 			}
 
 			//ここから請求明細
-			$seikyuusakicount = 0;
+			$countSheet = $countSheet + 1;
 
-			if ($seikyuusakicount > 0) { //請求先をまとめている場合
+			$baseSheet = $spreadsheet->getSheet(1);
+			$newSheet = $baseSheet->copy();
+			$newSheet->setTitle("Sheet_" . $countSheet);
+			$spreadsheet->addSheet($newSheet);
 
-			} else { //請求先が1か所の場合
+			$writer = new XlsxWriter($spreadsheet);
+
+			$sheet = $spreadsheet->getSheetByName("Sheet_" . $countSheet);
+			$sheet->setCellValue('J1', "No." . $Uriage[$s]->denpyou_num);
+			$sheet->setCellValue('U1', "No." . $Uriage[$s]->denpyou_num);
+			$sheet->setCellValue('A3', "〒 " . $yuubin);
+			$sheet->setCellValue('L3', "〒 " . $yuubin);
+
+			$addressarr =  explode("_", $Uriage[$s]->address);
+			$sheet->setCellValue('A4', "　　" . $addressarr[0]);
+			$sheet->setCellValue('L4', "　　" . $addressarr[0]);
+
+			if (isset($addressarr[1])) {
+				$sheet->setCellValue('A5', "　　　　" . $addressarr[1]);
+				$sheet->setCellValue('L5', "　　　　" . $addressarr[1]);
+			} else {
+				$sheet->setCellValue('A5', "　　");
+				$sheet->setCellValue('L5', "　　");
+			}
+			$namearr =  explode("_", $Uriage[$s]->customer);
+
+			if (isset($namearr[1])) {
+				$sheet->setCellValue('A6', $namearr[0]);
+				$sheet->setCellValue('A7', "　　 " . $namearr[1]);
+				$sheet->setCellValue('L6', $namearr[0]);
+				$sheet->setCellValue('L7', "　　 " . $namearr[1]);
+			} else {
+				$sheet->unmergeCells('A6:E6');
+				$sheet->unmergeCells('A7:E7');
+				$sheet->mergeCells('A6:E7');
+				$sheet->setCellValue('A6', $namearr[0]);
+				$sheet->unmergeCells('L6:P6');
+				$sheet->unmergeCells('L7:P7');
+				$sheet->mergeCells('L6:P7');
+				$sheet->setCellValue('L6', $namearr[0]);
+			}
+
+			$sheet->setCellValue('F6', $keisyou);
+			$sheet->setCellValue('Q6', $keisyou);
+
+			if ($data["datehyouji_flag"] == 1) {
+				$sheet->setCellValue('J3', " 年        月        日");
+				$sheet->setCellValue('U3', " 年        月        日");
+			} else {
+				$sheet->setCellValue('J3', $Uriage[$s]->uriagebi->format('Y 年 n 月 j 日') . "");
+				$sheet->setCellValue('U3', $Uriage[$s]->uriagebi->format('Y 年 n 月 j 日') . "");
+			}
+
+			$sheet->setCellValue('E15', $data["totalkingakutaxinc"]);
+			$sheet->setCellValue('P15', $data["totalkingakutaxinc"]);
+
+			if ($arrTaxinc[$s] > 0) { //内税の場合
+				$sheet->setCellValue('E15', ${"Totalprice" . $s});
+				$sheet->setCellValue('P15', ${"Totalprice" . $s});
+			} else {
+				$sheet->setCellValue('E15', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+				$sheet->setCellValue('P15', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+			}
+
+			$pro_check = 0;
+
+			if ($amari == 0) { //以下余白がいらない場合
+
+				for ($i = 0; $i < 20; $i++) {
+
+					if ($i == count($arrPros)) {
+						break;
+					}
+
+					$num = 18 + $i;
+
+					$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"]);
+					$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"]);
+					$sheet->setCellValue("F" . $num, $arrPros[$i]["amount"]);
+					$sheet->setCellValue("Q" . $num, $arrPros[$i]["amount"]);
+					$sheet->setCellValue("G" . $num, $arrPros[$i]["tani"]);
+					$sheet->setCellValue("R" . $num, $arrPros[$i]["tani"]);
+
+					if ($arrTaxinc[$s] > 0) { //内税の場合
+
+						$sheet->setCellValue("H" . $num, $arrPros[$i]["tanka"]);
+						$sheet->setCellValue("S" . $num, $arrPros[$i]["tanka"]);
+						$sheet->setCellValue("I" . $num, $arrPros[$i]["price"]);
+						$sheet->setCellValue("T" . $num, $arrPros[$i]["price"]);
+
+						$sheet->setCellValue('I38', "　");
+						$sheet->setCellValue('H38', "　");
+						$sheet->setCellValue('I39', "　");
+						$sheet->setCellValue('H39', "　");
+						$sheet->setCellValue('I40', "　");
+						$sheet->setCellValue('H40', "　");
+						$sheet->setCellValue('I41', "　");
+						$sheet->setCellValue('H41', "　");
+
+						$sheet->setCellValue('S38', "　");
+						$sheet->setCellValue('T38', "　");
+						$sheet->setCellValue('S39', "　");
+						$sheet->setCellValue('T39', "　");
+						$sheet->setCellValue('S40', "　");
+						$sheet->setCellValue('T40', "　");
+						$sheet->setCellValue('S41', "　");
+						$sheet->setCellValue('T41', "　");
+
+						if ($amari == 0 && $syou == 0) {
+
+							$sheet->setCellValue('H41', "合計");
+							$sheet->setCellValue('I41', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+							$sheet->setCellValue('S41', "合計");
+							$sheet->setCellValue('T41', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+						}
+					} else {
+
+						$sheet->setCellValue("H" . $num, $arrPros[$i]["tanka"]);
+						$sheet->setCellValue("I" . $num, $arrPros[$i]["price"]);
+						$sheet->setCellValue("S" . $num, $arrPros[$i]["tanka"]);
+						$sheet->setCellValue("T" . $num, $arrPros[$i]["price"]);
+
+						if ($amari == 0 && $syou == 0) {
+
+							$sheet->setCellValue('I38', ${"Totalprice" . $s});
+							$sheet->setCellValue('T38', ${"Totalprice" . $s});
+							$sheet->setCellValue('I39', ${"Totaltax8" . $s});
+							$sheet->setCellValue('T39', ${"Totaltax8" . $s});
+							$sheet->setCellValue('I40', ${"Totaltax10" . $s});
+							$sheet->setCellValue('T40', ${"Totaltax10" . $s});
+							$sheet->setCellValue('I41', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+							$sheet->setCellValue('T41', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+						} else {
+
+							$sheet->setCellValue('I38', "　");
+							$sheet->setCellValue('H38', "　");
+							$sheet->setCellValue('I39', "　");
+							$sheet->setCellValue('H39', "　");
+							$sheet->setCellValue('I40', "　");
+							$sheet->setCellValue('H40', "　");
+
+							$sheet->setCellValue('S38', "　");
+							$sheet->setCellValue('T38', "　");
+							$sheet->setCellValue('S39', "　");
+							$sheet->setCellValue('T39', "　");
+							$sheet->setCellValue('S40', "　");
+							$sheet->setCellValue('T40', "　");
+						}
+					}
+					$sheet->setCellValue("K" . $num, $arrPros[$i]["bik"]);
+					$sheet->setCellValue("V" . $num, $arrPros[$i]["bik"]);
+				}
+			} else { //以下余白がいる場合
+
+				for ($i = 0; $i < 20; $i++) {
+
+					if ($i == count($arrPros) + 1) {
+						break;
+					}
+
+					$num = 18 + $i;
+
+					if ($i < count($arrPros)) {
+
+						$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"]);
+						$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"]);
+						$sheet->setCellValue("F" . $num, $arrPros[$i]["amount"]);
+						$sheet->setCellValue("Q" . $num, $arrPros[$i]["amount"]);
+						$sheet->setCellValue("G" . $num, $arrPros[$i]["tani"]);
+						$sheet->setCellValue("R" . $num, $arrPros[$i]["tani"]);
+
+						if ($arrTaxinc[$s] > 0) { //内税の場合
+
+							$sheet->setCellValue("H" . $num, $arrPros[$i]["tanka"]);
+							$sheet->setCellValue("S" . $num, $arrPros[$i]["tanka"]);
+							$sheet->setCellValue("I" . $num, $arrPros[$i]["price"]);
+							$sheet->setCellValue("T" . $num, $arrPros[$i]["price"]);
+
+							$sheet->setCellValue('I38', "　");
+							$sheet->setCellValue('H38', "　");
+							$sheet->setCellValue('I39', "　");
+							$sheet->setCellValue('H39', "　");
+							$sheet->setCellValue('I40', "　");
+							$sheet->setCellValue('H40', "　");
+							$sheet->setCellValue('I41', "　");
+							$sheet->setCellValue('H41', "　");
+
+							$sheet->setCellValue('S38', "　");
+							$sheet->setCellValue('T38', "　");
+							$sheet->setCellValue('S39', "　");
+							$sheet->setCellValue('T39', "　");
+							$sheet->setCellValue('S40', "　");
+							$sheet->setCellValue('T40', "　");
+							$sheet->setCellValue('S41', "　");
+							$sheet->setCellValue('T41', "　");
+
+							if ($syou == 0) {
+
+								$sheet->setCellValue('H41', "合計");
+								$sheet->setCellValue('I41', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+								$sheet->setCellValue('S41', "合計");
+								$sheet->setCellValue('T41', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+							}
+						} else {
+
+							$sheet->setCellValue("H" . $num, $arrPros[$i]["tanka"]);
+							$sheet->setCellValue("I" . $num, $arrPros[$i]["price"]);
+							$sheet->setCellValue("S" . $num, $arrPros[$i]["tanka"]);
+							$sheet->setCellValue("T" . $num, $arrPros[$i]["price"]);
+
+							if ($syou == 0) {
+
+								$sheet->setCellValue('I38', ${"Totalprice" . $s});
+								$sheet->setCellValue('T38', ${"Totalprice" . $s});
+								$sheet->setCellValue('I39', ${"Totaltax8" . $s});
+								$sheet->setCellValue('T39', ${"Totaltax8" . $s});
+								$sheet->setCellValue('I40', ${"Totaltax10" . $s});
+								$sheet->setCellValue('T40', ${"Totaltax10" . $s});
+								$sheet->setCellValue('I41', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+								$sheet->setCellValue('T41', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+							} else {
+
+								$sheet->setCellValue('I38', "　");
+								$sheet->setCellValue('H38', "　");
+								$sheet->setCellValue('I39', "　");
+								$sheet->setCellValue('H39', "　");
+								$sheet->setCellValue('I40', "　");
+								$sheet->setCellValue('H40', "　");
+								$sheet->setCellValue('I41', "　");
+								$sheet->setCellValue('H41', "　");
+
+								$sheet->setCellValue('S38', "　");
+								$sheet->setCellValue('T38', "　");
+								$sheet->setCellValue('S39', "　");
+								$sheet->setCellValue('T39', "　");
+								$sheet->setCellValue('S40', "　");
+								$sheet->setCellValue('T40', "　");
+								$sheet->setCellValue('S41', "　");
+								$sheet->setCellValue('T41', "　");
+							}
+						}
+						$sheet->setCellValue("K" . $num, $arrPros[$i]["bik"]);
+						$sheet->setCellValue("V" . $num, $arrPros[$i]["bik"]);
+					} else {
+
+						$sheet->setCellValue("A" . $num, "以下余白");
+						$sheet->setCellValue("L" . $num, "以下余白");
+					}
+				}
+			}
+
+			$writer = new XlsxWriter($spreadsheet);
+
+			for ($j = 2; $j < 2 + $syou; $j++) {
 
 				$countSheet = $countSheet + 1;
 
@@ -4586,12 +4885,14 @@ class AccountsController extends AppController
 				$writer = new XlsxWriter($spreadsheet);
 
 				$sheet = $spreadsheet->getSheetByName("Sheet_" . $countSheet);
+
 				$sheet->setCellValue('J1', "No." . $Uriage[$s]->denpyou_num);
 				$sheet->setCellValue('U1', "No." . $Uriage[$s]->denpyou_num);
 				$sheet->setCellValue('A3', "〒 " . $yuubin);
 				$sheet->setCellValue('L3', "〒 " . $yuubin);
 
 				$addressarr =  explode("_", $Uriage[$s]->address);
+
 				$sheet->setCellValue('A4', "　　" . $addressarr[0]);
 				$sheet->setCellValue('L4', "　　" . $addressarr[0]);
 
@@ -4602,8 +4903,8 @@ class AccountsController extends AppController
 					$sheet->setCellValue('A5', "　　");
 					$sheet->setCellValue('L5', "　　");
 				}
-				$namearr =  explode("_", $Uriage[$s]->customer);
 
+				$namearr =  explode("_", $Uriage[$s]->customer);
 				if (isset($namearr[1])) {
 					$sheet->setCellValue('A6', $namearr[0]);
 					$sheet->setCellValue('A7', "　　 " . $namearr[1]);
@@ -4631,28 +4932,23 @@ class AccountsController extends AppController
 					$sheet->setCellValue('U3', $Uriage[$s]->uriagebi->format('Y 年 n 月 j 日') . "");
 				}
 
-				$sheet->setCellValue('E15', $data["totalkingakutaxinc"]);
-				$sheet->setCellValue('P15', $data["totalkingakutaxinc"]);
-
 				if ($arrTaxinc[$s] > 0) { //内税の場合
 					$sheet->setCellValue('E15', ${"Totalprice" . $s});
 					$sheet->setCellValue('P15', ${"Totalprice" . $s});
 				} else {
-					$sheet->setCellValue('E15', ${"Totalprice" . $s} * 1.1);
-					$sheet->setCellValue('P15', ${"Totalprice" . $s} * 1.1);
+					$sheet->setCellValue('E15', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+					$sheet->setCellValue('P15', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
 				}
 
-				$pro_check = 0;
+				for ($i = 20 * ($j - 1); $i < 20 * $j; $i++) {
 
-				if ($amari == 0) { //以下余白がいらない場合
+					if ($i == count($arrPros) + 1) {
+						break;
+					}
 
-					for ($i = 0; $i < 20; $i++) {
+					$num = 18 + $i - 20 * ($j - 1);
 
-						if ($i == count($arrPros)) {
-							break;
-						}
-
-						$num = 18 + $i;
+					if ($i < count($arrPros)) {
 
 						$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"]);
 						$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"]);
@@ -4664,8 +4960,8 @@ class AccountsController extends AppController
 						if ($arrTaxinc[$s] > 0) { //内税の場合
 
 							$sheet->setCellValue("H" . $num, $arrPros[$i]["tanka"]);
-							$sheet->setCellValue("S" . $num, $arrPros[$i]["tanka"]);
 							$sheet->setCellValue("I" . $num, $arrPros[$i]["price"]);
+							$sheet->setCellValue("S" . $num, $arrPros[$i]["tanka"]);
 							$sheet->setCellValue("T" . $num, $arrPros[$i]["price"]);
 
 							$sheet->setCellValue('I38', "　");
@@ -4674,6 +4970,8 @@ class AccountsController extends AppController
 							$sheet->setCellValue('H39', "　");
 							$sheet->setCellValue('I40', "　");
 							$sheet->setCellValue('H40', "　");
+							$sheet->setCellValue('I41', "　");
+							$sheet->setCellValue('H41', "　");
 
 							$sheet->setCellValue('S38', "　");
 							$sheet->setCellValue('T38', "　");
@@ -4681,13 +4979,15 @@ class AccountsController extends AppController
 							$sheet->setCellValue('T39', "　");
 							$sheet->setCellValue('S40', "　");
 							$sheet->setCellValue('T40', "　");
+							$sheet->setCellValue('S41', "　");
+							$sheet->setCellValue('T41', "　");
 
-							if ($amari == 0 && $syou == 0) {
+							if ($j == 1 + $syou) {
 
 								$sheet->setCellValue('H41', "合計");
-								$sheet->setCellValue('I41', ${"Totalprice" . $s});
 								$sheet->setCellValue('S41', "合計");
-								$sheet->setCellValue('T41', ${"Totalprice" . $s});
+								$sheet->setCellValue('I41', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+								$sheet->setCellValue('T41', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
 							}
 						} else {
 
@@ -4696,10 +4996,16 @@ class AccountsController extends AppController
 							$sheet->setCellValue("S" . $num, $arrPros[$i]["tanka"]);
 							$sheet->setCellValue("T" . $num, $arrPros[$i]["price"]);
 
-							if ($amari == 0 && $syou == 0) {
+							if ($j == 1 + $syou) {
 
 								$sheet->setCellValue('I38', ${"Totalprice" . $s});
 								$sheet->setCellValue('T38', ${"Totalprice" . $s});
+								$sheet->setCellValue('I39', ${"Totaltax8" . $s});
+								$sheet->setCellValue('T39', ${"Totaltax8" . $s});
+								$sheet->setCellValue('I40', ${"Totaltax10" . $s});
+								$sheet->setCellValue('T40', ${"Totaltax10" . $s});
+								$sheet->setCellValue('I41', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
+								$sheet->setCellValue('T41', ${"Totalprice" . $s} + ${"Totaltax8" . $s} + ${"Totaltax10" . $s});
 							} else {
 
 								$sheet->setCellValue('I38', "　");
@@ -4719,241 +5025,10 @@ class AccountsController extends AppController
 						}
 						$sheet->setCellValue("K" . $num, $arrPros[$i]["bik"]);
 						$sheet->setCellValue("V" . $num, $arrPros[$i]["bik"]);
-					}
-				} else { //以下余白がいる場合
-
-					for ($i = 0; $i < 20; $i++) {
-
-						if ($i == count($arrPros) + 1) {
-							break;
-						}
-
-						$num = 18 + $i;
-
-						if ($i < count($arrPros)) {
-
-							$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"]);
-							$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"]);
-							$sheet->setCellValue("F" . $num, $arrPros[$i]["amount"]);
-							$sheet->setCellValue("Q" . $num, $arrPros[$i]["amount"]);
-							$sheet->setCellValue("G" . $num, $arrPros[$i]["tani"]);
-							$sheet->setCellValue("R" . $num, $arrPros[$i]["tani"]);
-
-							if ($arrTaxinc[$s] > 0) { //内税の場合
-
-								$sheet->setCellValue("H" . $num, $arrPros[$i]["tanka"]);
-								$sheet->setCellValue("S" . $num, $arrPros[$i]["tanka"]);
-								$sheet->setCellValue("I" . $num, $arrPros[$i]["price"]);
-								$sheet->setCellValue("T" . $num, $arrPros[$i]["price"]);
-
-								$sheet->setCellValue('I38', "　");
-								$sheet->setCellValue('H38', "　");
-								$sheet->setCellValue('I39', "　");
-								$sheet->setCellValue('H39', "　");
-								$sheet->setCellValue('I40', "　");
-								$sheet->setCellValue('H40', "　");
-
-								$sheet->setCellValue('S38', "　");
-								$sheet->setCellValue('T38', "　");
-								$sheet->setCellValue('S39', "　");
-								$sheet->setCellValue('T39', "　");
-								$sheet->setCellValue('S40', "　");
-								$sheet->setCellValue('T40', "　");
-
-								if ($syou == 0) {
-
-									$sheet->setCellValue('H41', "合計");
-									$sheet->setCellValue('I41', ${"Totalprice" . $s});
-									$sheet->setCellValue('S41', "合計");
-									$sheet->setCellValue('T41', ${"Totalprice" . $s});
-								}
-							} else {
-
-								$sheet->setCellValue("H" . $num, $arrPros[$i]["tanka"]);
-								$sheet->setCellValue("I" . $num, $arrPros[$i]["price"]);
-								$sheet->setCellValue("S" . $num, $arrPros[$i]["tanka"]);
-								$sheet->setCellValue("T" . $num, $arrPros[$i]["price"]);
-
-								if ($syou == 0) {
-
-									$sheet->setCellValue('I38', ${"Totalprice" . $s});
-									$sheet->setCellValue('T38', ${"Totalprice" . $s});
-								} else {
-
-									$sheet->setCellValue('I38', "　");
-									$sheet->setCellValue('H38', "　");
-									$sheet->setCellValue('I39', "　");
-									$sheet->setCellValue('H39', "　");
-									$sheet->setCellValue('I40', "　");
-									$sheet->setCellValue('H40', "　");
-
-									$sheet->setCellValue('S38', "　");
-									$sheet->setCellValue('T38', "　");
-									$sheet->setCellValue('S39', "　");
-									$sheet->setCellValue('T39', "　");
-									$sheet->setCellValue('S40', "　");
-									$sheet->setCellValue('T40', "　");
-								}
-							}
-							$sheet->setCellValue("K" . $num, $arrPros[$i]["bik"]);
-							$sheet->setCellValue("V" . $num, $arrPros[$i]["bik"]);
-						} else {
-
-							$sheet->setCellValue("A" . $num, "以下余白");
-							$sheet->setCellValue("L" . $num, "以下余白");
-						}
-					}
-				}
-
-				$writer = new XlsxWriter($spreadsheet);
-
-				for ($j = 2; $j < 2 + $syou; $j++) {
-
-					$countSheet = $countSheet + 1;
-
-					$baseSheet = $spreadsheet->getSheet(1);
-					$newSheet = $baseSheet->copy();
-					$newSheet->setTitle("Sheet_" . $countSheet);
-					$spreadsheet->addSheet($newSheet);
-
-					$writer = new XlsxWriter($spreadsheet);
-
-					$sheet = $spreadsheet->getSheetByName("Sheet_" . $countSheet);
-
-					$sheet->setCellValue('J1', "No." . $Uriage[$s]->denpyou_num);
-					$sheet->setCellValue('U1', "No." . $Uriage[$s]->denpyou_num);
-					$sheet->setCellValue('A3', "〒 " . $yuubin);
-					$sheet->setCellValue('L3', "〒 " . $yuubin);
-
-					$addressarr =  explode("_", $Uriage[$s]->address);
-
-					$sheet->setCellValue('A4', "　　" . $addressarr[0]);
-					$sheet->setCellValue('L4', "　　" . $addressarr[0]);
-
-					if (isset($addressarr[1])) {
-						$sheet->setCellValue('A5', "　　　　" . $addressarr[1]);
-						$sheet->setCellValue('L5', "　　　　" . $addressarr[1]);
 					} else {
-						$sheet->setCellValue('A5', "　　");
-						$sheet->setCellValue('L5', "　　");
-					}
 
-					$namearr =  explode("_", $Uriage[$s]->customer);
-					if (isset($namearr[1])) {
-						$sheet->setCellValue('A6', $namearr[0]);
-						$sheet->setCellValue('A7', "　　 " . $namearr[1]);
-						$sheet->setCellValue('L6', $namearr[0]);
-						$sheet->setCellValue('L7', "　　 " . $namearr[1]);
-					} else {
-						$sheet->unmergeCells('A6:E6');
-						$sheet->unmergeCells('A7:E7');
-						$sheet->mergeCells('A6:E7');
-						$sheet->setCellValue('A6', $namearr[0]);
-						$sheet->unmergeCells('L6:P6');
-						$sheet->unmergeCells('L7:P7');
-						$sheet->mergeCells('L6:P7');
-						$sheet->setCellValue('L6', $namearr[0]);
-					}
-
-					$sheet->setCellValue('F6', $keisyou);
-					$sheet->setCellValue('Q6', $keisyou);
-
-					if ($data["datehyouji_flag"] == 1) {
-						$sheet->setCellValue('J3', " 年        月        日");
-						$sheet->setCellValue('U3', " 年        月        日");
-					} else {
-						$sheet->setCellValue('J3', $Uriage[$s]->uriagebi->format('Y 年 n 月 j 日') . "");
-						$sheet->setCellValue('U3', $Uriage[$s]->uriagebi->format('Y 年 n 月 j 日') . "");
-					}
-
-					if ($arrTaxinc[$s] > 0) { //内税の場合
-						$sheet->setCellValue('E14', ${"Totalprice" . $s});
-						$sheet->setCellValue('P14', ${"Totalprice" . $s});
-					} else {
-						$sheet->setCellValue('E14', ${"Totalprice" . $s} * 1.1);
-						$sheet->setCellValue('P14', ${"Totalprice" . $s} * 1.1);
-					}
-
-					for ($i = 20 * ($j - 1); $i < 20 * $j; $i++) {
-
-						if ($i == count($arrPros) + 1) {
-							break;
-						}
-
-						$num = 18 + $i - 20 * ($j - 1);
-
-						if ($i < count($arrPros)) {
-
-							$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"]);
-							$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"]);
-							$sheet->setCellValue("F" . $num, $arrPros[$i]["amount"]);
-							$sheet->setCellValue("Q" . $num, $arrPros[$i]["amount"]);
-							$sheet->setCellValue("G" . $num, $arrPros[$i]["tani"]);
-							$sheet->setCellValue("R" . $num, $arrPros[$i]["tani"]);
-
-							if ($arrTaxinc[$s] > 0) { //内税の場合
-
-								$sheet->setCellValue("H" . $num, $arrPros[$i]["tanka"]);
-								$sheet->setCellValue("I" . $num, $arrPros[$i]["price"]);
-								$sheet->setCellValue("S" . $num, $arrPros[$i]["tanka"]);
-								$sheet->setCellValue("T" . $num, $arrPros[$i]["price"]);
-
-								$sheet->setCellValue('I38', "　");
-								$sheet->setCellValue('H38', "　");
-								$sheet->setCellValue('I39', "　");
-								$sheet->setCellValue('H39', "　");
-								$sheet->setCellValue('I40', "　");
-								$sheet->setCellValue('H40', "　");
-
-								$sheet->setCellValue('S38', "　");
-								$sheet->setCellValue('T38', "　");
-								$sheet->setCellValue('S39', "　");
-								$sheet->setCellValue('T39', "　");
-								$sheet->setCellValue('S40', "　");
-								$sheet->setCellValue('T40', "　");
-
-								if ($j == 1 + $syou) {
-
-									$sheet->setCellValue('H41', "合計");
-									$sheet->setCellValue('S41', "合計");
-									$sheet->setCellValue('I41', ${"Totalprice" . $s});
-									$sheet->setCellValue('T41', ${"Totalprice" . $s});
-								}
-							} else {
-
-								$sheet->setCellValue("H" . $num, $arrPros[$i]["tanka"]);
-								$sheet->setCellValue("I" . $num, $arrPros[$i]["price"]);
-								$sheet->setCellValue("S" . $num, $arrPros[$i]["tanka"]);
-								$sheet->setCellValue("T" . $num, $arrPros[$i]["price"]);
-
-								if ($j == 1 + $syou) {
-
-									$sheet->setCellValue('I38', ${"Totalprice" . $s});
-									$sheet->setCellValue('T38', ${"Totalprice" . $s});
-								} else {
-
-									$sheet->setCellValue('I38', "　");
-									$sheet->setCellValue('H38', "　");
-									$sheet->setCellValue('I39', "　");
-									$sheet->setCellValue('H39', "　");
-									$sheet->setCellValue('I40', "　");
-									$sheet->setCellValue('H40', "　");
-
-									$sheet->setCellValue('S38', "　");
-									$sheet->setCellValue('T38', "　");
-									$sheet->setCellValue('S39', "　");
-									$sheet->setCellValue('T39', "　");
-									$sheet->setCellValue('S40', "　");
-									$sheet->setCellValue('T40', "　");
-								}
-							}
-							$sheet->setCellValue("K" . $num, $arrPros[$i]["bik"]);
-							$sheet->setCellValue("V" . $num, $arrPros[$i]["bik"]);
-						} else {
-
-							$sheet->setCellValue("A" . $num, "以下余白");
-							$sheet->setCellValue("L" . $num, "以下余白");
-						}
+						$sheet->setCellValue("A" . $num, "以下余白");
+						$sheet->setCellValue("L" . $num, "以下余白");
 					}
 				}
 			}
@@ -4999,25 +5074,25 @@ class AccountsController extends AppController
 				$writer->save($outfilepath);
 
 				/*
-							//共有フォルダに出力
-							if(is_dir("C:/datashare/エクセル出力（共有用）/請求書/$year/$month/$day")){//ディレクトリが存在すればOK
+//共有フォルダに出力
+if(is_dir("C:/datashare/エクセル出力（共有用）/請求書/$year/$month/$day")){//ディレクトリが存在すればOK
 
-							$file_name = $namehyouji.$siten."_".$datetime.".xlsx";
-							$outfilepath = "C:/datashare/エクセル出力（共有用）/請求書/$year/$month/$day/$file_name"; //出力したいファイルの指定
+	$file_name = $namehyouji.$siten."_".$datetime.".xlsx";
+	$outfilepath = "C:/datashare/エクセル出力（共有用）/請求書/$year/$month/$day/$file_name"; //出力したいファイルの指定
 
-						}else{//ディレクトリが存在しなければ作成する
+}else{//ディレクトリが存在しなければ作成する
 
-						mkdir("C:/datashare/エクセル出力（共有用）/請求書/$year/$month/$day", 0777, true);
-						$file_name = $namehyouji.$siten."_".$datetime.".xlsx";
-						$outfilepath = "C:/datashare/エクセル出力（共有用）/請求書/$year/$month/$day/$file_name"; //出力したいファイルの指定
+	mkdir("C:/datashare/エクセル出力（共有用）/請求書/$year/$month/$day", 0777, true);
+	$file_name = $namehyouji.$siten."_".$datetime.".xlsx";
+	$outfilepath = "C:/datashare/エクセル出力（共有用）/請求書/$year/$month/$day/$file_name"; //出力したいファイルの指定
 
-					}
+}
 
-					$mesxlsx = "「エクセル出力（共有用）/請求書/".$year."/".$month."/".$day."」フォルダにエクセルシート「".$file_name."」が出力されました。";
-					$this->set('mesxlsx',$mesxlsx);
+$mesxlsx = "「エクセル出力（共有用）/請求書/".$year."/".$month."/".$day."」フォルダにエクセルシート「".$file_name."」が出力されました。";
+$this->set('mesxlsx',$mesxlsx);
 
-					$writer->save($outfilepath);
-					*/
+$writer->save($outfilepath);
+*/
 			}
 
 			if ($s == count($Uriage) - 1) { //最後に登録

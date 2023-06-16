@@ -199,7 +199,7 @@ class InsatsuuriagesController extends AppController
 				$sheet->setCellValue("E" . $num, $Uriages[$j]["id"]);
 				$sheet->setCellValue("F" . $num, $Uriages[$j]["num"]);
 				if ($Uriages[$j]["zeiritu"] == 8) {
-					$sheet->setCellValue("G" . $num, $Uriages[$j]["pro"] . "※");
+					$sheet->setCellValue("G" . $num, $Uriages[$j]["pro"] . "＊");
 				} else {
 					$sheet->setCellValue("G" . $num, $Uriages[$j]["pro"]);
 				}

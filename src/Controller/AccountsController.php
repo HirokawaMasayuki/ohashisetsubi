@@ -1083,7 +1083,7 @@ class AccountsController extends AppController
 
 			$bik = "";
 			if ($data["tax_8"] > 0) {
-				$bik = "※軽減税率対象";
+				$bik = "＊軽減税率対象";
 			}
 
 			//エクセル出力
@@ -1157,7 +1157,7 @@ class AccountsController extends AppController
 						${"pro_" . $i} = "以下余白";
 						$pro_check = 1;
 					} elseif ($data["zeiritu_" . $i] == 8) {
-						${"pro_" . $i} = $data["pro_" . $i] . "※";
+						${"pro_" . $i} = $data["pro_" . $i] . "＊";
 					} else {
 						${"pro_" . $i} = $data["pro_" . $i];
 					}
@@ -1237,7 +1237,7 @@ class AccountsController extends AppController
 						${"pro_" . $i} = "以下余白";
 						$pro_check = 1;
 					} elseif ($data["zeiritu_" . $i] == 8) {
-						${"pro_" . $i} = $data["pro_" . $i] . "※";
+						${"pro_" . $i} = $data["pro_" . $i] . "＊";
 					} else {
 						${"pro_" . $i} = $data["pro_" . $i];
 					}
@@ -1346,7 +1346,7 @@ class AccountsController extends AppController
 						${"pro_" . $i} = "以下余白";
 						$pro_check = 1;
 					} elseif ($data["zeiritu_" . $i] == 8) {
-						${"pro_" . $i} = $data["pro_" . $i] . "※";
+						${"pro_" . $i} = $data["pro_" . $i] . "＊";
 					} else {
 						${"pro_" . $i} = $data["pro_" . $i];
 					}
@@ -4493,13 +4493,15 @@ class AccountsController extends AppController
 							$arrPros[] = array(
 								'pro' => $Uriagesyousais[$i]->pro, 'amount' => $Uriagesyousais[$i]->amount,
 								'tani' => $Uriagesyousais[$i]->tani, 'tanka' => $Uriagesyousais[$i]->tanka,
-								'price' => $Uriagesyousais[$i]->price, 'bik' => $Uriagesyousais[$i]->bik
+								'price' => $Uriagesyousais[$i]->price, 'zeiritu' => $Uriagesyousais[$i]->zeiritu,
+								'bik' => $Uriagesyousais[$i]->bik
 							);
 
 							${"arrPros" . $k}[] = array(
 								'pro' => $Uriagesyousais[$i]->pro, 'amount' => $Uriagesyousais[$i]->amount,
 								'tani' => $Uriagesyousais[$i]->tani, 'tanka' => $Uriagesyousais[$i]->tanka,
-								'price' => $Uriagesyousais[$i]->price, 'bik' => $Uriagesyousais[$i]->bik
+								'price' => $Uriagesyousais[$i]->price, 'zeiritu' => $Uriagesyousais[$i]->zeiritu,
+								'bik' => $Uriagesyousais[$i]->bik
 							);
 						}
 					}
@@ -4603,11 +4605,11 @@ class AccountsController extends AppController
 				for ($i = 0; $i < count($arrTotal_dempyou); $i++) {
 					if ($i < 20) {
 						$num = 25 + $i;
-						$sheet->setCellValue("B" . $num, $arrTotal_dempyou[$i]["dempyou"]);
+						$sheet->setCellValue("B" . $num, "No." . $arrTotal_dempyou[$i]["dempyou"]);
 						$sheet->setCellValue("D" . $num, $arrTotal_dempyou[$i]["total_price"]);
 					} else {
 						$num = 5 + $i;
-						$sheet->setCellValue("F" . $num, $arrTotal_dempyou[$i]["dempyou"]);
+						$sheet->setCellValue("F" . $num, "No." . $arrTotal_dempyou[$i]["dempyou"]);
 						$sheet->setCellValue("I" . $num, $arrTotal_dempyou[$i]["total_price"]);
 					}
 					$Total_all = $Total_all +  $arrTotal_dempyou[$i]["total_price"];
@@ -4696,8 +4698,15 @@ class AccountsController extends AppController
 
 					$num = 18 + $i;
 
-					$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"]);
-					$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"]);
+					if ($arrPros[$i]["zeiritu"] == 8) {
+						$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"] . "＊");
+						$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"] . "＊");
+						$sheet->setCellValue("A39", "＊軽減税率対象");
+						$sheet->setCellValue("L39", "＊軽減税率対象");
+					} else {
+						$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"]);
+						$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"]);
+					}
 					$sheet->setCellValue("F" . $num, $arrPros[$i]["amount"]);
 					$sheet->setCellValue("Q" . $num, $arrPros[$i]["amount"]);
 					$sheet->setCellValue("G" . $num, $arrPros[$i]["tani"]);
@@ -4784,8 +4793,15 @@ class AccountsController extends AppController
 
 					if ($i < count($arrPros)) {
 
-						$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"]);
-						$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"]);
+						if ($arrPros[$i]["zeiritu"] == 8) {
+							$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"] . "＊");
+							$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"] . "＊");
+							$sheet->setCellValue("A39", "＊軽減税率対象");
+							$sheet->setCellValue("L39", "＊軽減税率対象");
+						} else {
+							$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"]);
+							$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"]);
+						}
 						$sheet->setCellValue("F" . $num, $arrPros[$i]["amount"]);
 						$sheet->setCellValue("Q" . $num, $arrPros[$i]["amount"]);
 						$sheet->setCellValue("G" . $num, $arrPros[$i]["tani"]);
@@ -4950,8 +4966,15 @@ class AccountsController extends AppController
 
 					if ($i < count($arrPros)) {
 
-						$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"]);
-						$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"]);
+						if ($arrPros[$i]["zeiritu"] == 8) {
+							$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"] . "＊");
+							$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"] . "＊");
+							$sheet->setCellValue("A39", "＊軽減税率対象");
+							$sheet->setCellValue("L39", "＊軽減税率対象");
+						} else {
+							$sheet->setCellValue("A" . $num, $arrPros[$i]["pro"]);
+							$sheet->setCellValue("L" . $num, $arrPros[$i]["pro"]);
+						}
 						$sheet->setCellValue("F" . $num, $arrPros[$i]["amount"]);
 						$sheet->setCellValue("Q" . $num, $arrPros[$i]["amount"]);
 						$sheet->setCellValue("G" . $num, $arrPros[$i]["tani"]);

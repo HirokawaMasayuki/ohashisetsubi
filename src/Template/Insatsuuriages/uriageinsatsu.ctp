@@ -186,7 +186,7 @@ $this->layout = '';
               </td>
               <?php if ($Uriages->zeiritu == 8) : ?>
                 <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap">
-                  <font><?= h($Uriages->pro) ?>※</font>
+                  <font><?= h($Uriages->pro) ?>＊</font>
                 </td>
               <?php else : ?>
                 <td style="border-bottom: 0px;border-width: 1px" align="center" colspan="20" nowrap="nowrap">

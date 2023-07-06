@@ -4098,9 +4098,9 @@ class AccountsController extends AppController
 		}
 
 		$arrTotal_dempyou = array();
-		$Totaltax0 = 0;
-		$Totaltax8 = 0;
-		$Totaltax10 = 0;
+		$Totaltax_0 = 0;
+		$Totaltax_8 = 0;
+		$Totaltax_10 = 0;
 		$count = count($Uriage);
 		for ($k = 0; $k < $count; $k++) {
 			$totalkingakutaxinc = 0;
@@ -4120,11 +4120,11 @@ class AccountsController extends AppController
 				if (strlen($Uriagesyousais[$i]->zeiritu) > 0) {
 					$zeiritu = $Uriagesyousais[$i]->zeiritu;
 					if ($Uriagesyousais[$i]->zeiritu == 0) {
-						$Totaltax0 = $Totaltax0 + $Uriagesyousais[$i]->price;
+						$Totaltax_0 = $Totaltax_0 + $Uriagesyousais[$i]->price;
 					} elseif ($Uriagesyousais[$i]->zeiritu == 8) {
-						$Totaltax8 = $Totaltax8 + $Uriagesyousais[$i]->price;
+						$Totaltax_8 = $Totaltax_8 + $Uriagesyousais[$i]->price;
 					} elseif ($Uriagesyousais[$i]->zeiritu == 10) {
-						$Totaltax10 = $Totaltax10 + $Uriagesyousais[$i]->price;
+						$Totaltax_10 = $Totaltax_10 + $Uriagesyousais[$i]->price;
 					}
 				}
 			}
@@ -4188,7 +4188,6 @@ class AccountsController extends AppController
 			$spreadsheet = $reader->load($filepath);
 
 			$sheet = $spreadsheet->getSheetByName("合計表");
-			//				 $sheet->setCellValue('H1', "No.".$Uriage[$s]->denpyou_num);//210714
 			$sheet->setCellValue('A2', "  　　〒 " . $yuubin);
 
 			$addressarr =  explode("_", $address);
@@ -4264,19 +4263,19 @@ class AccountsController extends AppController
 			$sheet->setCellValue('A15', $data["Zenkai"]);
 			$sheet->setCellValue('C15', $data["nyuukingaku"]);
 			$sheet->setCellValue('D15', $data["tyousei"]);
-			$sheet->setCellValue('E15', $data["sousai"]);
-			$sheet->setCellValue('F15', $data["kurikosi"]);
+			$sheet->setCellValue('F15', $data["sousai"]);
+			$sheet->setCellValue('G15', $data["kurikosi"]);
 
-			$sheet->setCellValue('H15', 0);
 			$sheet->setCellValue('I15', 0);
+			$sheet->setCellValue('J15', 0);
 
-			$sheet->setCellValue('J15', $data["totalseikyuu"]); //合計表のみの場合は税抜（すでに税込）
+			$sheet->setCellValue('K15', $data["totalseikyuu"]); //合計表のみの場合は税抜（すでに税込）
 
-			$sheet->setCellValue('C48', $Totaltax10);
-			$sheet->setCellValue('C49', $Totaltax8);
-			$sheet->setCellValue('C50', $Totaltax0);
-			$sheet->setCellValue('D48', $Totaltax10 * 0.1);
-			$sheet->setCellValue('D49', $Totaltax8 * 0.08);
+			$sheet->setCellValue('C48', $Totaltax_10);
+			$sheet->setCellValue('C49', $Totaltax_8);
+			$sheet->setCellValue('C50', $Totaltax_0);
+			$sheet->setCellValue('D48', $Totaltax_10 * 0.1);
+			$sheet->setCellValue('D49', $Totaltax_8 * 0.08);
 			$sheet->setCellValue('D50', 0);
 
 			$writer = new XlsxWriter($spreadsheet);
@@ -4590,22 +4589,22 @@ class AccountsController extends AppController
 						$sheet->getStyle("B7")->getAlignment()->setShrinkToFit(true); //縮小して表示
 						$sheet->getStyle("B7")->getAlignment()->setHorizontal(Align::HORIZONTAL_CENTER);
 
-						$sheet->unmergeCells('M7:P7');
-						$sheet->unmergeCells('M8:P8');
-						$sheet->mergeCells('M7:P8');
-						$sheet->setCellValue('M7', "　" . $namearr[0]);
-						$sheet->getStyle("M7")->getAlignment()->setShrinkToFit(true); //縮小して表示
+						$sheet->unmergeCells('N7:Q7');
+						$sheet->unmergeCells('N8:Q8');
+						$sheet->mergeCells('N7:Q8');
+						$sheet->setCellValue('N7', "　" . $namearr[0]);
+						$sheet->getStyle("N7")->getAlignment()->setShrinkToFit(true); //縮小して表示
 
-						$sheet->setCellValue('Q7', $keisyou);
+						$sheet->setCellValue('R7', $keisyou);
 					} else {
 
 						$sheet->setCellValue('B7', "　" . $namearr[0]);
 						$sheet->setCellValue('F7', $keisyou);
-						$sheet->unmergeCells('M7:P7');
-						$sheet->unmergeCells('M8:P8');
-						$sheet->mergeCells('M7:P8');
-						$sheet->setCellValue('M7', "　" . $namearr[0]);
-						$sheet->setCellValue('Q7', $keisyou);
+						$sheet->unmergeCells('N7:Q7');
+						$sheet->unmergeCells('N8:Q8');
+						$sheet->mergeCells('N7:Q8');
+						$sheet->setCellValue('N7', "　" . $namearr[0]);
+						$sheet->setCellValue('R7', $keisyou);
 					}
 				}
 
@@ -4618,12 +4617,12 @@ class AccountsController extends AppController
 				$sheet->setCellValue('A15', $data["Zenkai"]);
 				$sheet->setCellValue('C15', $data["nyuukingaku"]);
 				$sheet->setCellValue('D15', $data["tyousei"]);
-				$sheet->setCellValue('E15', $data["sousai"]);
-				$sheet->setCellValue('F15', $data["kurikosi"]);
+				$sheet->setCellValue('F15', $data["sousai"]);
+				$sheet->setCellValue('G15', $data["kurikosi"]);
 
-				$sheet->setCellValue('H15', $totalkingaku);
-				$sheet->setCellValue('I15', $data["totaltax"]);
-				$sheet->setCellValue('J15', $data["totalkingakutaxinc"] + $data["kurikosi"]);
+				$sheet->setCellValue('I15', $totalkingaku);
+				$sheet->setCellValue('J15', $data["totaltax"]);
+				$sheet->setCellValue('K15', $data["totalkingakutaxinc"] + $data["kurikosi"]);
 
 				$Total_all = 0;
 				for ($i = 0; $i < count($arrTotal_dempyou); $i++) {
@@ -4633,18 +4632,18 @@ class AccountsController extends AppController
 						$sheet->setCellValue("D" . $num, $arrTotal_dempyou[$i]["total_price"]);
 					} else {
 						$num = 5 + $i;
-						$sheet->setCellValue("F" . $num, "No." . $arrTotal_dempyou[$i]["dempyou"]);
-						$sheet->setCellValue("I" . $num, $arrTotal_dempyou[$i]["total_price"]);
+						$sheet->setCellValue("G" . $num, "No." . $arrTotal_dempyou[$i]["dempyou"]);
+						$sheet->setCellValue("J" . $num, $arrTotal_dempyou[$i]["total_price"]);
 					}
 					$Total_all = $Total_all +  $arrTotal_dempyou[$i]["total_price"];
 				}
-				$sheet->setCellValue('F45', $Total_all);
+				$sheet->setCellValue('G45', $Total_all);
 
-				$sheet->setCellValue('C48', $Totaltax10);
-				$sheet->setCellValue('C49', $Totaltax8);
-				$sheet->setCellValue('C50', $Totaltax0);
-				$sheet->setCellValue('D48', $Totaltax10 * 0.1);
-				$sheet->setCellValue('D49', $Totaltax8 * 0.08);
+				$sheet->setCellValue('C48', $Totaltax_10);
+				$sheet->setCellValue('C49', $Totaltax_8);
+				$sheet->setCellValue('C50', $Totaltax_0);
+				$sheet->setCellValue('D48', $Totaltax_10 * 0.1);
+				$sheet->setCellValue('D49', $Totaltax_8 * 0.08);
 				$sheet->setCellValue('D50', 0);
 
 				$writer = new XlsxWriter($spreadsheet);

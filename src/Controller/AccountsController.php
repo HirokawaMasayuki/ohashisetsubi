@@ -1091,7 +1091,7 @@ class AccountsController extends AppController
 			$reader = new XlsxReader();
 			$spreadsheet = $reader->load($filepath);
 			$sheet = $spreadsheet->getSheetByName("Sheet1");
-			$sheet->setCellValue('H1', "伝票番号:" . $denpyou_num);
+			$sheet->setCellValue('H1', "No." . $denpyou_num);
 			$sheet->setCellValue('A2', "〒 " . $data["yuubin"]);
 
 			$addressarr =  explode("_", $data["address"]);
@@ -1125,6 +1125,11 @@ class AccountsController extends AppController
 			$sheet->setCellValue('E5', $data["keisyou"]);
 			$sheet->setCellValue('G2', $data["dateexcl"]);
 			$sheet->setCellValue('C8', $total_price);
+
+			if ($data["tax_8"] == 0 && $data["tax_10"] == 0) {
+				$sheet->setCellValue('E8', "");
+				$sheet->setCellValue('E32', "");
+			}
 
 			for ($j = 2; $j < 2 + $syou; $j++) {
 
@@ -4093,6 +4098,9 @@ class AccountsController extends AppController
 		}
 
 		$arrTotal_dempyou = array();
+		$Totaltax0 = 0;
+		$Totaltax8 = 0;
+		$Totaltax10 = 0;
 		$count = count($Uriage);
 		for ($k = 0; $k < $count; $k++) {
 			$totalkingakutaxinc = 0;
@@ -4101,12 +4109,22 @@ class AccountsController extends AppController
 			for ($i = 0; $i < count($Uriagesyousais); $i++) {
 
 				if (!empty($Uriagesyousais[$i]->pro)) {
-
 					if ($Uriage[$k]->tax_include_flag == 0) { //税別の場合
 						$totaltax = $totaltax + $Uriagesyousais[$i]->price * $Uriagesyousais[$i]->zeiritu / 100;
 						$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price + $Uriagesyousais[$i]->price * $Uriagesyousais[$i]->zeiritu / 100;
 					} else {
 						$totalkingakutaxinc = $totalkingakutaxinc + $Uriagesyousais[$i]->price;
+					}
+				}
+
+				if (strlen($Uriagesyousais[$i]->zeiritu) > 0) {
+					$zeiritu = $Uriagesyousais[$i]->zeiritu;
+					if ($Uriagesyousais[$i]->zeiritu == 0) {
+						$Totaltax0 = $Totaltax0 + $Uriagesyousais[$i]->price;
+					} elseif ($Uriagesyousais[$i]->zeiritu == 8) {
+						$Totaltax8 = $Totaltax8 + $Uriagesyousais[$i]->price;
+					} elseif ($Uriagesyousais[$i]->zeiritu == 10) {
+						$Totaltax10 = $Totaltax10 + $Uriagesyousais[$i]->price;
 					}
 				}
 			}
@@ -4254,6 +4272,13 @@ class AccountsController extends AppController
 
 			$sheet->setCellValue('J15', $data["totalseikyuu"]); //合計表のみの場合は税抜（すでに税込）
 
+			$sheet->setCellValue('C48', $Totaltax10);
+			$sheet->setCellValue('C49', $Totaltax8);
+			$sheet->setCellValue('C50', $Totaltax0);
+			$sheet->setCellValue('D48', $Totaltax10 * 0.1);
+			$sheet->setCellValue('D49', $Totaltax8 * 0.08);
+			$sheet->setCellValue('D50', 0);
+
 			$writer = new XlsxWriter($spreadsheet);
 
 			//Sheet1を削除
@@ -4379,7 +4404,6 @@ class AccountsController extends AppController
 			$arrTaxinc = array();
 			$arrDenpyou = array();
 			$arrSyuturyoku = array();
-			$arrTotalprice = array();
 
 			if ($count > 0) {
 
@@ -4411,7 +4435,7 @@ class AccountsController extends AppController
 								${"Totaltax10" . $k} = ${"Totaltax10" . $k} + $Uriagesyousais[$i]->price * $Uriagesyousais[$i]->zeiritu / 100;
 							}
 							${"Totalprice" . $k} = ${"Totalprice" . $k} + $Uriagesyousais[$i]->price;
-							$zeiritu = 10;
+							$zeiritu = 0;
 							if (strlen($Uriagesyousais[$i]->zeiritu) > 0) {
 								$zeiritu = $Uriagesyousais[$i]->zeiritu;
 							}
@@ -4615,6 +4639,13 @@ class AccountsController extends AppController
 					$Total_all = $Total_all +  $arrTotal_dempyou[$i]["total_price"];
 				}
 				$sheet->setCellValue('F45', $Total_all);
+
+				$sheet->setCellValue('C48', $Totaltax10);
+				$sheet->setCellValue('C49', $Totaltax8);
+				$sheet->setCellValue('C50', $Totaltax0);
+				$sheet->setCellValue('D48', $Totaltax10 * 0.1);
+				$sheet->setCellValue('D49', $Totaltax8 * 0.08);
+				$sheet->setCellValue('D50', 0);
 
 				$writer = new XlsxWriter($spreadsheet);
 			}
